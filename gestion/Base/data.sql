@@ -55,3 +55,7 @@ INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES
 ('Homme', 20, 0 , 1, 1),
 ('Femme', 25, 15, 5, 1);
 
+INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil) VALUES
+('2025-09-01', 'Développement et maintenance des applications Java', '2025-09-30', 1, 11),
+('2025-09-03', 'Gestion des serveurs et réseaux internes', '2025-10-03', 2, 15);
+
