@@ -17,7 +17,7 @@
                 ID : ${annonce.id_annonce}, Date : ${annonce.date_annonce}
                 Responsable : ${annonce.responsabilite} ${annonce.date_fin}
                 Poste : ${annonce.poste}, ID_Profil: ${annonce.profil}
-                <form action="#" method="get" style="display:inline;">
+                <form action="profil" method="get" style="display:inline;">
                     <input type="hidden" name="idProfil" value="${annonce.profil}">
                     <button type="submit" class="btn btn-primary btn-sm">Choisir</button>
                 </form>
