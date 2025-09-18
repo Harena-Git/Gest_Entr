@@ -68,8 +68,8 @@
     </c:if>
     <a href="/acceuil" class="btn btn-secondary">Retour</a>
     <form action="#" method="get">
+        <input type="hidden" name="idProfil" value="${profil.id_profil}">
         <button type="submit" class="btn btn-primary">Postuler</button>
-        
     </form>
 </body>
 </html>
