@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @Controller
-public class TestController {
+public class AnnonceController {
 
     @Autowired
     private AnnonceRepository annonceRepository;
