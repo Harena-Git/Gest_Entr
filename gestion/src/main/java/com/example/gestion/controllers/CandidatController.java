@@ -5,7 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.example.gestion.models.*;
+import com.example.gestion.repository.*;
 @Controller
 @RequestMapping("/candidat")
 public class CandidatController {
@@ -18,6 +19,7 @@ public class CandidatController {
 
     @Autowired
     private EtatCandidatRepository etatRepository;
+    
 
     @GetMapping("/form")
     public String showForm(@RequestParam(name = "idAnnonce", required = false) Integer idAnnonce,
@@ -50,10 +52,6 @@ public class CandidatController {
         model.addAttribute("candidats", candidatRepository.findAll());
         return "candidat-list";
     }
-
-    @GetMapping("/list")
-    public String listAnnonces(Model model) {
-        model.addAttribute("annonces", annonceRepository.findAll());
-        return "annonce-list"; // correspond à ton JSP
-    }
 }
+
+    

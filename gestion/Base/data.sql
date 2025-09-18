@@ -47,3 +47,11 @@ INSERT INTO diplome (niveau, Id_filiere) VALUES
 
 ('Licence', 3),
 ('Expert', 3);
+
+INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES
+(NULL, 28, 5, 1, 2),
+('Homme', 18, 3 , 2, 5),
+(NULL, 24, 2 , 3, 4),
+('Homme', 20, 0 , 1, 1),
+('Femme', 25, 15, 5, 1);
+
