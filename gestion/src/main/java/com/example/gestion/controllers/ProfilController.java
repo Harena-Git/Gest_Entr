@@ -1,6 +1,8 @@
 package com.example.gestion.controllers;
 
 import com.example.gestion.models.Profil;
+import com.example.gestion.models.Lieu;
+import com.example.gestion.models.Diplome;
 import com.example.gestion.repository.ProfilRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,12 +27,18 @@ public class ProfilController {
 
     @GetMapping("/profil")
     public String getProfil(@RequestParam("idProfil") Integer idProfil, Model model) {
-        Profil profil = profilRepository.findById(idProfil).orElse(null);
-        if (profil != null) {
-            model.addAttribute("profil", profil);
-        } else {
-            model.addAttribute("error", "Profil non trouvé avec l'ID : " + idProfil);
+        try {
+            Profil profil = profilRepository.findById(idProfil).orElse(null);
+            if (profil != null) {
+                model.addAttribute("profil", profil);
+            } else {
+                model.addAttribute("error", "Profil non trouvé avec l'ID : " + idProfil);
+            }
+            return "Profil";
+        } catch (Exception e) {
+            e.printStackTrace(); // This will print the full stack trace in the console
+            model.addAttribute("error", "Erreur lors de la recherche du profil: " + e.getMessage());
+            return "Profil";
         }
-        return "profil";
     }
 }
