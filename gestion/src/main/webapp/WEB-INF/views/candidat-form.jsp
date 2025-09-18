@@ -1,3 +1,6 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <style>
     form {
         max-width: 500px;
@@ -48,10 +51,9 @@
         min-height: 60px;
     }
 </style>
-
 <form action="${pageContext.request.contextPath}/candidat/save" method="post" enctype="multipart/form-data">
     <input type="hidden" name="idAnnonce" value="${idAnnonce}" />
-
+    
     <label for="nom">Nom :</label>
     <input type="text" name="nom" id="nom"/>
 
@@ -66,17 +68,19 @@
 
     <label for="adresse">Adresse :</label>
     <textarea name="adresse" id="adresse"></textarea>
+    <c:if test="${not empty departementNom}">  
+        <label for="anneeExperience">Années d expérience en ${departementNom} :</label>
+        <input type="number" name="anneeExperience" id="anneeExperience"/>
+    </c:if>
 
-    <label for="anneeExperience">Années d’expérience :</label>
-    <input type="number" name="anneeExperience" id="anneeExperience"/>
-
+   
     <label for="file">Photo :</label>
     <input type="file" name="file" id="file"/>
 
     <label for="idLieu">Lieu :</label>
     <select name="idLieu" id="idLieu">
         <c:forEach var="lieu" items="${lieux}">
-            <option value="${lieu.idLieu}">${lieu.libelle}</option>
+            <option value="${lieu.id_lieu}">${lieu.lieu}</option>
         </c:forEach>
     </select>
 

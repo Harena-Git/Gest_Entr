@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.*;
+import java.util.List;
+
+
 @Controller
 @RequestMapping("/candidat")
 public class CandidatController {
@@ -18,18 +21,26 @@ public class CandidatController {
     private LieuRepository lieuRepository;
 
     @Autowired
-    private EtatCandidatRepository etatRepository;
+    private AnnonceRepository annonceRepository;
+
+ 
     
 
     @GetMapping("/form")
     public String showForm(@RequestParam(name = "idAnnonce", required = false) Integer idAnnonce,
-                        Model model) {
+                            Model model) {
         model.addAttribute("candidat", new Candidat());
-        model.addAttribute("lieux", lieuRepository.findAll());
-        model.addAttribute("etats", etatRepository.findAll());
-        model.addAttribute("idAnnonce", idAnnonce); // garder l'ID de l'annonce
+        List<Lieu> lieux = lieuRepository.findAll();
+        model.addAttribute("lieux", lieux);
+        model.addAttribute("idAnnonce", idAnnonce);
+        // Récupérer le nom du département via l'idAnnonce
+        if (idAnnonce != null) {
+            String departementNom = annonceRepository.findDepartementByIdAnnonce(idAnnonce);
+            model.addAttribute("departementNom", departementNom);
+        }
         return "candidat-form";
     }
+
 
     @PostMapping("/save")
     public String saveCandidat(@ModelAttribute Candidat candidat,
