@@ -13,6 +13,11 @@ CREATE TABLE etat_candidat(
    PRIMARY KEY(Id_etat_candidat),
    UNIQUE(libelle)
 );
+CREATE TABLE niveau (
+   Id_niveau INT AUTO_INCREMENT,
+   libelle VARCHAR(50) NOT NULL,
+   PRIMARY KEY(Id_niveau)
+);
 
 CREATE TABLE filiere(
    Id_filiere INT AUTO_INCREMENT,
@@ -132,13 +137,21 @@ CREATE TABLE historique_etat(
    FOREIGN KEY(Id_etat_candidat) REFERENCES etat_candidat(Id_etat_candidat)
 );
 
-CREATE TABLE diplome(
+CREATE TABLE niveau (
+   Id_niveau INT AUTO_INCREMENT,
+   libelle VARCHAR(50) NOT NULL,
+   PRIMARY KEY(Id_niveau)
+);
+
+CREATE TABLE diplome (
    Id_diplome INT AUTO_INCREMENT,
-   niveau VARCHAR(50),
+   Id_niveau INT NOT NULL,
    Id_filiere INT NOT NULL,
    PRIMARY KEY(Id_diplome),
+   FOREIGN KEY(Id_niveau) REFERENCES niveau(Id_niveau),
    FOREIGN KEY(Id_filiere) REFERENCES filiere(Id_filiere)
 );
+
 
 CREATE TABLE evaluation_entretien_1(
    Id_evaluation_entretien_1 INT AUTO_INCREMENT,
