@@ -29,8 +29,26 @@ CREATE TABLE qcm(
    Id_qcm INT AUTO_INCREMENT,
    titre VARCHAR(50),
    description TEXT,
-   PRIMARY KEY(Id_qcm)
+   Id_poste INT NOT NULL,
+   PRIMARY KEY(Id_qcm),
+   FOREIGN KEY(Id_poste) REFERENCES poste(Id_poste)
+
 );
+CREATE TABLE question_generale(
+   Id_question_generale INT AUTO_INCREMENT,
+   libelle VARCHAR(50),
+   PRIMARY KEY(Id_question_generale)
+);
+CREATE TABLE qcm_generale(
+   Id_qcm_generale INT AUTO_INCREMENT,
+   Id_question_generale INT,
+   Id_qcm INT,
+   PRIMARY KEY(Id_question_generale, Id_qcm, Id_qcm_generale),
+   FOREIGN KEY(Id_question_generale) REFERENCES question_generale(Id_question_generale),
+   FOREIGN KEY(Id_qcm) REFERENCES qcm(Id_qcm)
+);
+
+
 
 CREATE TABLE question(
    Id_question INT AUTO_INCREMENT,
@@ -44,7 +62,9 @@ CREATE TABLE choix(
    Id_choix INT AUTO_INCREMENT,
    libelle VARCHAR(50),
    est_correct BOOLEAN,
-   Id_question INT NOT NULL,
+   Id_question INT ,
+   Id_question_generale INT ,
+   FOREIGN KEY(Id_question_generale) REFERENCES question_generale(Id_question_generale),
    PRIMARY KEY(Id_choix),
    FOREIGN KEY(Id_question) REFERENCES question(Id_question)
 );
@@ -242,11 +262,11 @@ CREATE TABLE profil_qcm(
 
 CREATE TABLE reponse(
    Id_reponse INT AUTO_INCREMENT,
-   Id_profil INT NOT NULL,
+   Id_candidat INT NOT NULL,
    Id_question INT NOT NULL,
    Id_choix INT NOT NULL,
    PRIMARY KEY(Id_reponse),
-   FOREIGN KEY(Id_profil) REFERENCES profil(Id_profil),
+   FOREIGN KEY(Id_candidat) REFERENCES candidat(Id_candidat),
    FOREIGN KEY(Id_question) REFERENCES question(Id_question),
    FOREIGN KEY(Id_choix) REFERENCES choix(Id_choix)
 );

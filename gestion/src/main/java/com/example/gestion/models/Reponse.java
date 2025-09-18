@@ -11,8 +11,8 @@ public class Reponse {
     private Integer id_reponse;
 
     @ManyToOne
-    @JoinColumn(name = "Id_profil")
-    private Profil profil;
+    @JoinColumn(name = "Id_candidat")
+    private Candidat candidat;
 
     @ManyToOne
     @JoinColumn(name = "Id_question")
@@ -26,8 +26,8 @@ public class Reponse {
     public Integer getId_reponse() { return id_reponse; }
     public void setId_reponse(Integer id_reponse) { this.id_reponse = id_reponse; }
 
-    public Profil getProfil() { return profil; }
-    public void setProfil(Profil profil) { this.profil = profil; }
+    public Candidat getCandidat() { return candidat; }
+    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
 
     public Question getQuestion() { return question; }
     public void setQuestion(Question question) { this.question = question; }
