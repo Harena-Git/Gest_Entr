@@ -67,5 +67,9 @@
         </table>
     </c:if>
     <a href="/acceuil" class="btn btn-secondary">Retour</a>
+    <form action="#" method="get">
+        <button type="submit" class="btn btn-primary">Postuler</button>
+        
+    </form>
 </body>
 </html>
