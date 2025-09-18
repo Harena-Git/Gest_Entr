@@ -1,8 +1,6 @@
 package com.example.gestion.models;
 
 import jakarta.persistence.*;
-import main.java.com.example.gestion.models.Niveau;
-
 import java.util.List;
 
 @Entity
