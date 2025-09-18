@@ -14,9 +14,6 @@ public class Reponse {
     @JoinColumn(name = "Id_candidat")
     private Candidat candidat;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_question")
-    private Question question;
 
     @ManyToOne
     @JoinColumn(name = "Id_choix")
@@ -29,8 +26,6 @@ public class Reponse {
     public Candidat getCandidat() { return candidat; }
     public void setCandidat(Candidat candidat) { this.candidat = candidat; }
 
-    public Question getQuestion() { return question; }
-    public void setQuestion(Question question) { this.question = question; }
 
     public Choix getChoix() { return choix; }
     public void setChoix(Choix choix) { this.choix = choix; }
