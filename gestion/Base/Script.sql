@@ -1,5 +1,5 @@
-CREATE DATABASE Gestion_entreprise ;
-use Gestion_entreprise ;
+-- Removed CREATE DATABASE and USE statements as they are not valid in Oracle SQL.
+-- Connect to your intended schema before running this script.
 CREATE TABLE role(
    Id_role INT AUTO_INCREMENT,
    libelle VARCHAR(50) NOT NULL,
