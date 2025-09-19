@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+    <%@ include file="/WEB-INF/views/menu_bar.jsp" %>
     <h1>Les offres d'emploie</h1>
     <ul>
         <c:forEach var="annonce" items="${annonces}">
