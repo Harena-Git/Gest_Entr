@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnnonceRepository extends JpaRepository<Annonce, Integer> {
-    @Query("SELECT a.poste.departement.departement FROM Annonce a WHERE a.id_annonce = :idAnnonce")
-    String findDepartementByIdAnnonce(@Param("idAnnonce") Integer idAnnonce);
+    @Query("SELECT a.poste.libelle FROM Annonce a WHERE a.id_annonce = :idAnnonce")
+    String findPosteByIdAnnonce(@Param("idAnnonce") Integer idAnnonce);
 }

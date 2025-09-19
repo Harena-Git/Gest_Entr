@@ -23,6 +23,7 @@ public class Candidat {
 
     private String telephone;
     private String adresse;
+    private String competences_personnelles;
 
     @Temporal(TemporalType.DATE)
     private Date date_candidature;
@@ -53,6 +54,9 @@ public class Candidat {
     public Integer getId_candidat() { return id_candidat; }
     public void setId_candidat(Integer id_candidat) { this.id_candidat = id_candidat; }
 
+    public String getCompetences_personnelles() { return competences_personnelles; }
+    public void setCompetences_personnelles(String competences_personnelles) { this.competences_personnelles = competences_personnelles; }
+    
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 

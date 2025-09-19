@@ -11,7 +11,7 @@ INSERT INTO poste (libelle, salaire, Id_departement) VALUES
 ('Développeur Java', 1200000, 1),
 ('Administrateur Système', 1500000, 1),
 ('Responsable RH', 1300000, 2),
-('Comptable Senior', 1000000, 3),
+('Comptable Senior', 1000000, 3);
 ('Assistant Marketing', 800000, 4),
 ('Responsable Logistique', 1100000, 5),
 ('Chef d’Atelier', 1400000, 6),
@@ -25,6 +25,13 @@ INSERT INTO lieu (lieu) VALUES
 ('Toliara'),
 ('Antsiranana');
 
+INSERT INTO niveau (libelle) VALUES
+('BTS'),
+('Licence'),
+('Master'),
+('Doctorat'),
+('Expert');
+
 INSERT INTO filiere (libelle) VALUES
 ('Informatique'),
 ('Gestion'),
@@ -36,17 +43,21 @@ INSERT INTO filiere (libelle) VALUES
 ('Agronomie'),
 ('Génie Civil');
 
-INSERT INTO diplome (niveau, Id_filiere) VALUES
-('Licence', 1),
-('Master', 1),
-('Doctorat', 1),
+-- Informatique
+INSERT INTO diplome (Id_niveau, Id_filiere) VALUES
+(2, 1), -- Licence Informatique
+(3, 1), -- Master Informatique
+(4, 1), -- Doctorat Informatique
 
-('BTS', 2),
-('Licence', 2),
-('Master', 2),
+-- Gestion
+(1, 2), -- BTS Gestion
+(2, 2), -- Licence Gestion
+(3, 2), -- Master Gestion
 
-('Licence', 3),
-('Expert', 3);
+-- Comptabilité et Finance
+(2, 3), -- Licence Comptabilité
+(5, 3); -- Expert Comptabilité
+
 
 INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES
 (NULL, 28, 5, 1, 2),
@@ -56,6 +67,6 @@ INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES
 ('Femme', 25, 15, 5, 1);
 
 INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil) VALUES
-('2025-09-01', 'Développement et maintenance des applications Java', '2025-09-30', 1, 11),
-('2025-09-03', 'Gestion des serveurs et réseaux internes', '2025-10-03', 2, 15);
+('2025-09-01', 'Développement et maintenance des applications Java', '2025-09-30', 1, 1),
+('2025-09-03', 'Gestion des serveurs et réseaux internes', '2025-10-03', 2, 2);
 

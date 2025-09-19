@@ -23,21 +23,35 @@ public class CandidatController {
     @Autowired
     private AnnonceRepository annonceRepository;
 
- 
-    
+    @Autowired
+    private NiveauRepository niveauRepository;
 
+    @Autowired
+    private FiliereRepository filiereRepository;
+        
+
+   
     @GetMapping("/form")
     public String showForm(@RequestParam(name = "idAnnonce", required = false) Integer idAnnonce,
-                            Model model) {
+                        Model model) {
         model.addAttribute("candidat", new Candidat());
+
+        // Lieux
         List<Lieu> lieux = lieuRepository.findAll();
         model.addAttribute("lieux", lieux);
+
         model.addAttribute("idAnnonce", idAnnonce);
-        // Récupérer le nom du département via l'idAnnonce
+
+        // Poste lié à l'annonce
         if (idAnnonce != null) {
-            String departementNom = annonceRepository.findDepartementByIdAnnonce(idAnnonce);
-            model.addAttribute("departementNom", departementNom);
+            String posteNom = annonceRepository.findPosteByIdAnnonce(idAnnonce);
+            model.addAttribute("posteNom", posteNom);
         }
+
+        // Ajouter niveaux et filières
+        model.addAttribute("niveaux", niveauRepository.findAll());
+        model.addAttribute("filieres", filiereRepository.findAll());
+
         return "candidat-form";
     }
 
