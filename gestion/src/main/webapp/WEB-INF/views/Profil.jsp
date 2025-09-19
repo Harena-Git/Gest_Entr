@@ -193,7 +193,7 @@
                 </div>
 
                 <div class="text-end p-3 border-top">
-                <form action="/postuler" method="get">
+                <form action="#" method="get">
                     <input type="hidden" name="idProfil" value="${profil.id_profil}">
                     <button type="submit" class="btn btn-success btn-return">
                         <i class="fas fa-paper-plane"></i> Postuler avec cette offre
