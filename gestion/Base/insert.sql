@@ -35,7 +35,7 @@ insert into niveau (libelle) values
 
 --table poste
 INSERT INTO poste (libelle, salaire, Id_departement) VALUES
-('Développeur Java', 1200000, 1),
+('Dveloppeur Java', 1200000, 1),
 ('Comptable', 900000, 2),
 ('Chef de projet', 1800000, 1),
 ('Responsable RH', 1500000, 4),
