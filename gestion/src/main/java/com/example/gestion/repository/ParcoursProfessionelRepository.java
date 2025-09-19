@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface ParcoursProfessionelRepository extends JpaRepository<ParcoursProfessionel, Integer> {
 
-    // Méthode pour récupérer tous les parcours d'un candidat donné
-    List<ParcoursProfessionel> findByCandidatId(Integer idCandidat);
+  
 
 }

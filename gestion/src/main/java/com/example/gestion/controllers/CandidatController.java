@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.*;
+import com.example.gestion.service.CandidatService;
 
-import main.java.com.example.gestion.models.Niveau;
-import main.java.com.example.gestion.repository.ParcoursProfessionelRepository;
 
 import java.util.List;
 
@@ -48,7 +47,9 @@ public class CandidatController {
     @Autowired
     private ParcoursProfessionelRepository parcoursProfessionelRepository;
 
-   
+    @Autowired
+    private CandidatService candidatService;
+    
     @GetMapping("/form")
     public String showForm(@RequestParam(name = "idAnnonce", required = false) Integer idAnnonce,
                         Model model) {
@@ -76,8 +77,16 @@ public class CandidatController {
 
     
     @PostMapping("/save")
-    public String saveCandidat(@ModelAttribute Candidat candidat,
+    public String saveCandidat( @RequestParam("idAnnonce") Integer idAnnonce,@ModelAttribute Candidat candidat,
                             @RequestParam("file") MultipartFile file) {
+        Annonce annonce = annonceRepository.findById(idAnnonce)
+            .orElseThrow(() -> new RuntimeException("Annonce non trouvée"));
+
+        // 2. Récupérer le profil de l'annonce
+        Profil profil = annonce.getProfil();
+
+
+
         try {
             // Photo
             if (!file.isEmpty()) {

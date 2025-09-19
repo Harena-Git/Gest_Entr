@@ -24,6 +24,8 @@ public class Candidat {
     private String telephone;
     private String adresse;
     private String competences_personnelles;
+    private String genre;
+    private Date date_naissance;
 
     @Temporal(TemporalType.DATE)
     private Date date_candidature;
@@ -109,5 +111,10 @@ public class Candidat {
     public void setParcoursProfessionels(List<ParcoursProfessionel> parcoursProfessionels) {
         this.parcoursProfessionels = parcoursProfessionels;
     }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
+
+    public Date getDate_naissance() { return date_naissance; }
+    public void setDate_naissance(Date date_naissance) { this.date_naissance = date_naissance; }
 
 }

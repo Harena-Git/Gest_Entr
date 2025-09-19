@@ -97,6 +97,15 @@
         <label for="telephone">Téléphone :</label>
         <input type="text" name="telephone" id="telephone"/>
 
+        <label for="genre">Genre :</label>
+        <select name="genre" id="genre">
+            <option value="Homme">Homme</option>
+            <option value="Femme">Femme</option>
+        </select>
+
+        <label for="date_naissance">Date de naissance :</label>
+        <input type="date" name="date_naissance" id="date_naissance"/>
+
         <label for="adresse">Adresse :</label>
         <textarea name="adresse" id="adresse"></textarea>
 
