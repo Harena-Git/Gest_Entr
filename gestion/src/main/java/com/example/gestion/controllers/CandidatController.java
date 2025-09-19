@@ -84,69 +84,77 @@ public class CandidatController {
 
         // 2. Récupérer le profil de l'annonce
         Profil profil = annonce.getProfil();
+        if(candidatService.verifierEtEnregistrer(candidat, profil)){
+             try {
+                    // Photo
+                    if (!file.isEmpty()) {
+                        String photoName = file.getOriginalFilename();
+                        candidat.setPhoto(photoName);
+                        // TODO : sauvegarder le fichier physiquement
+                    }
+                    // Sauvegarder le candidat // --- Etat du candidat ---
+                    EtatCandidat etatAttente = etatCandidatRepository.findById(1)
+                            .orElseThrow(() -> new RuntimeException("Etat 'En attente' introuvable"));
+                    candidat.setEtatCandidat(etatAttente);
+
+                    // --- Sauvegarder le candidat ---
+                    Candidat savedCandidat = candidatRepository.save(candidat);
+
+                    // --- Ajouter historique ---
+                    HistoriqueEtat historique = new HistoriqueEtat();
+                    historique.setCandidat(savedCandidat);
+                    historique.setEtatCandidat(etatAttente);
+                    historique.setDate_changement(java.time.LocalDate.now().toString()); // current date
+                    historiqueEtatRepository.save(historique);
+
+                    // Pour chaque diplôme candidat
+                    if (candidat.getDiplomesCandidats() != null) {
+                        for (DiplomeCandidat dc : candidat.getDiplomesCandidats()) {
+                            Niveau niveau = niveauRepository.findById(dc.getDiplome().getNiveau().getIdNiveau())
+                                    .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
+
+                            Filiere filiere = filiereRepository.findById(dc.getDiplome().getFiliere().getIdFiliere())
+                                    .orElseThrow(() -> new RuntimeException("Filiere introuvable"));
+
+                            // Vérifier si Diplome existe déjà
+                            Diplome diplome = diplomeRepository.findByNiveauAndFiliere(niveau, filiere)
+                                    .orElseGet(() -> {
+                                        // sinon créer
+                                        Diplome newDiplome = new Diplome();
+                                        newDiplome.setNiveau(niveau);
+                                        newDiplome.setFiliere(filiere);
+                                        return diplomeRepository.save(newDiplome);
+                                    });
+
+                            // Associer diplome existant au DiplomeCandidat
+                            dc.setDiplome(diplome);
+                            dc.setCandidat(savedCandidat);
+                            diplomeCandidatRepository.save(dc);
+                        }
+                    }
+
+                    if (candidat.getParcoursProfessionels() != null) {
+                        for (ParcoursProfessionel parcours : candidat.getParcoursProfessionels()) {
+                            parcours.setCandidat(savedCandidat);
+                            parcoursProfessionelRepository.save(parcours);
+                        }
+                    }
 
 
-
-        try {
-            // Photo
-            if (!file.isEmpty()) {
-                String photoName = file.getOriginalFilename();
-                candidat.setPhoto(photoName);
-                // TODO : sauvegarder le fichier physiquement
-            }
-            // Sauvegarder le candidat // --- Etat du candidat ---
-            EtatCandidat etatAttente = etatCandidatRepository.findById(1)
-                    .orElseThrow(() -> new RuntimeException("Etat 'En attente' introuvable"));
-            candidat.setEtatCandidat(etatAttente);
-
-            // --- Sauvegarder le candidat ---
-            Candidat savedCandidat = candidatRepository.save(candidat);
-
-            // --- Ajouter historique ---
-            HistoriqueEtat historique = new HistoriqueEtat();
-            historique.setCandidat(savedCandidat);
-            historique.setEtatCandidat(etatAttente);
-            historique.setDate_changement(java.time.LocalDate.now().toString()); // current date
-            historiqueEtatRepository.save(historique);
-
-             // Pour chaque diplôme candidat
-            if (candidat.getDiplomesCandidats() != null) {
-                for (DiplomeCandidat dc : candidat.getDiplomesCandidats()) {
-                    Niveau niveau = niveauRepository.findById(dc.getDiplome().getNiveau().getIdNiveau())
-                            .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
-
-                    Filiere filiere = filiereRepository.findById(dc.getDiplome().getFiliere().getIdFiliere())
-                            .orElseThrow(() -> new RuntimeException("Filiere introuvable"));
-
-                    // Vérifier si Diplome existe déjà
-                    Diplome diplome = diplomeRepository.findByNiveauAndFiliere(niveau, filiere)
-                            .orElseGet(() -> {
-                                // sinon créer
-                                Diplome newDiplome = new Diplome();
-                                newDiplome.setNiveau(niveau);
-                                newDiplome.setFiliere(filiere);
-                                return diplomeRepository.save(newDiplome);
-                            });
-
-                    // Associer diplome existant au DiplomeCandidat
-                    dc.setDiplome(diplome);
-                    dc.setCandidat(savedCandidat);
-                    diplomeCandidatRepository.save(dc);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }
-
-            if (candidat.getParcoursProfessionels() != null) {
-                for (ParcoursProfessionel parcours : candidat.getParcoursProfessionels()) {
-                    parcours.setCandidat(savedCandidat);
-                    parcoursProfessionelRepository.save(parcours);
-                }
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
+                 return "redirect:/candidat/list";
         }
-        return "redirect:/candidat/list";
+        else{
+            // Rediriger vers une page d'erreur ou afficher un message
+            return "candidat-error";
+        }
+
+
+
+       
+       
     }
 
 
