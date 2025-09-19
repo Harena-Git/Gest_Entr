@@ -59,6 +59,9 @@ public class AdminAnnonceController {
         @RequestParam("id_lieu") Integer idLieu,
         @RequestParam("id_niveau") Integer idNiveau
     ) {
+        // Définir la date courante pour l'annonce
+        annonce.setDate_annonce(LocalDate.now().toString());
+
         // Créer le poste avec le département sélectionné
         var departement = departementRepository.findById(idDepartement).orElse(null);
         var poste = new com.example.gestion.models.Poste();
@@ -74,7 +77,6 @@ public class AdminAnnonceController {
         profil.setAge(age);
         profil.setAnnee_experience(anneeExperience);
         profil.setLieu(lieuRepository.findById(idLieu).orElse(null));
-        // Associer le niveau au diplôme du profil si besoin
         // profil.getDiplome().setNiveau(niveauRepository.findById(idNiveau).orElse(null));
         profilRepository.save(profil);
         annonce.setProfil(profil);

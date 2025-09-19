@@ -10,10 +10,6 @@
 <form action="/admin/annonces" method="post">
     <input type="hidden" name="id_annonce" value="${annonce.id_annonce}" />
     <div>
-        <label>Date annonce :</label>
-        <input type="date" name="date_annonce" value="${annonce.date_annonce}" required />
-    </div>
-    <div>
         <label>Titre du poste :</label>
         <input type="text" name="libelle_poste" value="${annonce.poste != null ? annonce.poste.libelle : ''}" required />
     </div>
