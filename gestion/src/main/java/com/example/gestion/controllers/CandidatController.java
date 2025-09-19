@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.*;
+
+import main.java.com.example.gestion.models.Niveau;
+import main.java.com.example.gestion.repository.ParcoursProfessionelRepository;
+
 import java.util.List;
 
 
@@ -28,7 +32,21 @@ public class CandidatController {
 
     @Autowired
     private FiliereRepository filiereRepository;
-        
+
+    @Autowired
+    private DiplomeRepository diplomeRepository;
+
+    @Autowired
+    private DiplomeCandidatRepository diplomeCandidatRepository;
+
+    @Autowired
+    private EtatCandidatRepository etatCandidatRepository;
+
+    @Autowired
+    private HistoriqueEtatRepository historiqueEtatRepository;
+
+    @Autowired
+    private ParcoursProfessionelRepository parcoursProfessionelRepository;
 
    
     @GetMapping("/form")
@@ -56,21 +74,72 @@ public class CandidatController {
     }
 
 
+    
     @PostMapping("/save")
     public String saveCandidat(@ModelAttribute Candidat candidat,
-                               @RequestParam("file") MultipartFile file) {
+                            @RequestParam("file") MultipartFile file) {
         try {
+            // Photo
             if (!file.isEmpty()) {
                 String photoName = file.getOriginalFilename();
                 candidat.setPhoto(photoName);
-                // tu peux ajouter un service pour sauvegarder physiquement le fichier
+                // TODO : sauvegarder le fichier physiquement
             }
-            candidatRepository.save(candidat);
+            // Sauvegarder le candidat // --- Etat du candidat ---
+            EtatCandidat etatAttente = etatCandidatRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Etat 'En attente' introuvable"));
+            candidat.setEtatCandidat(etatAttente);
+
+            // --- Sauvegarder le candidat ---
+            Candidat savedCandidat = candidatRepository.save(candidat);
+
+            // --- Ajouter historique ---
+            HistoriqueEtat historique = new HistoriqueEtat();
+            historique.setCandidat(savedCandidat);
+            historique.setEtatCandidat(etatAttente);
+            historique.setDate_changement(java.time.LocalDate.now().toString()); // current date
+            historiqueEtatRepository.save(historique);
+
+             // Pour chaque diplôme candidat
+            if (candidat.getDiplomesCandidats() != null) {
+                for (DiplomeCandidat dc : candidat.getDiplomesCandidats()) {
+                    Niveau niveau = niveauRepository.findById(dc.getDiplome().getNiveau().getIdNiveau())
+                            .orElseThrow(() -> new RuntimeException("Niveau introuvable"));
+
+                    Filiere filiere = filiereRepository.findById(dc.getDiplome().getFiliere().getIdFiliere())
+                            .orElseThrow(() -> new RuntimeException("Filiere introuvable"));
+
+                    // Vérifier si Diplome existe déjà
+                    Diplome diplome = diplomeRepository.findByNiveauAndFiliere(niveau, filiere)
+                            .orElseGet(() -> {
+                                // sinon créer
+                                Diplome newDiplome = new Diplome();
+                                newDiplome.setNiveau(niveau);
+                                newDiplome.setFiliere(filiere);
+                                return diplomeRepository.save(newDiplome);
+                            });
+
+                    // Associer diplome existant au DiplomeCandidat
+                    dc.setDiplome(diplome);
+                    dc.setCandidat(savedCandidat);
+                    diplomeCandidatRepository.save(dc);
+                }
+            }
+
+            if (candidat.getParcoursProfessionels() != null) {
+                for (ParcoursProfessionel parcours : candidat.getParcoursProfessionels()) {
+                    parcours.setCandidat(savedCandidat);
+                    parcoursProfessionelRepository.save(parcours);
+                }
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "redirect:/candidat/list";
     }
+
 
     @GetMapping("/list")
     public String listCandidats(Model model) {

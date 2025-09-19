@@ -49,6 +49,18 @@
 
     .step { display: none; }
     .step.active { display: block; }
+    #filieres {
+        display: flex;
+        flex-wrap: wrap; /* Retour à la ligne si trop long */
+        gap: 10px;       /* Espace entre les boutons */
+    }
+
+    .filiere-block {
+        display: flex;
+        flex-direction: column; /* Bouton + select restent verticaux entre eux */
+        align-items: flex-start;
+    }
+
 </style>
 
 <!-- Templates cachés -->
@@ -117,25 +129,30 @@
                 <label>Année d'obtention :</label>
                 <input type="number" name="diplomes[0].annee_obtention"/>
                 
-                <label for="filiere">Filière :</label>
-                    <select id="filiere" name="diplomes[0].idFiliere" onchange="afficherNiveau(this)">
-                        <option value="">-- Choisir une filière --</option>
-                        <c:forEach var="f" items="${filieres}">
-                            <option value="${f.idFiliere}">${f.libelle}</option>
-                        </c:forEach>
-                    </select>
+                <label>Filières :</label>
+                <div id="filieres">
+                    <c:forEach var="f" items="${filieres}">
+                        <div class="filiere-block" style="margin-bottom:10px;">
+                            <!-- Bouton de la filière -->
+                            <button type="button" class="filiere-btn" onclick="toggleNiveau('${f.idFiliere}')">
+                                ${f.libelle}
+                            </button>
 
-                    <!-- Niveau (caché par défaut) -->
-                    <div id="niveau-container" style="display:none; margin-top:10px;">
-                        <label for="niveau">Niveau :</label>
-                        <select id="niveau" name="diplomes[0].idNiveau">
-                            <c:forEach var="n" items="${niveaux}">
-                                <option value="${n.idNiveau}">${n.libelle}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
 
-                
+                            <!-- Liste des niveaux, cachée par défaut -->
+                            <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
+                                <label for="niveau-${f.idFiliere}">Niveau :</label>
+                                <select name="diplomes[0].idNiveau" id="niveau-${f.idFiliere}">
+                                    <c:forEach var="n" items="${niveaux}">
+                                        <option value="${n.idNiveau}">${n.libelle}</option>
+                                    </c:forEach>
+                                </select>
+                                <!-- Champ caché pour stocker la filière choisie -->
+                                <input type="hidden" name="diplomes[0].idFiliere" value="${f.idFiliere}" />
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
             </div>
         </div>
         <button type="button" onclick="ajouterDiplome()">+ Ajouter un diplôme</button><br/>
@@ -181,6 +198,18 @@ function prevStep(step) {
     document.getElementById("step" + (step - 1)).classList.add("active");
     currentStep = step - 1;
 }
+function toggleNiveau(idFiliere) {
+    // Cacher toutes les div de niveaux
+    let all = document.querySelectorAll(".niveau-container");
+    all.forEach(div => div.style.display = "none");
+
+    // Afficher seulement celle cliquée
+    let selected = document.getElementById("niveau-" + idFiliere);
+    if (selected) {
+        selected.style.display = "block";
+    }
+}
+
 
 let indexDiplome = 1;
 function ajouterDiplome() {
@@ -200,6 +229,30 @@ function ajouterDiplome() {
 
         <label>Année d'obtention :</label>
         <input type="number" name="diplomes[${indexDiplome}].annee_obtention"/>
+         <label>Filières :</label>
+                <div id="filieres">
+                    <c:forEach var="f" items="${filieres}">
+                        <div class="filiere-block" style="margin-bottom:10px;">
+                            <!-- Bouton de la filière -->
+                            <button type="button" class="filiere-btn" onclick="toggleNiveau('${f.idFiliere}')">
+                                ${f.libelle}
+                            </button>
+
+
+                            <!-- Liste des niveaux, cachée par défaut -->
+                            <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
+                                <label for="niveau-${f.idFiliere}">Niveau :</label>
+                                <select name="diplomes[${indexDiplome}].idNiveau" id="niveau-${f.idFiliere}">
+                                    <c:forEach var="n" items="${niveaux}">
+                                        <option value="${n.idNiveau}">${n.libelle}</option>
+                                    </c:forEach>
+                                </select>
+                                <!-- Champ caché pour stocker la filière choisie -->
+                                <input type="hidden" name="diplomes[${indexDiplome}].idFiliere" value="${f.idFiliere}" />
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
 
         <label>Filières :</label>
                 <div class="filieres">

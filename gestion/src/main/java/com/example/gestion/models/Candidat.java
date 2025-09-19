@@ -50,6 +50,10 @@ public class Candidat {
     @OneToMany(mappedBy = "candidat")
     private List<Personnel> personnels;
 
+    @OneToMany(mappedBy = "candidat")
+    private List<ParcoursProfessionel> parcoursProfessionels;
+
+
     // Getters and Setters
     public Integer getId_candidat() { return id_candidat; }
     public void setId_candidat(Integer id_candidat) { this.id_candidat = id_candidat; }
@@ -98,4 +102,12 @@ public class Candidat {
 
     public List<Personnel> getPersonnels() { return personnels; }
     public void setPersonnels(List<Personnel> personnels) { this.personnels = personnels; }
+
+    public List<ParcoursProfessionel> getParcoursProfessionels() {
+        return parcoursProfessionels;
+    }
+    public void setParcoursProfessionels(List<ParcoursProfessionel> parcoursProfessionels) {
+        this.parcoursProfessionels = parcoursProfessionels;
+    }
+
 }
