@@ -1,4 +1,9 @@
+// ...existing code...
 package com.example.gestion.controllers;
+
+import com.example.gestion.models.Niveau;
+import com.example.gestion.models.Diplome;
+import com.example.gestion.models.Filiere; // Ajout de l'import pour Filiere
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,22 +20,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.gestion.models.Annonce;
-import com.example.gestion.models.Diplome;
 import com.example.gestion.models.Lieu;
 import com.example.gestion.models.Poste;
 import com.example.gestion.models.Profil;
 import com.example.gestion.repository.AnnonceRepository;
 import com.example.gestion.repository.DiplomeRepository;
+import com.example.gestion.repository.FiliereRepository; // Ajout du repository Filiere
 import com.example.gestion.repository.LieuRepository;
 import com.example.gestion.repository.NiveauRepository;
 import com.example.gestion.repository.PosteRepository;
 import com.example.gestion.repository.ProfilRepository;
-// ...existing code...
-// ...existing code...
 
 @Controller
 @RequestMapping("/admin/annonces")
 public class AdminAnnonceController {
+    @Autowired
+    private com.example.gestion.repository.DepartementRepository departementRepository;
+    // Étape 1 : Choix du département
+    @GetMapping("/choose-department")
+    public String showChooseDepartmentForm(Model model) {
+        model.addAttribute("departements", departementRepository.findAll());
+        return "annonces/choose_department";
+    }
+
+    @PostMapping("/choose-department")
+    public String processDepartmentChoice(@RequestParam("departementId") Integer departementId) {
+        return "redirect:/admin/annonces/new?departementId=" + departementId;
+    }
+
+    // Étape 2 : Formulaire d'annonce filtré par département
+    @GetMapping("/new")
+    public String showCreateForm(@RequestParam("departementId") Integer departementId, Model model) {
+        model.addAttribute("annonce", new Annonce());
+        model.addAttribute("postes", posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList());
+        model.addAttribute("lieux", lieuRepository.findAll());
+        model.addAttribute("niveaux", niveauRepository.findAll());
+        model.addAttribute("filieres", filiereRepository.findAll());
+        model.addAttribute("departementId", departementId);
+        return "annonces/form";
+    }
     @Autowired
     private AnnonceRepository annonceRepository;
     @Autowired
@@ -43,21 +71,13 @@ public class AdminAnnonceController {
     private NiveauRepository niveauRepository;
     @Autowired
     private DiplomeRepository diplomeRepository;
-
+    @Autowired
+    private FiliereRepository filiereRepository;
+    
     @GetMapping
     public String list(Model model) {
         model.addAttribute("annonces", annonceRepository.findAll());
         return "annonces/admin_list";
-    }
-
-    @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("annonce", new Annonce());
-        model.addAttribute("postes", posteRepository.findAll());
-        model.addAttribute("lieux", lieuRepository.findAll());
-        model.addAttribute("niveaux", niveauRepository.findAll());
-        model.addAttribute("diplomes", diplomeRepository.findAll());
-        return "annonces/form";
     }
 
     @PostMapping
@@ -69,30 +89,58 @@ public class AdminAnnonceController {
             @RequestParam("annee_experience") String annee_experience,
             @RequestParam("lieuId") Integer lieuId,
             @RequestParam("niveauId") Integer niveauId,
-            @RequestParam("diplomeId") Integer diplomeId,
-            @RequestParam("date_fin") String dateFinStr
+            @RequestParam("filiereId") Integer filiereId,
+            @RequestParam("date_fin") String dateFinStr,
+            @RequestParam("departementId") Integer departementId,
+            Model model
     ) {
-        Poste poste = posteRepository.findById(posteId).orElse(null);
-        Lieu lieu = lieuRepository.findById(lieuId).orElse(null);
-        Diplome diplome = diplomeRepository.findById(diplomeId).orElse(null);
+        try {
+            Poste poste = posteRepository.findById(posteId).orElse(null);
+            Lieu lieu = lieuRepository.findById(lieuId).orElse(null);
+            Niveau niveau = niveauRepository.findById(niveauId).orElse(null);
 
-        Profil profil = new Profil();
-        profil.setGenre(genre);
-        profil.setAge(age);
-        profil.setAnnee_experience(annee_experience);
-        profil.setLieu(lieu);
-        profil.setDiplome(diplome);
-        profil = profilRepository.save(profil);
+            Filiere filiere = filiereRepository.findById(filiereId).orElse(null);
+            if (filiere == null) {
+                model.addAttribute("error", "La filière est obligatoire.");
+                model.addAttribute("postes", posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList());
+                model.addAttribute("lieux", lieuRepository.findAll());
+                model.addAttribute("niveaux", niveauRepository.findAll());
+                model.addAttribute("filieres", filiereRepository.findAll());
+                model.addAttribute("departementId", departementId);
+                return "annonces/form";
+            }
 
-        Annonce annonce = new Annonce();
-        annonce.setResponsabilite(responsabilite);
-        annonce.setPoste(poste);
-        annonce.setProfil(profil);
-        annonce.setDate_annonce(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        annonce.setDate_fin(java.sql.Date.valueOf(dateFinStr));
+            Diplome diplome = new Diplome();
+            diplome.setNiveau(niveau);
+            diplome.setFiliere(filiere);
+            diplome = diplomeRepository.save(diplome);
 
-        annonceRepository.save(annonce);
-        return "redirect:/admin/annonces";
+            Profil profil = new Profil();
+            profil.setGenre(genre);
+            profil.setAge(age);
+            profil.setAnnee_experience(Integer.parseInt(annee_experience));
+            profil.setLieu(lieu);
+            profil.setDiplome(diplome);
+            profil = profilRepository.save(profil);
+
+            Annonce annonce = new Annonce();
+            annonce.setResponsabilite(responsabilite);
+            annonce.setPoste(poste);
+            annonce.setProfil(profil);
+            annonce.setDate_annonce(new java.util.Date());
+            annonce.setDate_fin(java.sql.Date.valueOf(dateFinStr));
+
+            annonceRepository.save(annonce);
+            return "redirect:/admin/annonces";
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de la création: " + e.getMessage());
+            model.addAttribute("postes", posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList());
+            model.addAttribute("lieux", lieuRepository.findAll());
+            model.addAttribute("niveaux", niveauRepository.findAll());
+            model.addAttribute("filieres", filiereRepository.findAll());
+            model.addAttribute("departementId", departementId);
+            return "annonces/form";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -103,17 +151,26 @@ public class AdminAnnonceController {
             model.addAttribute("postes", posteRepository.findAll());
             model.addAttribute("lieux", lieuRepository.findAll());
             model.addAttribute("niveaux", niveauRepository.findAll());
-            model.addAttribute("diplomes", diplomeRepository.findAll());
+            model.addAttribute("filieres", filiereRepository.findAll());
             return "annonces/form";
         }
         return "redirect:/admin/annonces";
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer id, @ModelAttribute Annonce annonce) {
-        annonce.setId_annonce(id);
-        annonceRepository.save(annonce);
-        return "redirect:/admin/annonces";
+    public String update(@PathVariable("id") Integer id, @ModelAttribute Annonce annonce, Model model) {
+        try {
+            annonce.setId_annonce(id);
+            annonceRepository.save(annonce);
+            return "redirect:/admin/annonces";
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de la mise à jour: " + e.getMessage());
+            model.addAttribute("postes", posteRepository.findAll());
+            model.addAttribute("lieux", lieuRepository.findAll());
+            model.addAttribute("niveaux", niveauRepository.findAll());
+            model.addAttribute("filieres", filiereRepository.findAll());
+            return "annonces/form";
+        }
     }
 
     @GetMapping("/delete/{id}")

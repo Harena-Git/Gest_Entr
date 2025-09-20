@@ -1,24 +1,25 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>Gestion des annonces (Admin)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <h1>Liste des annonces</h1>
-    <a href="/admin/annonces/new">Ajouter une annonce</a>
+    <a href="/admin/annonces/choose-department">Ajouter une annonce</a>
     <table border="1">
         <tr>
             <th>ID</th>
             <th>Date annonce</th>
             <th>Poste</th>
-            <th>Département</th>
-            <th>Responsabilité</th>
+            <th>Departement</th>
+            <th>Responsabilite</th>
             <th>Genre</th>
-            <th>Âge</th>
-            <th>Année exp.</th>
+            <th>Age</th>
+            <th>Annee exp.</th>
             <th>Lieu</th>
-            <th>Niveau diplôme</th>
+            <th>Niveau diplome</th>
             <th>Date fin</th>
             <th>Actions</th>
         </tr>

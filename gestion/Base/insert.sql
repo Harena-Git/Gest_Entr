@@ -41,3 +41,13 @@ INSERT INTO poste (libelle, salaire, Id_departement) VALUES
 ('Responsable RH', 1500000, 4),
 ('Analyste financier', 1700000, 5),
 ('Logisticien', 1000000, 6);
+
+INSERT INTO filiere (libelle) VALUES
+('Informatique'),
+('Gestion'),
+('Ressources Humaines'),
+('Marketing'),
+('Finance'),
+('Logistique'),
+('Droit'),
+('Communication');

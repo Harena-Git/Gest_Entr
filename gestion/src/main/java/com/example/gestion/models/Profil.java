@@ -30,8 +30,8 @@ public class Profil {
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
 
-    public String getAnnee_experience() { return annee_experience; }
-    public void setAnnee_experience(String annee_experience) { this.annee_experience = annee_experience; }
+    public Integer getAnnee_experience() { return annee_experience; }
+    public void setAnnee_experience(Integer annee_experience) { this.annee_experience = annee_experience; }
 
     public Lieu getLieu() { return lieu; }
     public void setLieu(Lieu lieu) { this.lieu = lieu; }
