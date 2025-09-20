@@ -24,11 +24,10 @@ public class AnnonceController {
         LocalDate today = LocalDate.now();
         annonces = annonces.stream()
                 .filter(annonce -> {
-                    // Convertir java.util.Date en LocalDate
                     LocalDate dateFin = annonce.getDate_fin().toInstant()
                             .atZone(java.time.ZoneId.systemDefault())
                             .toLocalDate();
-                    return !dateFin.isBefore(today); // Montrer les annonces actives et futures
+                    return !dateFin.isBefore(today);
                 })
                 .collect(Collectors.toList());
         model.addAttribute("annonces", annonces);
