@@ -158,7 +158,7 @@
                         <div class="job-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h2 class="job-title">${annonce.poste}</h2>
+                                    <h2 class="job-title">${annonce.poste.id_poste}</h2>
                                     <p class="job-company mb-0">
                                         <i class="fas fa-building"></i> Réf: #${annonce.id_annonce}
                                     </p>
