@@ -1,5 +1,63 @@
 USE Gestion_entreprise;
 
+-- Supprimer les données existantes pour recommencer
+DELETE FROM reponse;
+DELETE FROM resultat_qcm;
+DELETE FROM choix;
+DELETE FROM question;
+DELETE FROM qcm;
+DELETE FROM evaluation_entretien_2;
+DELETE FROM entretien_2;
+DELETE FROM evaluation_entretien_1;
+DELETE FROM entretien_1;
+DELETE FROM diplome_candidat;
+DELETE FROM contrat_essai;
+DELETE FROM historique_etat;
+DELETE FROM personnel;
+DELETE FROM candidat;
+DELETE FROM user_;
+DELETE FROM annonce;
+DELETE FROM profil;
+DELETE FROM diplome;
+DELETE FROM appreciation;
+DELETE FROM niveau;
+DELETE FROM question_generale;
+DELETE FROM lieu;
+DELETE FROM poste;
+DELETE FROM departement;
+DELETE FROM filiere;
+DELETE FROM etat_candidat;
+DELETE FROM role;
+
+-- Réinitialiser les auto-incréments
+ALTER TABLE role AUTO_INCREMENT = 1;
+ALTER TABLE etat_candidat AUTO_INCREMENT = 1;
+ALTER TABLE filiere AUTO_INCREMENT = 1;
+ALTER TABLE departement AUTO_INCREMENT = 1;
+ALTER TABLE appreciation AUTO_INCREMENT = 1;
+ALTER TABLE lieu AUTO_INCREMENT = 1;
+ALTER TABLE niveau AUTO_INCREMENT = 1;
+ALTER TABLE question_generale AUTO_INCREMENT = 1;
+ALTER TABLE user_ AUTO_INCREMENT = 1;
+ALTER TABLE candidat AUTO_INCREMENT = 1;
+ALTER TABLE poste AUTO_INCREMENT = 1;
+ALTER TABLE personnel AUTO_INCREMENT = 1;
+ALTER TABLE historique_etat AUTO_INCREMENT = 1;
+ALTER TABLE diplome AUTO_INCREMENT = 1;
+ALTER TABLE qcm AUTO_INCREMENT = 1;
+ALTER TABLE question AUTO_INCREMENT = 1;
+ALTER TABLE choix AUTO_INCREMENT = 1;
+ALTER TABLE reponse AUTO_INCREMENT = 1;
+ALTER TABLE resultat_qcm AUTO_INCREMENT = 1;
+ALTER TABLE entretien_1 AUTO_INCREMENT = 1;
+ALTER TABLE evaluation_entretien_1 AUTO_INCREMENT = 1;
+ALTER TABLE entretien_2 AUTO_INCREMENT = 1;
+ALTER TABLE evaluation_entretien_2 AUTO_INCREMENT = 1;
+ALTER TABLE contrat_essai AUTO_INCREMENT = 1;
+ALTER TABLE diplome_candidat AUTO_INCREMENT = 1;
+ALTER TABLE profil AUTO_INCREMENT = 1;
+ALTER TABLE annonce AUTO_INCREMENT = 1;
+
 -- Insertion des rôles
 INSERT INTO role (libelle) VALUES 
 ('Administrateur'),
@@ -134,24 +192,24 @@ INSERT INTO question (libelle, Id_qcm) VALUES
 ('Qu''est-ce qu''une API REST?', 1),
 ('Quelle est la dernière tendance en marketing digital?', 2);
 
--- Insertion choix
+-- Insertion choix (CORRIGÉ - suppression des contraintes UNIQUE problématiques)
 INSERT INTO choix (libelle, est_correct, Id_question_generale, Id_question) VALUES 
 ('Même langage', FALSE, 1, 1),
 ('Langages différents', TRUE, 1, 1),
-('Interface de programmation', TRUE, 1, 2),
-('Type de base de données', FALSE, 1, 2),
-('L''IA générative', TRUE, 1, 3),
-('Le fax marketing', FALSE, 1, 3);
+('Interface de programmation', TRUE, 2, 2),
+('Type de base de données', FALSE, 2, 2),
+('L''IA générative', TRUE, 3, 3),
+('Le fax marketing', FALSE, 3, 3);
 
 -- Insertion réponses
 INSERT INTO reponse (Id_candidat, Id_choix) VALUES 
-(2, 2),
+(2, 1),
 (2, 3),
 (2, 5);
 
 -- Insertion résultats QCM
 INSERT INTO resultat_qcm (bonnes_reponses, total_questions, pourcentage, Id_candidat, Id_qcm) VALUES 
-(3, 3, 100.00, 2, 1);
+(2, 3, 66.67, 2, 1);
 
 -- Insertion entretiens
 INSERT INTO entretien_1 (date_entretien, Id_user) VALUES 
@@ -192,3 +250,6 @@ INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil
 ('2024-01-10', 'Développement applications web, maintenance code, collaboration équipe', '2024-02-10', 3, 1),
 ('2024-01-15', 'Gestion recrutement, formation personnel, gestion carrières', '2024-02-15', 2, 2),
 ('2024-01-20', 'Analyse financière, reporting, gestion budget', '2024-02-20', 4, 3);
+
+-- Vérification des données
+SELECT 'Données insérées avec succès!' as Status;
