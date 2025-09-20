@@ -249,7 +249,8 @@ INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES
 INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil) VALUES 
 ('2024-01-10', 'Développement applications web, maintenance code, collaboration équipe', '2024-02-10', 3, 1),
 ('2024-01-15', 'Gestion recrutement, formation personnel, gestion carrières', '2024-02-15', 2, 2),
-('2024-01-20', 'Analyse financière, reporting, gestion budget', '2024-02-20', 4, 3);
+('2024-01-20', 'Analyse financière, reporting, gestion budget', '2024-02-20', 4, 3),
+('2025-09-22', 'Analyse Économique, reporting, gestion budget', '2025-10-23', 3, 2);
 
 -- Vérification des données
 SELECT 'Données insérées avec succès!' as Status;
