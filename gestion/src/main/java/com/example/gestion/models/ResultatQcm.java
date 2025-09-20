@@ -22,8 +22,8 @@ public class ResultatQcm {
     private Qcm qcm;
 
     @ManyToOne
-    @JoinColumn(name = "Id_candidat")
-    private Candidat candidat;
+    @JoinColumn(name = "Id_profil")
+    private Profil profil;
 
     // Getters and Setters
     public Integer getId_resultat_qcm() { return id_resultat_qcm; }
@@ -41,6 +41,6 @@ public class ResultatQcm {
     public Qcm getQcm() { return qcm; }
     public void setQcm(Qcm qcm) { this.qcm = qcm; }
 
-    public Candidat getCandidat() { return candidat; }
-    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
+    public Profil getProfil() { return profil; }
+    public void setProfil(Profil profil) { this.profil = profil; }
 }

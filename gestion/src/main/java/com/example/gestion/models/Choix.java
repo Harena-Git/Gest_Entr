@@ -18,10 +18,6 @@ public class Choix {
     @JoinColumn(name = "Id_question")
     private Question question;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_question_generale")
-    private QuestionGenerale questionGenerale;
-
     @OneToMany(mappedBy = "choix")
     private List<Reponse> reponses;
 
@@ -38,8 +34,6 @@ public class Choix {
     public Question getQuestion() { return question; }
     public void setQuestion(Question question) { this.question = question; }
 
-    public QuestionGenerale getQuestionGenerale() { return questionGenerale; }
-    public void setQuestionGenerale(QuestionGenerale questionGenerale) { this.questionGenerale = questionGenerale; }
     public List<Reponse> getReponses() { return reponses; }
     public void setReponses(List<Reponse> reponses) { this.reponses = reponses; }
 }

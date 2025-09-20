@@ -17,10 +17,6 @@ public class Qcm {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_poste", nullable = false)
-    private Poste poste;
-
     @OneToMany(mappedBy = "qcm")
     private List<Question> questions = new ArrayList<>();
 
@@ -37,14 +33,6 @@ public class Qcm {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Poste getPoste() {
-        return poste;
-    }
-
-    public void setPoste(Poste poste) {
-        this.poste = poste;
-    }
-    
     public List<Question> getQuestions() { return questions; }
     public void setQuestions(List<Question> questions) { this.questions = questions; }
 

@@ -19,6 +19,10 @@ public class Question {
 
     @OneToMany(mappedBy = "question")
     private List<Choix> choix = new ArrayList<>();
+
+    @OneToMany(mappedBy = "question")
+    private List<Reponse> reponses = new ArrayList<>();
+
     // Getters and Setters
     public Integer getIdQuestion() { return idQuestion; }
     public void setIdQuestion(Integer idQuestion) { this.idQuestion = idQuestion; }
@@ -31,5 +35,8 @@ public class Question {
 
     public List<Choix> getChoix() { return choix; }
     public void setChoix(List<Choix> choix) { this.choix = choix; }
+
+    public List<Reponse> getReponses() { return reponses; }
+    public void setReponses(List<Reponse> reponses) { this.reponses = reponses; }
 }
 
