@@ -91,11 +91,11 @@ public class CandidatService {
                 }
             }
 
-          /*   if (!match) {
+             if (!match) {
              return "Diplôme invalide : attendu [Filière = " + filiereAttendue +
                                 ", Niveau = " + niveauAttendu + "] mais reçu [Filière = " + filiereCandidat +
                                 ", Niveau = " + niveauCandidat + "]";
-            }*/
+            }
         }
 
         return "OK"; // Tout est conforme
