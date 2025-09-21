@@ -1,46 +1,60 @@
 package com.example.gestion.models;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "resultat_qcm")
 public class ResultatQcm {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_resultat_qcm;
+    private Integer idResultatQcm;
 
-    private Integer bonnes_reponses;
-    private Integer total_questions;
+    @Column(name = "bonnes_reponses")
+    private Integer bonnesReponses;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal pourcentage;
+    @Column(name = "total_questions")
+    private Integer totalQuestions;
+
+    @Column(name = "pourcentage")
+    private Double pourcentage;
+
+    @Column(name = "est_reussi")
+    private Boolean estReussi;
+
+    @Column(name = "date_reponse")
+    private LocalDateTime dateReponse;
 
     @ManyToOne
-    @JoinColumn(name = "Id_qcm")
-    private Qcm qcm;
-
-    @ManyToOne
-    @JoinColumn(name = "Id_candidat")
+    @JoinColumn(name = "Id_candidat", nullable = false)
     private Candidat candidat;
 
+    @ManyToOne
+    @JoinColumn(name = "Id_qcm", nullable = false)
+    private Qcm qcm;
+
     // Getters and Setters
-    public Integer getId_resultat_qcm() { return id_resultat_qcm; }
-    public void setId_resultat_qcm(Integer id_resultat_qcm) { this.id_resultat_qcm = id_resultat_qcm; }
+    public Integer getIdResultatQcm() { return idResultatQcm; }
+    public void setIdResultatQcm(Integer idResultatQcm) { this.idResultatQcm = idResultatQcm; }
 
-    public Integer getBonnes_reponses() { return bonnes_reponses; }
-    public void setBonnes_reponses(Integer bonnes_reponses) { this.bonnes_reponses = bonnes_reponses; }
+    public Integer getBonnesReponses() { return bonnesReponses; }
+    public void setBonnesReponses(Integer bonnesReponses) { this.bonnesReponses = bonnesReponses; }
 
-    public Integer getTotal_questions() { return total_questions; }
-    public void setTotal_questions(Integer total_questions) { this.total_questions = total_questions; }
+    public Integer getTotalQuestions() { return totalQuestions; }
+    public void setTotalQuestions(Integer totalQuestions) { this.totalQuestions = totalQuestions; }
 
-    public BigDecimal getPourcentage() { return pourcentage; }
-    public void setPourcentage(BigDecimal pourcentage) { this.pourcentage = pourcentage; }
+    public Double getPourcentage() { return pourcentage; }
+    public void setPourcentage(Double pourcentage) { this.pourcentage = pourcentage; }
 
-    public Qcm getQcm() { return qcm; }
-    public void setQcm(Qcm qcm) { this.qcm = qcm; }
+    public Boolean getEstReussi() { return estReussi; }
+    public void setEstReussi(Boolean estReussi) { this.estReussi = estReussi; }
+
+    public LocalDateTime getDateReponse() { return dateReponse; }
+    public void setDateReponse(LocalDateTime dateReponse) { this.dateReponse = dateReponse; }
 
     public Candidat getCandidat() { return candidat; }
     public void setCandidat(Candidat candidat) { this.candidat = candidat; }
+
+    public Qcm getQcm() { return qcm; }
+    public void setQcm(Qcm qcm) { this.qcm = qcm; }
 }
