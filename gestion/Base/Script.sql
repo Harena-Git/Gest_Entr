@@ -13,6 +13,11 @@ CREATE TABLE etat_candidat(
    PRIMARY KEY(Id_etat_candidat),
    UNIQUE(libelle)
 );
+CREATE TABLE niveau (
+   Id_niveau INT AUTO_INCREMENT,
+   libelle VARCHAR(50) NOT NULL,
+   PRIMARY KEY(Id_niveau)
+);
 
 CREATE TABLE filiere(
    Id_filiere INT AUTO_INCREMENT,
@@ -112,75 +117,18 @@ CREATE TABLE historique_etat(
    FOREIGN KEY(Id_etat_candidat) REFERENCES etat_candidat(Id_etat_candidat)
 );
 
-CREATE TABLE diplome(
+CREATE TABLE niveau (
+   Id_niveau INT AUTO_INCREMENT,
+   libelle VARCHAR(50) NOT NULL,
+   PRIMARY KEY(Id_niveau)
+);
+
+CREATE TABLE diplome (
    Id_diplome INT AUTO_INCREMENT,
-   Id_niveau INT NOT NULL,
+   niveau VARCHAR(50),
    Id_filiere INT NOT NULL,
    PRIMARY KEY(Id_diplome),
-   FOREIGN KEY(Id_niveau) REFERENCES niveau(Id_niveau),
    FOREIGN KEY(Id_filiere) REFERENCES filiere(Id_filiere)
-);
-
-CREATE TABLE qcm(
-   Id_qcm INT AUTO_INCREMENT,
-   titre VARCHAR(50),
-   description TEXT,
-   Id_poste INT NOT NULL,
-   PRIMARY KEY(Id_qcm),
-   UNIQUE(Id_poste),
-   FOREIGN KEY(Id_poste) REFERENCES poste(Id_poste)
-);
-
-CREATE TABLE question(
-   Id_question INT AUTO_INCREMENT,
-   libelle TEXT,
-   Id_qcm INT NOT NULL,
-   PRIMARY KEY(Id_question),
-   FOREIGN KEY(Id_qcm) REFERENCES qcm(Id_qcm)
-);
-
-CREATE TABLE choix(
-   Id_choix INT AUTO_INCREMENT,
-   libelle VARCHAR(50),
-   est_correct BOOLEAN,
-   Id_question_generale INT NOT NULL,
-   Id_question INT NOT NULL,
-   PRIMARY KEY(Id_choix),
-   UNIQUE(Id_question_generale),
-   UNIQUE(Id_question),
-   FOREIGN KEY(Id_question_generale) REFERENCES question_generale(Id_question_generale),
-   FOREIGN KEY(Id_question) REFERENCES question(Id_question)
-);
-
-CREATE TABLE reponse(
-   Id_reponse INT AUTO_INCREMENT,
-   Id_candidat INT NOT NULL,
-   Id_choix INT NOT NULL,
-   PRIMARY KEY(Id_reponse),
-   UNIQUE(Id_choix),
-   FOREIGN KEY(Id_candidat) REFERENCES candidat(Id_candidat),
-   FOREIGN KEY(Id_choix) REFERENCES choix(Id_choix)
-);
-
-CREATE TABLE resultat_qcm(
-   Id_resultat_qcm INT AUTO_INCREMENT,
-   bonnes_reponses INT,
-   total_questions INT,
-   pourcentage DECIMAL(15,2),
-   Id_candidat INT NOT NULL,
-   Id_qcm INT NOT NULL,
-   PRIMARY KEY(Id_resultat_qcm),
-   UNIQUE(Id_qcm),
-   FOREIGN KEY(Id_candidat) REFERENCES candidat(Id_candidat),
-   FOREIGN KEY(Id_qcm) REFERENCES qcm(Id_qcm)
-);
-
-CREATE TABLE entretien_1(
-   Id_entretien_ INT AUTO_INCREMENT,
-   date_entretien DATE,
-   Id_user INT NOT NULL,
-   PRIMARY KEY(Id_entretien_),
-   FOREIGN KEY(Id_user) REFERENCES user_(Id_user)
 );
 
 CREATE TABLE evaluation_entretien_1(
