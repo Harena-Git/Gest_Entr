@@ -1,16 +1,10 @@
 // ...existing code...
 package com.example.gestion.controllers;
 
-import com.example.gestion.models.Niveau;
-import com.example.gestion.models.Diplome;
-import com.example.gestion.models.Filiere; // Ajout de l'import pour Filiere
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Controller; // Ajout de l'import pour Filiere
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,14 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.gestion.models.Annonce;
+import com.example.gestion.models.Diplome;
+import com.example.gestion.models.Filiere;
 import com.example.gestion.models.Lieu;
+import com.example.gestion.models.Niveau;
 import com.example.gestion.models.Poste;
 import com.example.gestion.models.Profil;
 import com.example.gestion.repository.AnnonceRepository;
 import com.example.gestion.repository.DiplomeRepository;
-import com.example.gestion.repository.FiliereRepository; // Ajout du repository Filiere
+import com.example.gestion.repository.FiliereRepository;
 import com.example.gestion.repository.LieuRepository;
-import com.example.gestion.repository.NiveauRepository;
+import com.example.gestion.repository.NiveauRepository; // Ajout du repository Filiere
 import com.example.gestion.repository.PosteRepository;
 import com.example.gestion.repository.ProfilRepository;
 
@@ -52,10 +49,16 @@ public class AdminAnnonceController {
     @GetMapping("/new")
     public String showCreateForm(@RequestParam("departementId") Integer departementId, Model model) {
         model.addAttribute("annonce", new Annonce());
-        model.addAttribute("postes", posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList());
+        var postes = posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList();
+        model.addAttribute("postes", postes);
         model.addAttribute("lieux", lieuRepository.findAll());
         model.addAttribute("niveaux", niveauRepository.findAll());
-        model.addAttribute("filieres", filiereRepository.findAll());
+        // Champ filiere optionnel comme avant :
+        try {
+            model.addAttribute("filieres", filiereRepository.findAll());
+        } catch (Exception e) {
+            // Si la table n'existe pas ou est vide, on ignore
+        }
         model.addAttribute("departementId", departementId);
         return "annonces/form";
     }
@@ -118,7 +121,7 @@ public class AdminAnnonceController {
             Profil profil = new Profil();
             profil.setGenre(genre);
             profil.setAge(age);
-            profil.setAnnee_experience(Integer.parseInt(annee_experience));
+            profil.setAnnee_experience(annee_experience);
             profil.setLieu(lieu);
             profil.setDiplome(diplome);
             profil = profilRepository.save(profil);

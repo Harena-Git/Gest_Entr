@@ -112,7 +112,7 @@
                     <select class="form-control" id="filiereId" name="filiereId" required>
                         <option value="" disabled selected>Choisir une filière</option>
                         <c:forEach var="filiere" items="${filieres}">
-                            <option value="${filiere.id_filiere}" ${annonce != null && annonce.profil != null && annonce.profil.diplome != null && annonce.profil.diplome.filiere != null && annonce.profil.diplome.filiere.id_filiere == filiere.id_filiere ? 'selected' : ''}>
+                            <option value="${filiere.idFiliere}" ${annonce != null && annonce.profil != null && annonce.profil.diplome != null && annonce.profil.diplome.filiere != null && annonce.profil.diplome.filiere.idFiliere == filiere.idFiliere ? 'selected' : ''}>
                                 ${filiere.libelle}
                             </option>
                         </c:forEach>

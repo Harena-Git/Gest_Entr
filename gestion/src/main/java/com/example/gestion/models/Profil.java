@@ -1,6 +1,12 @@
 package com.example.gestion.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "profil")
@@ -30,8 +36,8 @@ public class Profil {
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
 
-    public Integer getAnnee_experience() { return annee_experience; }
-    public void setAnnee_experience(Integer annee_experience) { this.annee_experience = annee_experience; }
+    public String getAnnee_experience() { return annee_experience; }
+    public void setAnnee_experience(String annee_experience) { this.annee_experience = annee_experience; }
 
     public Lieu getLieu() { return lieu; }
     public void setLieu(Lieu lieu) { this.lieu = lieu; }
