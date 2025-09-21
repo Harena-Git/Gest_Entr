@@ -204,7 +204,7 @@ CREATE TABLE entretien_2(
    FOREIGN KEY(Id_user) REFERENCES user_(Id_user),
    FOREIGN KEY(Id_entretien_) REFERENCES entretien_1(Id_entretien_)
 );
-
+   
 CREATE TABLE evaluation_entretien_2(
    Id_evaluation_appreciation_2 INT AUTO_INCREMENT,
    presence BOOLEAN,
