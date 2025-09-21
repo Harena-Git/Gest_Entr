@@ -28,5 +28,9 @@
         <h2>Désolé</h2>
         <p>Votre profil ne correspond pas à nos attentes.</p>
     </div>
+    <h2>Le candidat ne peut pas être accepté</h2>
+<p>${erreur}</p>
+<a href="${pageContext.request.contextPath}/candidat/form?idAnnonce=${idAnnonce}">Retour au formulaire</a>
+
 </body>
 </html>

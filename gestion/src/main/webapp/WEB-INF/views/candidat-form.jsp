@@ -111,18 +111,18 @@
 
         <c:if test="${not empty posteNom}">
             <label for="anneeExperience">Années d'expérience en tant que ${posteNom} :</label>
-            <input type="number" name="anneeExperience" id="anneeExperience"/>
+            <input type="number" name="annee_experience" id="anneeExperience" min="0" value="0"/>
         </c:if>
 
         <label for="file">Photo :</label>
-        <input type="file" name="file" id="file"/>
+            <input type="file" name="file" id="file"/>
 
-        <label for="idLieu">Lieu :</label>
-        <select name="idLieu" id="idLieu">
-            <c:forEach var="lieu" items="${lieux}">
-                <option value="${lieu.id_lieu}">${lieu.lieu}</option>
-            </c:forEach>
-        </select>
+            <select name="lieu.id_lieu" id="idLieu">
+        <c:forEach var="lieu" items="${lieux}">
+            <option value="${lieu.id_lieu}">${lieu.lieu}</option>
+        </c:forEach>
+    </select>
+
 
         <button type="button" onclick="nextStep(1)">Suivant</button>
     </div>
@@ -133,10 +133,10 @@
         <div id="diplomes">
             <div class="diplome">
                 <label>Établissement :</label>
-                <input type="text" name="diplomes[0].etablissement"/>
+                <input type="text" name="diplomesCandidats[0].etablissement"/>
 
                 <label>Année d'obtention :</label>
-                <input type="number" name="diplomes[0].annee_obtention"/>
+                <input type="number" name="diplomesCandidats[0].annee_obtention"/>
                 
                 <label>Filières :</label>
                 <div id="filieres">
@@ -151,13 +151,13 @@
                             <!-- Liste des niveaux, cachée par défaut -->
                             <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
                                 <label for="niveau-${f.idFiliere}">Niveau :</label>
-                                <select name="diplomes[0].idNiveau" id="niveau-${f.idFiliere}">
+                                <select name="diplomesCandidats[0].idNiveau" id="niveau-${f.idFiliere}">
                                     <c:forEach var="n" items="${niveaux}">
                                         <option value="${n.idNiveau}">${n.libelle}</option>
                                     </c:forEach>
                                 </select>
                                 <!-- Champ caché pour stocker la filière choisie -->
-                                <input type="hidden" name="diplomes[0].idFiliere" value="${f.idFiliere}" />
+                                <input type="hidden" name="diplomesCandidats[0].idFiliere" value="${f.idFiliere}" />
                             </div>
                         </div>
                     </c:forEach>
@@ -230,15 +230,16 @@ function ajouterDiplome() {
     let filiereChecks = document.querySelector("#template-filiere").innerHTML;
 
     // Mettre à jour les name dynamiquement pour ce diplôme
-    filiereChecks = filiereChecks.replace(/value="/g, `name="diplomes[${indexDiplome}].idFilieres" value="`);
+    filiereChecks = filiereChecks.replace(/value="/g, `name="diplomesCandidats[${indexDiplome}].idFilieres" value="`);
 
     div.innerHTML = `
+        <h3> Autre Diplôme</h3>
         <label>Établissement :</label>
-        <input type="text" name="diplomes[${indexDiplome}].etablissement"/>
+        <input type="text" name="diplomesCandidats[${indexDiplome}].etablissement"/>
 
         <label>Année d'obtention :</label>
-        <input type="number" name="diplomes[${indexDiplome}].annee_obtention"/>
-         <label>Filières :</label>
+        <input type="number" name="diplomesCandidats[${indexDiplome}].annee_obtention"/>
+          <label>Filières :</label>
                 <div id="filieres">
                     <c:forEach var="f" items="${filieres}">
                         <div class="filiere-block" style="margin-bottom:10px;">
@@ -251,32 +252,19 @@ function ajouterDiplome() {
                             <!-- Liste des niveaux, cachée par défaut -->
                             <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
                                 <label for="niveau-${f.idFiliere}">Niveau :</label>
-                                <select name="diplomes[${indexDiplome}].idNiveau" id="niveau-${f.idFiliere}">
+                                <select name="diplomesCandidats[${indexDiplome}].idNiveau" id="niveau-${f.idFiliere}">
                                     <c:forEach var="n" items="${niveaux}">
                                         <option value="${n.idNiveau}">${n.libelle}</option>
                                     </c:forEach>
                                 </select>
                                 <!-- Champ caché pour stocker la filière choisie -->
-                                <input type="hidden" name="diplomes[${indexDiplome}].idFiliere" value="${f.idFiliere}" />
+                                <input type="hidden" name="diplomesCandidats[${indexDiplome}].idFiliere" value="${f.idFiliere}" />
                             </div>
                         </div>
                     </c:forEach>
                 </div>
-
-        <label>Filières :</label>
-                <div class="filieres">
-                    <c:forEach var="f" items="${filieres}">
-                        <label>
-                            <input type="checkbox" name="diplomes[${indexDiplome}].idFilieres" value="${f.idFiliere}"/> ${f.libelle}
-                        </label><br/>
-                    </c:forEach>
-                </div>
-        <label>Niveau :</label>
-                <select name="diplomes[${indexDiplome}].idNiveau">
-                    <c:forEach var="n" items="${niveaux}">
-                        <option value="${n.idNiveau}">${n.libelle}</option>
-                    </c:forEach>
-                </select>
+            
+        
     `;
     container.appendChild(div);
     indexDiplome++;

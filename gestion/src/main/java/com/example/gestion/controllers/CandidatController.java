@@ -9,10 +9,7 @@ import com.example.gestion.models.*;
 import com.example.gestion.repository.*;
 import com.example.gestion.service.CandidatService;
 
-
 import java.util.List;
-
-
 @Controller
 @RequestMapping("/candidat")
 public class CandidatController {
@@ -78,13 +75,15 @@ public class CandidatController {
     
     @PostMapping("/save")
     public String saveCandidat( @RequestParam("idAnnonce") Integer idAnnonce,@ModelAttribute Candidat candidat,
-                            @RequestParam("file") MultipartFile file) {
+                            @RequestParam("file") MultipartFile file, Model model) {
         Annonce annonce = annonceRepository.findById(idAnnonce)
             .orElseThrow(() -> new RuntimeException("Annonce non trouvée"));
 
         // 2. Récupérer le profil de l'annonce
         Profil profil = annonce.getProfil();
-        if(candidatService.verifierEtEnregistrer(candidat, profil)){
+                                
+        String verification = candidatService.verifierEtEnregistrer(candidat, profil);
+        if ("OK".equals(verification)) {
              try {
                     // Photo
                     if (!file.isEmpty()) {
@@ -146,11 +145,11 @@ public class CandidatController {
                 }
                  return "redirect:/candidat/list";
         }
-        else{
-            // Rediriger vers une page d'erreur ou afficher un message
-            return "candidat-error";
-        }
-
+         else {
+        // Ajouter le message d'erreur dans le modèle et afficher la page d'erreur
+        model.addAttribute("erreur", verification);
+        return "candidat-error";
+    }
 
 
        
