@@ -32,6 +32,8 @@ public class Candidat {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")  // <-- ici
     private Date date_naissance;
+    
+    
     @Temporal(TemporalType.DATE)
     private Date date_candidature;
 

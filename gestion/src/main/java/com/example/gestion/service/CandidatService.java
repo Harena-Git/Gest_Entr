@@ -4,6 +4,7 @@ package com.example.gestion.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ public class CandidatService {
     @Autowired
     private CandidatRepository candidatRepository;
 
-    public String verifierEtEnregistrer(Candidat candidat, Profil profilAnnonce) {
+ 
+
+    public String verifierEtEnregistrer(Candidat candidat, Profil profilAnnonce, List<DiplomeCandidat> diplomes) {
         // Vérification genre
         if (profilAnnonce.getGenre() != null && !profilAnnonce.getGenre().equalsIgnoreCase(candidat.getGenre())) {
             return "Le genre du candidat ne correspond pas au profil recherché.";
@@ -56,21 +59,23 @@ public class CandidatService {
                 return "Lieu requis : " + lieuRequis + " | Lieu choisi : " + lieuChoisi;
             }
         }
-
+        
 
       // Vérification diplôme (filière + niveau)
         if (profilAnnonce.getDiplome() != null) {
+            String filiereCandidat = "" ;
+            String niveauCandidat = "" ;
             boolean match = false;
             Diplome diplomeProfil = profilAnnonce.getDiplome();
             String filiereAttendue = diplomeProfil.getFiliere() != null ? diplomeProfil.getFiliere().getLibelle() : "Non précisée";
             String niveauAttendu = diplomeProfil.getNiveau() != null ? diplomeProfil.getNiveau().getLibelle() : "Non précisé";
-
-            for (DiplomeCandidat dc : candidat.getDiplomesCandidats()) {
+            StringBuilder detailsDiplomes = new StringBuilder();
+            for (DiplomeCandidat dc : diplomes ) {
                 Diplome diplomeCandidat = dc.getDiplome();
 
                 if (diplomeCandidat != null) {
-                    String filiereCandidat = diplomeCandidat.getFiliere() != null ? diplomeCandidat.getFiliere().getLibelle() : "Non précisée";
-                    String niveauCandidat = diplomeCandidat.getNiveau() != null ? diplomeCandidat.getNiveau().getLibelle() : "Non précisé";
+                     filiereCandidat = diplomeCandidat.getFiliere() != null ? diplomeCandidat.getFiliere().getLibelle() : "Non précisée";
+                     niveauCandidat = diplomeCandidat.getNiveau() != null ? diplomeCandidat.getNiveau().getLibelle() : "Non précisé";
 
                     boolean memeFiliere = diplomeProfil.getFiliere() != null
                             && diplomeCandidat.getFiliere() != null
@@ -92,7 +97,7 @@ public class CandidatService {
             }
 
              if (!match) {
-             return "Diplôme invalide : attendu [Filière = " + filiereAttendue +
+            return "Diplôme invalide : attendu [Filière = " + filiereAttendue +
                                 ", Niveau = " + niveauAttendu + "] mais reçu [Filière = " + filiereCandidat +
                                 ", Niveau = " + niveauCandidat + "]";
             }

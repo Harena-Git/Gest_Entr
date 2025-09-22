@@ -132,11 +132,12 @@
         <h3>Diplômes</h3>
         <div id="diplomes">
             <div class="diplome">
+                <input type="hidden" id="diplomesCount" name="diplomesCount" value="1"/>
                 <label>Établissement :</label>
-                <input type="text" name="diplomesCandidats[0].etablissement"/>
+                <input type="text" name="diplomes[0].etablissement"/>
 
                 <label>Année d'obtention :</label>
-                <input type="number" name="diplomesCandidats[0].annee_obtention"/>
+                <input type="number" name="diplomes[0].annee_obtention"/>
                 
                 <label>Filières :</label>
                 <div id="filieres">
@@ -151,13 +152,13 @@
                             <!-- Liste des niveaux, cachée par défaut -->
                             <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
                                 <label for="niveau-${f.idFiliere}">Niveau :</label>
-                                <select name="diplomesCandidats[0].idNiveau" id="niveau-${f.idFiliere}">
+                                <select name="diplomes[0].idNiveau" id="niveau-${f.idFiliere}">
                                     <c:forEach var="n" items="${niveaux}">
                                         <option value="${n.idNiveau}">${n.libelle}</option>
                                     </c:forEach>
                                 </select>
                                 <!-- Champ caché pour stocker la filière choisie -->
-                                <input type="hidden" name="diplomesCandidats[0].idFiliere" value="${f.idFiliere}" />
+                                <input type="hidden" name="diplomes[0].idFiliere" value="${f.idFiliere}" />
                             </div>
                         </div>
                     </c:forEach>
@@ -172,6 +173,7 @@
     <!-- Step 3 : Parcours professionnel -->
     <div class="step" id="step3">
         <h3>Parcours professionnel</h3>
+        <input type="hidden" id="parcoursCount" name="parcoursCount" value="1"/>
         <div id="parcours">
             <div class="parc">
                 <label>Entreprise :</label>
@@ -230,44 +232,43 @@ function ajouterDiplome() {
     let filiereChecks = document.querySelector("#template-filiere").innerHTML;
 
     // Mettre à jour les name dynamiquement pour ce diplôme
-    filiereChecks = filiereChecks.replace(/value="/g, `name="diplomesCandidats[${indexDiplome}].idFilieres" value="`);
+    filiereChecks = filiereChecks.replace(/value="/g, `name="diplomes[${indexDiplome}].idFilieres" value="`);
 
     div.innerHTML = `
         <h3> Autre Diplôme</h3>
         <label>Établissement :</label>
-        <input type="text" name="diplomesCandidats[${indexDiplome}].etablissement"/>
+        <input type="text" name="diplomes[${indexDiplome}].etablissement"/>
 
         <label>Année d'obtention :</label>
-        <input type="number" name="diplomesCandidats[${indexDiplome}].annee_obtention"/>
+        <input type="number" name="diplomes[${indexDiplome}].annee_obtention"/>
           <label>Filières :</label>
-                <div id="filieres">
-                    <c:forEach var="f" items="${filieres}">
-                        <div class="filiere-block" style="margin-bottom:10px;">
-                            <!-- Bouton de la filière -->
-                            <button type="button" class="filiere-btn" onclick="toggleNiveau('${f.idFiliere}')">
-                                ${f.libelle}
-                            </button>
-
-
-                            <!-- Liste des niveaux, cachée par défaut -->
-                            <div id="niveau-${f.idFiliere}" class="niveau-container" style="display:none; margin-top:5px;">
-                                <label for="niveau-${f.idFiliere}">Niveau :</label>
-                                <select name="diplomesCandidats[${indexDiplome}].idNiveau" id="niveau-${f.idFiliere}">
-                                    <c:forEach var="n" items="${niveaux}">
-                                        <option value="${n.idNiveau}">${n.libelle}</option>
-                                    </c:forEach>
-                                </select>
-                                <!-- Champ caché pour stocker la filière choisie -->
-                                <input type="hidden" name="diplomesCandidats[${indexDiplome}].idFiliere" value="${f.idFiliere}" />
-                            </div>
-                        </div>
-                    </c:forEach>
+        <div id="filieres" style="display:flex; flex-wrap:wrap; gap:10px;">
+            <c:forEach var="f" items="${filieres}">
+                <div class="filiere-block">
+                    <!-- Checkbox pour sélectionner la filière -->
+                    <label style="display:flex; align-items:center; cursor:pointer; padding:5px 10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="checkbox" name="diplomes[${indexDiplome}].idFilieres" value="${f.idFiliere}" style="margin-right:5px;">
+                        ${f.libelle}
+                    </label>
                 </div>
-            
+            </c:forEach>
+        </div>
+
+        <!-- Niveau du diplôme (si nécessaire, un seul select par diplôme) -->
+        <label for="niveau-${indexDiplome}">Niveau :</label>
+        <select name="diplomes[${indexDiplome}].idNiveau" id="niveau-${indexDiplome}">
+            <c:forEach var="n" items="${niveaux}">
+                <option value="${n.idNiveau}">${n.libelle}</option>
+            </c:forEach>
+        </select>
+
+                    
         
     `;
     container.appendChild(div);
     indexDiplome++;
+    document.getElementById("diplomesCount").value = indexDiplome;
+
 }
 
 
@@ -291,5 +292,6 @@ function ajouterParcours() {
     `;
     container.appendChild(div);
     indexParcours++;
+        document.getElementById("parcoursCount").value = indexParcours;
 }
 </script>
