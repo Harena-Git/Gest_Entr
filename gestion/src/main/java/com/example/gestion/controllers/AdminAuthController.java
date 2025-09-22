@@ -30,30 +30,27 @@ public class AdminAuthController {
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
                         Model model) {
-        logger.info("Tentative de connexion avec username: {}", username);
-        
-        User user = userRepository.findByNom(username);
-        if (user == null) {
-            logger.error("Utilisateur non trouvé pour username: {}", username);
-            model.addAttribute("error", "Utilisateur non trouvé.");
+        if (username == null || password == null) {
+            model.addAttribute("error", "Veuillez remplir tous les champs.");
             return "admin/login";
         }
-        
-        logger.info("Utilisateur trouvé: {}, mot de passe fourni: {}", user.getNom(), password);
-        if (!user.getMot_de_passe().equals(password)) {
-            logger.error("Mot de passe incorrect pour username: {}", username);
+        String usernameTrim = username.trim();
+        String passwordTrim = password.trim();
+
+        User user = userRepository.findByNom(usernameTrim);
+        if (user == null) {
+            model.addAttribute("error", "Utilisateur introuvable.");
+            return "admin/login";
+        }
+        if (!user.getMot_de_passe().equals(passwordTrim)) {
             model.addAttribute("error", "Mot de passe incorrect.");
             return "admin/login";
         }
-        
         if (user.getRole() == null || !user.getRole().getLibelle().equalsIgnoreCase("ADMIN")) {
-            logger.error("Rôle invalide pour username: {}. Rôle trouvé: {}", 
-                username, user.getRole() != null ? user.getRole().getLibelle() : "null");
-            model.addAttribute("error", "Accès réservé aux administrateurs.");
+            model.addAttribute("error", "Accès réservé à l'administrateur.");
             return "admin/login";
         }
-
-        logger.info("Authentification réussie pour username: {}", username);
+        // Authentification réussie
         return "redirect:/admin/dashboard";
     }
 }

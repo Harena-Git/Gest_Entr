@@ -1,4 +1,12 @@
-package com.example.gestion.controller;
+package com.example.gestion.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.gestion.models.Candidat;
 import com.example.gestion.models.Diplome;
@@ -6,13 +14,6 @@ import com.example.gestion.models.Lieu;
 import com.example.gestion.repository.CandidatRepository;
 import com.example.gestion.repository.DiplomeRepository;
 import com.example.gestion.repository.LieuRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Controller
 public class RechercheController {
