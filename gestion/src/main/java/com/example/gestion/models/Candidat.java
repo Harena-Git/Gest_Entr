@@ -1,8 +1,11 @@
 package com.example.gestion.models;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;  // <-- import nécessaire
 
 @Entity
 @Table(name = "candidat")
@@ -23,7 +26,12 @@ public class Candidat {
 
     private String telephone;
     private String adresse;
-
+    private String competences_personnelles;
+    private String genre;
+    
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")  // <-- ici
+    private Date date_naissance;
     @Temporal(TemporalType.DATE)
     private Date date_candidature;
 
@@ -41,7 +49,7 @@ public class Candidat {
     private List<HistoriqueEtat> historiqueEtats;
 
     @OneToMany(mappedBy = "candidat")
-    private List<DiplomeCandidat> diplomesCandidats;
+    private List<DiplomeCandidat> diplomesCandidats = new ArrayList<>();
 
     @OneToMany(mappedBy = "candidat")
     private List<ContratEssai> contratsEssai;
@@ -50,12 +58,16 @@ public class Candidat {
     private List<Personnel> personnels;
 
     @OneToMany(mappedBy = "candidat")
-    private List<Entretien1> entretien1;
+    private List<ParcoursProfessionel> parcoursProfessionels;
+
 
     // Getters and Setters
     public Integer getId_candidat() { return id_candidat; }
     public void setId_candidat(Integer id_candidat) { this.id_candidat = id_candidat; }
 
+    public String getCompetences_personnelles() { return competences_personnelles; }
+    public void setCompetences_personnelles(String competences_personnelles) { this.competences_personnelles = competences_personnelles; }
+    
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 
@@ -98,6 +110,16 @@ public class Candidat {
     public List<Personnel> getPersonnels() { return personnels; }
     public void setPersonnels(List<Personnel> personnels) { this.personnels = personnels; }
 
-    public List<Entretien1> getEntretien1() { return entretien1; }
-    public void setEntretien1(List<Entretien1> entretien1) { this.entretien1 = entretien1; }
+    public List<ParcoursProfessionel> getParcoursProfessionels() {
+        return parcoursProfessionels;
+    }
+    public void setParcoursProfessionels(List<ParcoursProfessionel> parcoursProfessionels) {
+        this.parcoursProfessionels = parcoursProfessionels;
+    }
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
+
+    public Date getDate_naissance() { return date_naissance; }
+    public void setDate_naissance(Date date_naissance) { this.date_naissance = date_naissance; }
+
 }

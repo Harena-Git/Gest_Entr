@@ -78,6 +78,9 @@ CREATE TABLE candidat(
    annee_experience INT,
    Id_lieu INT NOT NULL,
    Id_etat_candidat INT NOT NULL,
+   competences_personnelles TEXT,
+   genre VARCHAR(10),
+   date_naissance DATE,
    PRIMARY KEY(Id_candidat),
    UNIQUE(email),
    FOREIGN KEY(Id_lieu) REFERENCES lieu(Id_lieu),
@@ -122,6 +125,17 @@ CREATE TABLE diplome(
    PRIMARY KEY(Id_diplome),
    FOREIGN KEY(Id_niveau) REFERENCES niveau(Id_niveau),
    FOREIGN KEY(Id_filiere) REFERENCES filiere(Id_filiere)
+);
+
+CREATE TABLE parcours_professionel(
+   Id_parcours_professionel INT AUTO_INCREMENT,
+   entreprise VARCHAR(50),
+   poste VARCHAR(50),
+   date_debut DATE,
+   date_fin DATE,
+   Id_candidat INT NOT NULL,
+   PRIMARY KEY(Id_parcours_professionel),
+   FOREIGN KEY(Id_candidat) REFERENCES candidat(Id_candidat)
 );
 
 CREATE TABLE qcm(
@@ -252,7 +266,7 @@ CREATE TABLE profil(
    Id_profil INT AUTO_INCREMENT,
    genre VARCHAR(50),
    age INT,
-   annee_experience VARCHAR(50),
+   annee_experience INT,
    Id_lieu INT NOT NULL,
    Id_diplome INT NOT NULL,
    PRIMARY KEY(Id_profil),
