@@ -25,13 +25,27 @@ public class AdminAuthController {
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password,
                         Model model) {
-        User user = userRepository.findByNom(username);
-        if (user != null && user.getMot_de_passe().equals(password) && user.getRole() != null && user.getRole().getLibelle().equalsIgnoreCase("ADMIN")) {
-            // Authentification réussie, redirige vers la page admin (à adapter)
-            return "redirect:/admin/dashboard";
-        } else {
-            model.addAttribute("error", "Identifiants invalides ou accès refusé.");
+        if (username == null || password == null) {
+            model.addAttribute("error", "Veuillez remplir tous les champs.");
             return "admin/login";
         }
+        String usernameTrim = username.trim();
+        String passwordTrim = password.trim();
+
+        User user = userRepository.findByNom(usernameTrim);
+        if (user == null) {
+            model.addAttribute("error", "Utilisateur introuvable.");
+            return "admin/login";
+        }
+        if (!user.getMot_de_passe().equals(passwordTrim)) {
+            model.addAttribute("error", "Mot de passe incorrect.");
+            return "admin/login";
+        }
+        if (user.getRole() == null || !user.getRole().getLibelle().equalsIgnoreCase("ADMIN")) {
+            model.addAttribute("error", "Accès réservé à l'administrateur.");
+            return "admin/login";
+        }
+        // Authentification réussie
+        return "redirect:/admin/dashboard";
     }
 }
