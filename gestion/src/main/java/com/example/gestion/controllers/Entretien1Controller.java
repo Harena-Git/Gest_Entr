@@ -25,11 +25,7 @@ public class Entretien1Controller {
 
     @GetMapping("/mes-entretiens")
     public String afficherMesEntretiens(HttpSession session, Model model) {
-<<<<<<< Updated upstream
-        Integer userId = 4; // exemple
-=======
         Integer userId = 3; // exemple
->>>>>>> Stashed changes
         if (userId == null) {
             return "redirect:/login"; 
         }

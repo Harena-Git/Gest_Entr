@@ -8,15 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-<<<<<<< Updated upstream
-
-import java.time.LocalDate;
-=======
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
->>>>>>> Stashed changes
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,33 +23,23 @@ public class EvaluationEntretien2Controller {
     private final AppreciationService appreciationService;
     private final Entretien2Service entretien2Service;
     private final UserService userService;
-<<<<<<< Updated upstream
-=======
     private final HistoriqueEtatService historiqueEtatService;
     private final EtatCandidatService etatCandidatService;
 
->>>>>>> Stashed changes
 
     public EvaluationEntretien2Controller(
             EvaluationEntretien2Service evaluationEntretien2Service,
             AppreciationService appreciationService,
             UserService userService,
-<<<<<<< Updated upstream
-            Entretien2Service entretien2Service) {
-=======
             Entretien2Service entretien2Service,
             HistoriqueEtatService historiqueEtatService,
             EtatCandidatService etatCandidatService) {
->>>>>>> Stashed changes
         this.evaluationEntretien2Service = evaluationEntretien2Service;
         this.appreciationService = appreciationService;
         this.userService = userService;
         this.entretien2Service = entretien2Service;
-<<<<<<< Updated upstream
-=======
         this.historiqueEtatService = historiqueEtatService;
         this.etatCandidatService = etatCandidatService;
->>>>>>> Stashed changes
     }
 
     // Page pour choisir l’appréciation
@@ -97,8 +82,6 @@ public class EvaluationEntretien2Controller {
         }
 
         evaluationEntretien2Service.save(eval2);
-<<<<<<< Updated upstream
-=======
         HistoriqueEtat histo = new HistoriqueEtat();
         LocalDateTime today = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -120,7 +103,6 @@ public class EvaluationEntretien2Controller {
 
             historiqueEtatService.save(histo);
         }
->>>>>>> Stashed changes
             return "redirect:/mes-entretiens"; // Sinon retour à la liste
     }
 }
