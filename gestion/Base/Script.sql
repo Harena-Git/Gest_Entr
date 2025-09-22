@@ -13,6 +13,7 @@ CREATE TABLE etat_candidat(
    PRIMARY KEY(Id_etat_candidat),
    UNIQUE(libelle)
 );
+
 CREATE TABLE niveau (
    Id_niveau INT AUTO_INCREMENT,
    libelle VARCHAR(50) NOT NULL,
