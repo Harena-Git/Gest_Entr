@@ -162,7 +162,7 @@
             </div>
         </div>
 
-        Candidate Listings
+        <!-- Candidate Listings -->
         <div class="row">
             <c:forEach var="candidat" items="${candidats}">
                 <div class="col-12 col-lg-6">
@@ -203,10 +203,10 @@
                         
                         <div class="candidate-footer">
                             <div class="d-flex justify-content-between align-items-center">
-                                <form action="/candidat/profil" method="get">
+                                <form action="#" method="get">
                                     <input type="hidden" name="idCandidat" value="${candidat.id_candidat}">
                                     <button type="submit" class="btn btn-primary btn-details">
-                                        <i class="fas fa-user-check"></i> Voir le profil
+                                        <i class="fas fa-user-check"></i> Voir le candidat
                                     </button>
                                 </form>
                                 <div class="text-muted">

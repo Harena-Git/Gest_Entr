@@ -11,9 +11,9 @@ import java.util.List;
 @Repository
 public interface CandidatRepository extends JpaRepository<Candidat, Integer> {
 
-    @Query("SELECT c FROM Candidat c " +
+    @Query("SELECT DISTINCT c FROM Candidat c " +
+           "LEFT JOIN FETCH c.diplomesCandidats dc " +
            "LEFT JOIN c.lieu l " +
-           "LEFT JOIN c.diplomesCandidats dc " +
            "WHERE (:nom IS NULL OR LOWER(CONCAT(c.nom, ' ', c.prenom)) LIKE LOWER(CONCAT('%', :nom, '%'))) " +
            "AND (:lieuId IS NULL OR l.id_lieu = :lieuId) " +
            "AND (:experience IS NULL OR c.annee_experience >= :experience) " +
