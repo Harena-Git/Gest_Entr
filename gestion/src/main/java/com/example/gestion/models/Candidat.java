@@ -33,10 +33,6 @@ public class Candidat {
     @JoinColumn(name = "Id_lieu")
     private Lieu lieu;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_etat_candidat")
-    private EtatCandidat etatCandidat;
-
     @OneToMany(mappedBy = "candidat")
     private List<HistoriqueEtat> historiqueEtats;
 
@@ -79,9 +75,6 @@ public class Candidat {
 
     public Lieu getLieu() { return lieu; }
     public void setLieu(Lieu lieu) { this.lieu = lieu; }
-
-    public EtatCandidat getEtatCandidat() { return etatCandidat; }
-    public void setEtatCandidat(EtatCandidat etatCandidat) { this.etatCandidat = etatCandidat; }
 
     public List<HistoriqueEtat> getHistoriqueEtats() { return historiqueEtats; }
     public void setHistoriqueEtats(List<HistoriqueEtat> historiqueEtats) { this.historiqueEtats = historiqueEtats; }

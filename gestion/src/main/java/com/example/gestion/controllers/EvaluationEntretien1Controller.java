@@ -8,8 +8,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+<<<<<<< Updated upstream
 
 import java.time.LocalDate;
+=======
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+>>>>>>> Stashed changes
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +30,12 @@ public class EvaluationEntretien1Controller {
     private final Entretien2Service entretien2Service;
     private final ProfilService profilService;
     private final AnnonceService annonceService;
+<<<<<<< Updated upstream
+=======
+    private final HistoriqueEtatService historiqueEtatService;
+    private final EtatCandidatService etatCandidatService;
+
+>>>>>>> Stashed changes
 
     public EvaluationEntretien1Controller(
             EvaluationEntretien1Service evaluationEntretien1Service,
@@ -32,7 +44,13 @@ public class EvaluationEntretien1Controller {
             UserService userService,
             Entretien2Service entretien2Service,
             ProfilService profilService,
+<<<<<<< Updated upstream
             AnnonceService annonceService) {
+=======
+            AnnonceService annonceService,
+            HistoriqueEtatService historiqueEtatService,
+            EtatCandidatService etatCandidatService) {
+>>>>>>> Stashed changes
         this.evaluationEntretien1Service = evaluationEntretien1Service;
         this.appreciationService = appreciationService;
         this.entretien1Service = entretien1Service;
@@ -40,6 +58,11 @@ public class EvaluationEntretien1Controller {
         this.entretien2Service = entretien2Service;
         this.profilService = profilService;
         this.annonceService = annonceService;
+<<<<<<< Updated upstream
+=======
+        this.historiqueEtatService = historiqueEtatService;
+        this.etatCandidatService = etatCandidatService;
+>>>>>>> Stashed changes
     }
 
     // Page pour choisir l’appréciation
@@ -68,6 +91,11 @@ public class EvaluationEntretien1Controller {
 
         // Vérifier si une évaluation existe déjà
         Optional<EvaluationEntretien1> existingEval = evaluationEntretien1Service.findByEntretien(entretien1);
+<<<<<<< Updated upstream
+=======
+        
+
+>>>>>>> Stashed changes
 
         EvaluationEntretien1 eval1;
         if (existingEval.isPresent()) {
@@ -82,6 +110,17 @@ public class EvaluationEntretien1Controller {
         }
 
         evaluationEntretien1Service.save(eval1);
+<<<<<<< Updated upstream
+=======
+        HistoriqueEtat histo = new HistoriqueEtat();
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String todayAsString = today.format(formatter);
+        histo.setDate_changement(todayAsString);
+        histo.setCandidat(eval1.getEntretien1().getCandidat());
+        histo.setEtatCandidat(etatCandidatService.findById(4).get());
+        historiqueEtatService.save(histo);
+>>>>>>> Stashed changes
 
         // Si note >= 3, créer Entretien2
         if (appreciation.getNote() >= 3) {
@@ -106,6 +145,12 @@ public class EvaluationEntretien1Controller {
 
             return "date-entretien2"; // Page pour saisir date et heure
         } else {
+<<<<<<< Updated upstream
+=======
+            histo.setDate_changement(LocalDateTime.now().format(formatter));
+            histo.setEtatCandidat(etatCandidatService.findById(7).get());
+            historiqueEtatService.save(histo);
+>>>>>>> Stashed changes
             return "redirect:/mes-entretiens"; // Sinon retour à la liste
         }
     }
@@ -131,6 +176,17 @@ public class EvaluationEntretien1Controller {
         entretien2.setHeureEntretien(heureEntretien);
 
         entretien2Service.save(entretien2);
+<<<<<<< Updated upstream
+=======
+        HistoriqueEtat histo = new HistoriqueEtat();
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String todayAsString = today.format(formatter);
+        histo.setDate_changement(todayAsString);
+        histo.setCandidat(entretien1.getCandidat());
+        histo.setEtatCandidat(etatCandidatService.findById(3).get());
+        historiqueEtatService.save(histo);
+>>>>>>> Stashed changes
 
         return "redirect:/mes-entretiens";
     }
