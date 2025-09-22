@@ -1,33 +1,43 @@
 package com.example.gestion.models;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "entretien_2")
 public class Entretien2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_entretien_2;
+    @Column(name = "Id_entretien_2")
+    private Integer idEntretien2;
 
-    private Date date_entretien;
+    @Column(name = "date_entretien")
+    private LocalDate dateEntretien;
+
+    @Column(name = "heure_entretien")
+    private LocalTime heureEntretien;
 
     @ManyToOne
-    @JoinColumn(name = "id_user")
+    @JoinColumn(name = "Id_user", nullable = false)
     private User user;
 
     @OneToOne
-    @JoinColumn(name = "id_entretien_")
+    @JoinColumn(name = "Id_entretien_", nullable = false)
     private Entretien1 entretien1;
 
     @OneToOne(mappedBy = "entretien2")
     private EvaluationEntretien2 evaluation;
 
-    public Integer getId_entretien_2() { return id_entretien_2; }
-    public void setId_entretien_2(Integer id_entretien_2) { this.id_entretien_2 = id_entretien_2; }
+    // Getters and Setters
+    public Integer getIdEntretien2() { return idEntretien2; }
+    public void setIdEntretien2(Integer idEntretien2) { this.idEntretien2 = idEntretien2; }
 
-    public Date getDate_entretien() { return date_entretien; }
-    public void setDate_entretien(Date date_entretien) { this.date_entretien = date_entretien; }
+    public LocalDate getDateEntretien() { return dateEntretien; }
+    public void setDateEntretien(LocalDate dateEntretien) { this.dateEntretien = dateEntretien; }
+
+    public LocalTime getHeureEntretien() { return heureEntretien; }
+    public void setHeureEntretien(LocalTime heureEntretien) { this.heureEntretien = heureEntretien; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

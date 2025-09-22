@@ -11,7 +11,7 @@ public class Annonce {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_annonce;
 
-    private Date date_annonce; // Changé de String à Date
+    private String date_annonce;
 
     @Column(columnDefinition = "TEXT")
     private String responsabilite;
@@ -23,15 +23,14 @@ public class Annonce {
     private Poste poste;
 
     @ManyToOne
-    @JoinColumn(name = "id_profil", nullable = false) // Corrigé: id_profil au lieu de id_profi
+    @JoinColumn(name = "id_profil", nullable = false)
     private Profil profil;
 
-    // Getters et setters
     public Integer getId_annonce() { return id_annonce; }
     public void setId_annonce(Integer id_annonce) { this.id_annonce = id_annonce; }
 
-    public Date getDate_annonce() { return date_annonce; }
-    public void setDate_annonce(Date date_annonce) { this.date_annonce = date_annonce; }
+    public String getDate_annonce() { return date_annonce; }
+    public void setDate_annonce(String date_annonce) { this.date_annonce = date_annonce; }
 
     public String getResponsabilite() { return responsabilite; }
     public void setResponsabilite(String responsabilite) { this.responsabilite = responsabilite; }
