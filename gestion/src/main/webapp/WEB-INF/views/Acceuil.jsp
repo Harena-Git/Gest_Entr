@@ -125,31 +125,6 @@
             <p class="mb-0">Découvrez nos opportunités de carrière</p>
         </div>
 
-        <!-- Search Section -->
-        <div class="search-section">
-            <div class="row">
-                <div class="col-md-8 mx-auto">
-                    <div class="input-group">
-                        <input type="text" class="form-control search-box" placeholder="Rechercher un poste, une compétence...">
-                        <button class="btn btn-primary search-btn" type="button">
-                            <i class="fas fa-search"></i> Rechercher
-                        </button>
-                    </div>
-                    <div class="filters">
-                        <select class="form-select filter-select">
-                            <option>Tous les lieux</option>
-                        </select>
-                        <select class="form-select filter-select">
-                            <option>Type de contrat</option>
-                        </select>
-                        <select class="form-select filter-select">
-                            <option>Expérience</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Job Listings -->
         <div class="row">
             <c:forEach var="annonce" items="${annonces}">
