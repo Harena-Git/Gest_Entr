@@ -307,6 +307,10 @@ END$$
 DELIMITER ;
 
 -- 2. Trouver le prochain créneau disponible
+-- Supprimer la fonction existante
+DROP FUNCTION IF EXISTS trouver_creneau_disponible;
+
+-- Recréer la fonction avec des corrections
 DELIMITER $$
 CREATE FUNCTION trouver_creneau_disponible(p_date_base DATE) 
 RETURNS DATETIME
@@ -317,23 +321,46 @@ BEGIN
     DECLARE v_heure_fin TIME;
     DECLARE v_duree_entretien INT;
     DECLARE v_derniere_heure TIME;
-    DECLARE v_jour_semaine VARCHAR(10);
-    DECLARE v_id_user INT;
-    DECLARE v_nb_entretiens INT;
+    DECLARE v_nom_jour VARCHAR(20);
+    DECLARE v_plage_trouvee BOOLEAN DEFAULT FALSE;
     
     -- Initialiser la date à 5 jours après la date de base
     SET v_date_entretien = DATE_ADD(p_date_base, INTERVAL 5 DAY);
     
-    -- Vérifier que c'est un jour ouvré (lundi-vendredi)
-    WHILE DAYOFWEEK(v_date_entretien) IN (1, 7) DO
-        SET v_date_entretien = DATE_ADD(v_date_entretien, INTERVAL 1 DAY);
+    -- Chercher un jour ouvré avec des plages horaires disponibles
+    WHILE NOT v_plage_trouvee DO
+        -- Vérifier que c'est un jour ouvré (lundi-vendredi)
+        WHILE DAYOFWEEK(v_date_entretien) IN (1, 7) DO
+            SET v_date_entretien = DATE_ADD(v_date_entretien, INTERVAL 1 DAY);
+        END WHILE;
+        
+        -- Obtenir le nom du jour en français
+        SET v_nom_jour = CASE DAYOFWEEK(v_date_entretien)
+            WHEN 2 THEN 'Lundi'
+            WHEN 3 THEN 'Mardi'
+            WHEN 4 THEN 'Mercredi'
+            WHEN 5 THEN 'Jeudi'
+            WHEN 6 THEN 'Vendredi'
+            ELSE 'Samedi'
+        END;
+        
+        -- Vérifier s'il y a des plages horaires pour ce jour
+        IF EXISTS (
+            SELECT 1 FROM plage_horaire_entretien 
+            WHERE FIND_IN_SET(v_nom_jour, jours_travail) > 0
+        ) THEN
+            SET v_plage_trouvee = TRUE;
+        ELSE
+            SET v_date_entretien = DATE_ADD(v_date_entretien, INTERVAL 1 DAY);
+        END IF;
     END WHILE;
     
-    -- Trouver les plages horaires disponibles pour ce jour
+    -- Trouver la première plage horaire disponible pour ce jour
     SELECT heure_debut, heure_fin, duree_entretien_minutes 
     INTO v_heure_debut, v_heure_fin, v_duree_entretien
     FROM plage_horaire_entretien
-    WHERE FIND_IN_SET(DAYNAME(v_date_entretien), jours_travail) > 0
+    WHERE FIND_IN_SET(v_nom_jour, jours_travail) > 0
+    ORDER BY heure_debut
     LIMIT 1;
     
     -- Trouver le dernier entretien planifié pour cette date
@@ -348,11 +375,9 @@ BEGIN
         -- Ajouter la durée d'un entretien à la dernière heure
         SET v_heure_debut = ADDTIME(v_derniere_heure, SEC_TO_TIME(v_duree_entretien * 60));
         
-        -- Si on dépasse l'heure de fin de la plage horaire du matin, passer à l'après-midi
-        IF v_heure_debut >= '12:00:00' AND v_heure_debut < '14:00:00' THEN
-            SET v_heure_debut = '14:00:00';
-        -- Si on dépasse l'heure de fin de la journée, passer au jour suivant
-        ELSEIF v_heure_debut >= v_heure_fin THEN
+        -- Si on dépasse l'heure de fin de la plage horaire actuelle
+        IF v_heure_debut >= v_heure_fin THEN
+            -- Passer au jour suivant
             SET v_date_entretien = DATE_ADD(v_date_entretien, INTERVAL 1 DAY);
             
             -- S'assurer que c'est un jour ouvré
@@ -360,15 +385,27 @@ BEGIN
                 SET v_date_entretien = DATE_ADD(v_date_entretien, INTERVAL 1 DAY);
             END WHILE;
             
-            -- Réinitialiser l'heure au début de la journée
+            -- Obtenir le nom du jour
+            SET v_nom_jour = CASE DAYOFWEEK(v_date_entretien)
+                WHEN 2 THEN 'Lundi'
+                WHEN 3 THEN 'Mardi'
+                WHEN 4 THEN 'Mercredi'
+                WHEN 5 THEN 'Jeudi'
+                WHEN 6 THEN 'Vendredi'
+                ELSE 'Samedi'
+            END;
+            
+            -- Trouver la première plage horaire du nouveau jour
             SELECT heure_debut INTO v_heure_debut
             FROM plage_horaire_entretien
-            WHERE FIND_IN_SET(DAYNAME(v_date_entretien), jours_travail) > 0
+            WHERE FIND_IN_SET(v_nom_jour, jours_travail) > 0
+            ORDER BY heure_debut
             LIMIT 1;
         END IF;
     END IF;
     
-    RETURN CONCAT(v_date_entretien, ' ', v_heure_debut);
+    -- Retourner le datetime combiné
+    RETURN TIMESTAMP(v_date_entretien, v_heure_debut);
 END$$
 DELIMITER ;
 
@@ -413,7 +450,10 @@ BEGIN
 END$$
 DELIMITER ;
 
--- 4. Procédure principale pour planifier l'entretien après réussite du QCM
+-- Supprimer la procédure existante
+DROP PROCEDURE IF EXISTS planifier_entretien_apres_qcm;
+
+-- Recréer la procédure sans retourner de résultat (pour usage dans l'application)
 DELIMITER $$
 CREATE PROCEDURE planifier_entretien_apres_qcm(IN p_id_candidat INT, IN p_id_qcm INT)
 BEGIN
@@ -427,12 +467,6 @@ BEGIN
     SET v_est_reussi = verifier_reussite_qcm(p_id_candidat, p_id_qcm);
     
     IF v_est_reussi THEN
-        -- Mettre à jour le statut de réussite dans resultat_qcm
-        UPDATE resultat_qcm 
-        SET est_reussi = TRUE 
-        WHERE Id_candidat = p_id_candidat AND Id_qcm = p_id_qcm
-        ORDER BY date_reponse DESC LIMIT 1;
-        
         -- Récupérer la date de réponse pour calculer la date d'entretien
         SELECT date_reponse INTO v_date_reponse
         FROM resultat_qcm
@@ -449,42 +483,39 @@ BEGIN
         INSERT INTO entretien_1 (date_entretien, heure_entretien, Id_candidat, Id_user)
         VALUES (DATE(v_date_entretien), TIME(v_date_entretien), p_id_candidat, v_id_user);
         
-        -- Récupérer l'ID de l'entretien créé
-        SET v_id_entretien = LAST_INSERT_ID();
-        
-        -- Mettre à jour l'état du candidat (supposons que l'état "En entretien" a l'ID 3)
-        UPDATE candidat SET Id_etat_candidat = 3 WHERE Id_candidat = p_id_candidat;
+        -- Mettre à jour l'état du candidat (état "Entretien programmé" = 7)
+        UPDATE candidat SET Id_etat_candidat = 7 WHERE Id_candidat = p_id_candidat;
         
         -- Ajouter une entrée dans l'historique des états
         INSERT INTO historique_etat (date_changement, Id_candidat, Id_etat_candidat)
-        VALUES (NOW(), p_id_candidat, 3);
-        
-        -- Retourner les informations de l'entretien
-        SELECT 
-            v_id_entretien AS id_entretien,
-            DATE(v_date_entretien) AS date_entretien,
-            TIME(v_date_entretien) AS heure_entretien,
-            v_id_user AS id_rh
-        FROM dual;
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Le candidat n''a pas réussi le QCM';
+        VALUES (NOW(), p_id_candidat, 7);
     END IF;
 END$$
 DELIMITER ;
 
 
+-- Supprimer le déclencheur existant s'il existe
+DROP TRIGGER IF EXISTS after_resultat_qcm_insert;
+
+-- Recréer le déclencheur sans appeler la procédure qui retourne un résultat
 DELIMITER $$
 CREATE TRIGGER after_resultat_qcm_insert
 AFTER INSERT ON resultat_qcm
 FOR EACH ROW
 BEGIN
-    DECLARE v_pourcentage DECIMAL(15,2);
-    
-    -- Vérifier si le pourcentage est >= 50%
-    IF NEW.pourcentage >= 50 THEN
-        -- Appeler la procédure de planification
-        CALL planifier_entretien_apres_qcm(NEW.Id_candidat, NEW.Id_qcm);
+    -- Vérifier si le pourcentage est >= 50% ET si l'entretien n'a pas déjà été planifié
+    IF NEW.pourcentage >= 50 AND NOT EXISTS (
+        SELECT 1 FROM entretien_1 WHERE Id_candidat = NEW.Id_candidat
+    ) THEN
+        -- Mettre à jour l'état du candidat directement (état "En attente entretien" = 6)
+        UPDATE candidat SET Id_etat_candidat = 6 WHERE Id_candidat = NEW.Id_candidat;
+        
+        -- Ajouter une entrée dans l'historique des états
+        INSERT INTO historique_etat (date_changement, Id_candidat, Id_etat_candidat)
+        VALUES (NOW(), NEW.Id_candidat, 6);
+        
+        -- Note: La planification effective de l'entretien se fera via un job batch
+        -- ou sera déclenchée manuellement pour éviter les problèmes dans le trigger
     END IF;
 END$$
 DELIMITER ;

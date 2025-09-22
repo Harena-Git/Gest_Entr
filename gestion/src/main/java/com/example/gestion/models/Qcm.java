@@ -21,6 +21,9 @@ public class Qcm {
     @JoinColumn(name = "Id_poste", nullable = false)
     private Poste poste;
 
+    @Column(name = "duree_minutes")
+    private Integer dureeMinutes;
+
     @OneToMany(mappedBy = "qcm")
     private List<Question> questions = new ArrayList<>();
 
@@ -44,6 +47,9 @@ public class Qcm {
     public void setPoste(Poste poste) {
         this.poste = poste;
     }
+
+    public Integer getDureeMinutes() {return dureeMinutes; } 
+    public void setDureeMinutes(Integer dureeMinutes) {this.dureeMinutes = dureeMinutes; } 
     
     public List<Question> getQuestions() { return questions; }
     public void setQuestions(List<Question> questions) { this.questions = questions; }
