@@ -1,34 +1,49 @@
 package com.example.gestion.models;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "entretien_1")
 public class Entretien1 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_entretien;
+    @Column(name = "Id_entretien_")
+    private Integer idEntretien;
 
-    private Date date_entretien;
+    @Column(name = "date_entretien")
+    private LocalDate dateEntretien;
+
+    @Column(name = "heure_entretien")
+    private LocalTime heureEntretien;
 
     @ManyToOne
-    @JoinColumn(name = "id_user")
+    @JoinColumn(name = "Id_candidat", nullable = false)
+    private Candidat candidat;
+
+    @ManyToOne
+    @JoinColumn(name = "Id_user", nullable = false)
     private User user;
 
-    // Lien avec l'évaluation de cet entretien
     @OneToOne(mappedBy = "entretien1")
     private EvaluationEntretien1 evaluation;
 
-    // Lien avec l'entretien_2 associé
     @OneToOne(mappedBy = "entretien1")
     private Entretien2 entretien2;
 
-    public Integer getId_entretien() { return id_entretien; }
-    public void setId_entretien(Integer id_entretien) { this.id_entretien = id_entretien; }
+    // Getters and Setters
+    public Integer getIdEntretien() { return idEntretien; }
+    public void setIdEntretien(Integer idEntretien) { this.idEntretien = idEntretien; }
 
-    public Date getDate_entretien() { return date_entretien; }
-    public void setDate_entretien(Date date_entretien) { this.date_entretien = date_entretien; }
+    public LocalDate getDateEntretien() { return dateEntretien; }
+    public void setDateEntretien(LocalDate dateEntretien) { this.dateEntretien = dateEntretien; }
+
+    public LocalTime getHeureEntretien() { return heureEntretien; }
+    public void setHeureEntretien(LocalTime heureEntretien) { this.heureEntretien = heureEntretien; }
+
+    public Candidat getCandidat() { return candidat; }
+    public void setCandidat(Candidat candidat) { this.candidat = candidat; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

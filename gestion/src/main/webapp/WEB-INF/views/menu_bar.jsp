@@ -2,9 +2,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="company-name">
-        <h4>Gestion RH
-            <a href="/admin/login">Admin</a>
-        </h4>
+        <h4>Gestion RH</h4>
     </div>
     <ul class="nav flex-column">
         <li class="nav-item">
@@ -23,8 +21,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/admin_recherche">
-                <i class="fas fa-chart-line"></i> Recherches
+            <a class="nav-link" href="#">
+                <i class="fas fa-chart-line"></i> Statistiques
             </a>
         </li>
         <li class="nav-item">

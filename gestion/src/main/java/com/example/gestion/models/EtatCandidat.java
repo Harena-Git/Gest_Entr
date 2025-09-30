@@ -15,9 +15,6 @@ public class EtatCandidat {
     private String libelle;
 
     @OneToMany(mappedBy = "etatCandidat")
-    private List<Candidat> candidats = new ArrayList<>();
-
-    @OneToMany(mappedBy = "etatCandidat")
     private List<HistoriqueEtat> historiques = new ArrayList<>();
 
     // Getters and Setters

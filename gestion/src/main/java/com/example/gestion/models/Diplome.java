@@ -1,15 +1,7 @@
 package com.example.gestion.models;
 
+import jakarta.persistence.*;
 import java.util.List;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "diplome")
@@ -19,9 +11,7 @@ public class Diplome {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_diplome;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_niveau")
-    private Niveau niveau;
+    private String niveau;
 
     @ManyToOne
     @JoinColumn(name = "Id_filiere")
@@ -37,8 +27,8 @@ public class Diplome {
     public Integer getId_diplome() { return id_diplome; }
     public void setId_diplome(Integer id_diplome) { this.id_diplome = id_diplome; }
 
-    public Niveau getNiveau() { return niveau; }
-    public void setNiveau(Niveau niveau) { this.niveau = niveau; }
+    public String getNiveau() { return niveau; }
+    public void setNiveau(String niveau) { this.niveau = niveau; }
 
     public Filiere getFiliere() { return filiere; }
     public void setFiliere(Filiere filiere) { this.filiere = filiere; }
