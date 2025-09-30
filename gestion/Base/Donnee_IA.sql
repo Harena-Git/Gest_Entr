@@ -29,6 +29,28 @@ DELETE FROM filiere;
 DELETE FROM etat_candidat;
 DELETE FROM role;
 
+INSERT INTO filiere(libelle) VALUES
+('Informatique'),
+('Management'),
+('Droit'),
+('Finance'),
+('Marketing'),
+('Ressources Humaines'),
+('Génie Civil'),
+('Biologie'),
+('Chimie'),
+('Physique');
+
+INSERT INTO niveau(libelle) VALUES
+('Licence'),
+('Master'),
+('Doctorat'),
+('DUT'),
+('BTS'),
+('Certificat'),
+('Formation Continue');
+
+
 -- Réinitialiser les auto-incréments
 ALTER TABLE role AUTO_INCREMENT = 1;
 ALTER TABLE etat_candidat AUTO_INCREMENT = 1;
@@ -216,6 +238,13 @@ INSERT INTO entretien_1 (date_entretien, Id_user) VALUES
 ('2024-02-05', 3),
 ('2024-02-06', 2);
 
+INSERT INTO entretien_1 (date_entretien, heure_entretien, id_candidat, id_user)
+VALUES 
+('2025-09-25', '10:30:00', 1, 2),
+('2025-09-26', '14:00:00', 2, 3),
+('2025-09-27', '09:15:00', 3, 1);
+
+
 -- Insertion évaluations entretien 1
 INSERT INTO evaluation_entretien_1 (presence, Id_appreciation, Id_entretien_) VALUES 
 (TRUE, 4, 1),
@@ -254,3 +283,12 @@ INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil
 
 -- Vérification des données
 SELECT 'Données insérées avec succès!' as Status;
+
+INSERT INTO etat_candidat (Id_etat_candidat, libelle) VALUES 
+(1, 'Nouvelle candidature'),
+(2, 'En attente entretien'),
+(3, 'Entretien programmé'),
+(4, 'Entretien réalisé'),
+(5, 'En attente décision'),
+(6, 'Embauche confirmée'),
+(7, 'Candidature rejetée');

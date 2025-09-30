@@ -11,7 +11,7 @@ public class ContratEssai {
     private Integer id_contrat_essai;
 
     private Date date_debut;
-    private String date_fin;
+    private Date date_fin;
 
     @OneToOne
     @JoinColumn(name = "id_candidat")
@@ -23,8 +23,8 @@ public class ContratEssai {
     public Date getDate_debut() { return date_debut; }
     public void setDate_debut(Date date_debut) { this.date_debut = date_debut; }
 
-    public String getDate_fin() { return date_fin; }
-    public void setDate_fin(String date_fin) { this.date_fin = date_fin; }
+    public Date getDate_fin() { return date_fin; }
+    public void setDate_fin(Date date_fin) { this.date_fin = date_fin; }
 
     public Candidat getCandidat() { return candidat; }
     public void setCandidat(Candidat candidat) { this.candidat = candidat; }
