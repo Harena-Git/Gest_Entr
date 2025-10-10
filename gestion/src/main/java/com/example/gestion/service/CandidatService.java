@@ -5,11 +5,15 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.List;
+import java.time.Instant;
+
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.CandidatRepository;
+import com.example.gestion.repository.DiplomeCandidatRepository;
 
 @Service
 public class CandidatService {
@@ -17,28 +21,37 @@ public class CandidatService {
     @Autowired
     private CandidatRepository candidatRepository;
 
+    @Autowired
+    private DiplomeCandidatRepository diplomeCandidatRepository;
+
  
 
-    public String verifierEtEnregistrer(Candidat candidat, Profil profilAnnonce, List<DiplomeCandidat> diplomes) {
+    public String verifierEtEnregistrer(Candidat candidat, Profil profilAnnonce) {
         // Vérification genre
         if (profilAnnonce.getGenre() != null && !profilAnnonce.getGenre().equalsIgnoreCase(candidat.getGenre())) {
             return "Le genre du candidat ne correspond pas au profil recherché.";
         }
 
         // Convertir Date en LocalDate
-        if (candidat.getDate_naissance() == null) {
+        // Vérification date de naissance et calcul de l'âge
+       if (candidat.getDate_naissance() == null) {
             return "La date de naissance du candidat est manquante.";
         }
-        LocalDate naissance = candidat.getDate_naissance().toInstant()
+
+        // Conversion java.util.Date → LocalDate
+        Date dateNaissance = candidat.getDate_naissance();
+        LocalDate naissance = Instant.ofEpochMilli(dateNaissance.getTime())
                                     .atZone(ZoneId.systemDefault())
                                     .toLocalDate();
+
         LocalDate aujourdHui = LocalDate.now();
-        int ageCandidat = Period.between(naissance, aujourdHui).getYears();
+        int ageCandidat = java.time.Period.between(naissance, aujourdHui).getYears();
 
         // Vérification âge
         if (profilAnnonce.getAge() != null && ageCandidat < profilAnnonce.getAge()) {
             return "L'âge du candidat est inférieur à l'âge minimum requis.";
         }
+
 
         // Vérification années d'expérience
         Integer anneeCandidat = candidat.getAnnee_experience() != null ? candidat.getAnnee_experience() : 0;
@@ -61,47 +74,39 @@ public class CandidatService {
         }
         
 
-      // Vérification diplôme (filière + niveau)
-        if (profilAnnonce.getDiplome() != null) {
-            String filiereCandidat = "" ;
-            String niveauCandidat = "" ;
-            boolean match = false;
-            Diplome diplomeProfil = profilAnnonce.getDiplome();
-            String filiereAttendue = diplomeProfil.getFiliere() != null ? diplomeProfil.getFiliere().getLibelle() : "Non précisée";
-            String niveauAttendu = diplomeProfil.getNiveau() != null ? diplomeProfil.getNiveau().getLibelle() : "Non précisé";
-            StringBuilder detailsDiplomes = new StringBuilder();
-            for (DiplomeCandidat dc : diplomes ) {
-                Diplome diplomeCandidat = dc.getDiplome();
+        // Vérification diplômes  if (profilAnnonce.getDiplome() != null) {
+        Diplome diplomeProfil = profilAnnonce.getDiplome();
+      
 
-                if (diplomeCandidat != null) {
-                     filiereCandidat = diplomeCandidat.getFiliere() != null ? diplomeCandidat.getFiliere().getLibelle() : "Non précisée";
-                     niveauCandidat = diplomeCandidat.getNiveau() != null ? diplomeCandidat.getNiveau().getLibelle() : "Non précisé";
+        // 🔹 Récupérer les diplômes du candidat dans la base
+        List<DiplomeCandidat> diplomes = diplomeCandidatRepository.findDiplomesByCandidatId(candidat.getId_candidat());
 
-                    boolean memeFiliere = diplomeProfil.getFiliere() != null
-                            && diplomeCandidat.getFiliere() != null
-                            && diplomeProfil.getFiliere().getIdFiliere().equals(diplomeCandidat.getFiliere().getIdFiliere());
+        boolean match = false;
+        
 
-                    boolean niveauOk = diplomeProfil.getNiveau() != null
-                            && diplomeCandidat.getNiveau() != null
-                            && diplomeCandidat.getNiveau().getIdNiveau() >= diplomeProfil.getNiveau().getIdNiveau();
+        for (DiplomeCandidat dc : diplomes) {
+            Diplome diplomeCandidat = dc.getDiplome();
+            if (diplomeCandidat == null) continue;
 
-                    if (memeFiliere && niveauOk) {
-                        match = true;
-                        break;
-                    } else {
-                        return "Diplôme invalide : attendu [Filière = " + filiereAttendue +
-                                ", Niveau = " + niveauAttendu + "] mais reçu [Filière = " + filiereCandidat +
-                                ", Niveau = " + niveauCandidat + "]";
-                    }
-                }
-            }
+            
+            boolean memeFiliere = diplomeProfil.getFiliere() != null
+                    && diplomeCandidat.getFiliere() != null
+                    && diplomeProfil.getFiliere().getIdFiliere().equals(diplomeCandidat.getFiliere().getIdFiliere());
 
-             if (!match) {
-            return "Diplôme invalide : attendu [Filière = " + filiereAttendue +
-                                ", Niveau = " + niveauAttendu + "] mais reçu [Filière = " + filiereCandidat +
-                                ", Niveau = " + niveauCandidat + "]";
+            boolean niveauOk = diplomeProfil.getNiveau() != null
+                    && diplomeCandidat.getNiveau() != null
+                    && diplomeCandidat.getNiveau().getIdNiveau() >= diplomeProfil.getNiveau().getIdNiveau();
+
+            if (memeFiliere && niveauOk) {
+                match = true;
+                break;
             }
         }
+
+        if (!match) {
+            return "Diplôme invalide ";
+        }
+    
 
         return "OK"; // Tout est conforme
     }
