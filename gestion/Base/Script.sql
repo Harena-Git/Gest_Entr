@@ -1,5 +1,6 @@
 CREATE DATABASE Gestion_entreprise ;
 use Gestion_entreprise ;
+
 CREATE TABLE role(
    Id_role INT AUTO_INCREMENT,
    libelle VARCHAR(50) NOT NULL,

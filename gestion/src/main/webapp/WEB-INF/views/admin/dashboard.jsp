@@ -20,7 +20,7 @@
     </nav>
     <!-- Main Content -->
     <div class="flex-grow-1 p-4">
-        <h2 id="annonces">Tableau de bord - Annonces</h2>
+        <h2 id="annonces">Tableau de bord</h2>
         <div class="row">
             <c:forEach var="annonce" items="${annonces}">
                 <div class="col-md-4 mb-3">
