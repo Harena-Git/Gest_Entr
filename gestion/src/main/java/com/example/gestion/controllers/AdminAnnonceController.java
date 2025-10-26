@@ -1,13 +1,15 @@
 // ...existing code...
 package com.example.gestion.controllers;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller; // Ajout de l'import pour Filiere
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -131,7 +133,22 @@ public class AdminAnnonceController {
             annonce.setPoste(poste);
             annonce.setProfil(profil);
             annonce.setDate_annonce(new java.util.Date());
-            annonce.setDate_fin(java.sql.Date.valueOf(dateFinStr));
+            // Parse date_fin: support datetime-local (yyyy-MM-dd'T'HH:mm) or date (yyyy-MM-dd)
+            if (dateFinStr != null && !dateFinStr.isBlank()) {
+                try {
+                    LocalDateTime ldt;
+                    if (dateFinStr.contains("T")) {
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                        ldt = LocalDateTime.parse(dateFinStr, dtf);
+                    } else {
+                        ldt = LocalDate.parse(dateFinStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+                    }
+                    annonce.setDate_fin(java.sql.Timestamp.valueOf(ldt));
+                } catch (Exception ex) {
+                    // fallback to date only
+                    annonce.setDate_fin(java.sql.Date.valueOf(dateFinStr));
+                }
+            }
 
             annonceRepository.save(annonce);
             return "redirect:/admin/annonces";
@@ -161,9 +178,72 @@ public class AdminAnnonceController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer id, @ModelAttribute Annonce annonce, Model model) {
+    public String update(@PathVariable("id") Integer id,
+                         @RequestParam("responsabilite") String responsabilite,
+                         @RequestParam("posteId") Integer posteId,
+                         @RequestParam("genre") String genre,
+                         @RequestParam("age") Integer age,
+                         @RequestParam("annee_experience") String annee_experience,
+                         @RequestParam("lieuId") Integer lieuId,
+                         @RequestParam("niveauId") Integer niveauId,
+                         @RequestParam("filiereId") Integer filiereId,
+                         @RequestParam("date_fin") String dateFinStr,
+                         Model model) {
+        Optional<Annonce> existingOpt = annonceRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return "redirect:/admin/annonces";
+        }
+
         try {
-            annonce.setId_annonce(id);
+            Annonce annonce = existingOpt.get();
+
+            Poste poste = posteRepository.findById(posteId).orElse(null);
+            Lieu lieu = lieuRepository.findById(lieuId).orElse(null);
+            Niveau niveau = niveauRepository.findById(niveauId).orElse(null);
+            Filiere filiere = filiereRepository.findById(filiereId).orElse(null);
+
+            // Update or create Diplome
+            Profil profil = annonce.getProfil();
+            if (profil == null) {
+                profil = new Profil();
+            }
+
+            Diplome diplome = profil.getDiplome();
+            if (diplome == null) {
+                diplome = new Diplome();
+            }
+            diplome.setNiveau(niveau);
+            diplome.setFiliere(filiere);
+            diplome = diplomeRepository.save(diplome);
+
+            // Update profil
+            profil.setGenre(genre);
+            profil.setAge(age);
+            profil.setAnnee_experience(annee_experience);
+            profil.setLieu(lieu);
+            profil.setDiplome(diplome);
+            profil = profilRepository.save(profil);
+
+            // Update annonce
+            annonce.setResponsabilite(responsabilite);
+            annonce.setPoste(poste);
+            annonce.setProfil(profil);
+            // conserve date_annonce existante, on met à jour date_fin si fourni
+            if (dateFinStr != null && !dateFinStr.isBlank()) {
+                try {
+                    LocalDateTime ldt;
+                    if (dateFinStr.contains("T")) {
+                        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                        ldt = LocalDateTime.parse(dateFinStr, dtf);
+                    } else {
+                        ldt = LocalDate.parse(dateFinStr, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+                    }
+                    annonce.setDate_fin(java.sql.Timestamp.valueOf(ldt));
+                } catch (Exception ex) {
+                    annonce.setDate_fin(java.sql.Date.valueOf(dateFinStr));
+                }
+            }
+
             annonceRepository.save(annonce);
             return "redirect:/admin/annonces";
         } catch (Exception e) {
