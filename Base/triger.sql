@@ -1,3 +1,13 @@
+CREATE TABLE entretien_qcm (
+    id_entretien_qcm INT PRIMARY KEY AUTO_INCREMENT,
+    id_entretien INT,
+    id_qcm INT,
+    id_candidat INT,
+    FOREIGN KEY (id_entretien) REFERENCES entretien_1(id_entretien_),
+    FOREIGN KEY (id_qcm) REFERENCES qcm(id_qcm),
+    FOREIGN KEY (id_candidat) REFERENCES candidat(Id_candidat)
+);
+
 CREATE TABLE plage_horaire_entretien (
    Id_plage INT AUTO_INCREMENT,
    heure_debut TIME NOT NULL,
@@ -240,11 +250,9 @@ BEGIN
     DECLARE v_date_entretien DATETIME;
     DECLARE v_id_user INT;
     DECLARE v_date_reponse TIMESTAMP;
+    DECLARE v_id_entretien INT;
     
-    -- NE PAS refaire la vérification de réussite ici
-    -- Supprimer: SET v_est_reussi = verifier_reussite_qcm(p_id_candidat, p_id_qcm);
-    
-    -- Récupérer directement la date de réponse
+    -- Récupérer la date de réponse
     SELECT date_reponse INTO v_date_reponse
     FROM resultat_qcm
     WHERE Id_candidat = p_id_candidat AND Id_qcm = p_id_qcm
@@ -260,6 +268,13 @@ BEGIN
     INSERT INTO entretien_1 (date_entretien, heure_entretien, Id_candidat, Id_user)
     VALUES (DATE(v_date_entretien), TIME(v_date_entretien), p_id_candidat, v_id_user);
     
+    -- Récupérer l'ID de l'entretien
+    SET v_id_entretien = LAST_INSERT_ID();
+    
+    -- Lier l'entretien au QCM
+    INSERT INTO entretien_qcm (id_entretien, id_qcm, id_candidat)
+    VALUES (v_id_entretien, p_id_qcm, p_id_candidat);
+    
     -- Mettre à jour l'état du candidat
     UPDATE candidat SET Id_etat_candidat = 3 WHERE Id_candidat = p_id_candidat;
     
@@ -269,7 +284,9 @@ BEGIN
 END$$
 DELIMITER ;
 
+
 DROP TRIGGER IF EXISTS after_reponse_insert_auto_eval;
+
 DELIMITER $$
 CREATE TRIGGER after_reponse_insert_auto_eval
 AFTER INSERT ON reponse
@@ -285,13 +302,11 @@ BEGIN
     DECLARE v_total_reponses INT DEFAULT 0;
     DECLARE v_continue BOOLEAN DEFAULT TRUE;
 
-    -- Trouver l'ID du QCM - VERSION CORRIGÉE
+    -- Trouver l'ID du QCM
     BEGIN
         DECLARE EXIT HANDLER FOR NOT FOUND
         BEGIN
-            -- Au lieu d'une valeur fixe, prendre le premier QCM existant
             SELECT Id_qcm INTO v_qcm_id FROM qcm ORDER BY Id_qcm LIMIT 1;
-            -- Si toujours pas trouvé, utiliser NULL et arrêter
             IF v_qcm_id IS NULL THEN
                 SET v_continue = FALSE;
             END IF;
@@ -306,17 +321,30 @@ BEGIN
         LIMIT 1;
     END;
 
-    -- Vérifier si on doit continuer
-    IF v_continue = FALSE OR EXISTS (SELECT 1 FROM entretien_1 WHERE Id_candidat = NEW.Id_candidat) THEN
+    -- Vérifier si on doit continuer - CONDITIONS MODIFIÉES
+    IF v_continue = FALSE THEN
         SET v_continue = FALSE;
     END IF;
 
-    IF v_continue = TRUE AND EXISTS (SELECT 1 FROM resultat_qcm WHERE Id_candidat = NEW.Id_candidat AND Id_qcm = v_qcm_id) THEN
+    -- Vérifier seulement si un résultat existe déjà pour CE QCM spécifique
+    IF v_continue = TRUE AND EXISTS (
+        SELECT 1 FROM resultat_qcm 
+        WHERE Id_candidat = NEW.Id_candidat AND Id_qcm = v_qcm_id
+    ) THEN
+        SET v_continue = FALSE;
+    END IF;
+
+    -- Vérifier seulement si un entretien existe déjà pour CE QCM spécifique
+    IF v_continue = TRUE AND EXISTS (
+        SELECT 1 FROM entretien_1 e
+        JOIN resultat_qcm r ON e.Id_candidat = r.Id_candidat
+        WHERE e.Id_candidat = NEW.Id_candidat AND r.Id_qcm = v_qcm_id
+    ) THEN
         SET v_continue = FALSE;
     END IF;
 
     IF v_continue THEN
-        -- Compter les questions spécifiques et générales SÉPARÉMENT (CORRIGÉ)
+        -- Compter les questions spécifiques et générales
         SELECT COUNT(*) INTO v_nb_questions_specifiques
         FROM question 
         WHERE Id_qcm = v_qcm_id;
@@ -362,18 +390,128 @@ BEGIN
                 IF EXISTS (SELECT 1 FROM information_schema.ROUTINES WHERE ROUTINE_NAME = 'planifier_entretien_apres_qcm') THEN
                     CALL planifier_entretien_apres_qcm(NEW.Id_candidat, v_qcm_id);
                 END IF;
-            END IF;
-
-            IF v_pourcentage < v_seuil_reussite THEN
+            ELSE
+                -- Échec : enregistrer quand même le résultat
                 INSERT INTO resultat_qcm (bonnes_reponses, total_questions, pourcentage, Id_candidat, Id_qcm, est_reussi, date_reponse)
                 VALUES (v_nb_bonnes_reponses, v_nb_questions_total, v_pourcentage, NEW.Id_candidat, v_qcm_id, 0, NOW());
+
+                INSERT INTO historique_etat (date_changement, Id_candidat, Id_etat_candidat)
+                VALUES (NOW(), NEW.Id_candidat, 7); 
+
+                UPDATE candidat SET Id_etat_candidat = 7 WHERE Id_candidat = NEW.Id_candidat;
+                 
             END IF;
         END IF;
     END IF;
 
 END$$
-
 DELIMITER ;
+
+-- DROP TRIGGER IF EXISTS after_reponse_insert_auto_eval;
+-- DELIMITER $$
+-- CREATE TRIGGER after_reponse_insert_auto_eval
+-- AFTER INSERT ON reponse
+-- FOR EACH ROW
+-- BEGIN
+--     DECLARE v_nb_questions_specifiques INT DEFAULT 0;
+--     DECLARE v_nb_questions_generales INT DEFAULT 0;
+--     DECLARE v_nb_questions_total INT DEFAULT 0;
+--     DECLARE v_nb_bonnes_reponses INT DEFAULT 0;
+--     DECLARE v_pourcentage DOUBLE DEFAULT 0;
+--     DECLARE v_seuil_reussite DOUBLE DEFAULT 50;
+--     DECLARE v_qcm_id INT;
+--     DECLARE v_total_reponses INT DEFAULT 0;
+--     DECLARE v_continue BOOLEAN DEFAULT TRUE;
+
+--     -- Trouver l'ID du QCM - VERSION CORRIGÉE
+--     BEGIN
+--         DECLARE EXIT HANDLER FOR NOT FOUND
+--         BEGIN
+--             -- Au lieu d'une valeur fixe, prendre le premier QCM existant
+--             SELECT Id_qcm INTO v_qcm_id FROM qcm ORDER BY Id_qcm LIMIT 1;
+--             -- Si toujours pas trouvé, utiliser NULL et arrêter
+--             IF v_qcm_id IS NULL THEN
+--                 SET v_continue = FALSE;
+--             END IF;
+--         END;
+        
+--         SELECT COALESCE(q.Id_qcm, 
+--                (SELECT Id_qcm FROM qcm ORDER BY Id_qcm LIMIT 1)) 
+--         INTO v_qcm_id
+--         FROM choix c
+--         LEFT JOIN question q ON c.Id_question = q.Id_question
+--         WHERE c.Id_choix = NEW.Id_choix
+--         LIMIT 1;
+--     END;
+
+--     -- Vérifier si on doit continuer
+--     IF v_continue = FALSE OR EXISTS (SELECT 1 FROM entretien_1 WHERE Id_candidat = NEW.Id_candidat) THEN
+--         SET v_continue = FALSE;
+--     END IF;
+
+--     IF v_continue = TRUE AND EXISTS (SELECT 1 FROM resultat_qcm WHERE Id_candidat = NEW.Id_candidat AND Id_qcm = v_qcm_id) THEN
+--         SET v_continue = FALSE;
+--     END IF;
+
+--     IF v_continue THEN
+--         -- Compter les questions spécifiques et générales SÉPARÉMENT (CORRIGÉ)
+--         SELECT COUNT(*) INTO v_nb_questions_specifiques
+--         FROM question 
+--         WHERE Id_qcm = v_qcm_id;
+
+--         SELECT COUNT(*) INTO v_nb_questions_generales
+--         FROM question_generale;
+
+--         SET v_nb_questions_total = v_nb_questions_specifiques + v_nb_questions_generales;
+
+--         -- Compter les réponses actuelles du candidat
+--         SELECT COUNT(*) INTO v_total_reponses
+--         FROM reponse r
+--         JOIN choix c ON r.Id_choix = c.Id_choix
+--         WHERE r.Id_candidat = NEW.Id_candidat
+--           AND (
+--               c.Id_question IN (SELECT Id_question FROM question WHERE Id_qcm = v_qcm_id)
+--               OR c.Id_question_generale IS NOT NULL
+--           );
+
+--         -- Vérifier si le candidat a répondu à toutes les questions
+--         IF v_total_reponses >= v_nb_questions_total THEN
+--             -- Compter les bonnes réponses
+--             SELECT COUNT(*) INTO v_nb_bonnes_reponses
+--             FROM reponse r
+--             JOIN choix c ON r.Id_choix = c.Id_choix
+--             WHERE r.Id_candidat = NEW.Id_candidat
+--               AND c.est_correct = 1
+--               AND (
+--                   c.Id_question IN (SELECT Id_question FROM question WHERE Id_qcm = v_qcm_id)
+--                   OR c.Id_question_generale IS NOT NULL
+--               );
+
+--             -- Calculer le pourcentage
+--             IF v_nb_questions_total > 0 THEN
+--                 SET v_pourcentage = (v_nb_bonnes_reponses / v_nb_questions_total) * 100;
+--             END IF;
+
+--             -- Si réussi, enregistrer le résultat et planifier l'entretien
+--             IF v_pourcentage >= v_seuil_reussite THEN
+--                 INSERT INTO resultat_qcm (bonnes_reponses, total_questions, pourcentage, Id_candidat, Id_qcm, est_reussi, date_reponse)
+--                 VALUES (v_nb_bonnes_reponses, v_nb_questions_total, v_pourcentage, NEW.Id_candidat, v_qcm_id, 1, NOW());
+
+--                 IF EXISTS (SELECT 1 FROM information_schema.ROUTINES WHERE ROUTINE_NAME = 'planifier_entretien_apres_qcm') THEN
+--                     CALL planifier_entretien_apres_qcm(NEW.Id_candidat, v_qcm_id);
+--                 END IF;
+--             END IF;
+
+--             IF v_pourcentage < v_seuil_reussite THEN
+--                 INSERT INTO resultat_qcm (bonnes_reponses, total_questions, pourcentage, Id_candidat, Id_qcm, est_reussi, date_reponse)
+--                 VALUES (v_nb_bonnes_reponses, v_nb_questions_total, v_pourcentage, NEW.Id_candidat, v_qcm_id, 0, NOW());
+--             END IF;
+--         END IF;
+--     END IF;
+
+-- END$$
+
+-- DELIMITER ;
 
 
 -- DELIMITER $$

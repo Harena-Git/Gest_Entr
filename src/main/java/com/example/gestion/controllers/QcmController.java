@@ -2,6 +2,7 @@ package com.example.gestion.controllers;
 
 import com.example.gestion.models.*;
 import com.example.gestion.services.QcmService;
+import com.example.gestion.services.Entretien1Service; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/qcm")
@@ -18,6 +21,9 @@ public class QcmController {
     @Autowired
     private QcmService qcmService;
     
+    @Autowired
+    private Entretien1Service entretien1Service;
+
     // Page d'accueil des QCMs pour test
     @GetMapping("/")
     public String listQcms(Model model) {
@@ -97,10 +103,37 @@ public class QcmController {
             // Évaluer le QCM
             ResultatQcm resultat = qcmService.evaluerQcm(candidatId, qcmId, choixSelectionnes);
             
+            Integer entretienIds = entretien1Service.getEntretienByCandidatId(candidatId, qcmId);
+            Entretien1 entretien = null;
+            
+            if (entretienIds != null) {
+                entretien = entretien1Service.findById(entretienIds).orElse(null);
+            }
+            
+            // Formater les dates pour l'affichage
+            if (entretien != null) {
+                if (entretien.getDateEntretien() != null) {
+                    // Formater la date en français
+                    String dateFormatted = entretien.getDateEntretien().format(
+                        java.time.format.DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", java.util.Locale.FRENCH)
+                    );
+                    model.addAttribute("dateEntretienFormatted", dateFormatted);
+                }
+                
+                if (entretien.getHeureEntretien() != null) {
+                    // Formater l'heure
+                    String heureFormatted = entretien.getHeureEntretien().format(
+                        java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                    );
+                    model.addAttribute("heureEntretienFormatted", heureFormatted);
+                }
+            }
+            
+            model.addAttribute("entretien", entretien);
             model.addAttribute("resultat", resultat);
             model.addAttribute("candidatId", candidatId);
             model.addAttribute("qcmId", qcmId);
-            
+
             return "resultat";
             
         } catch (Exception e) {

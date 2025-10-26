@@ -36,4 +36,8 @@ public class Entretien1Service {
     {
         return entretien1Repository.findAllWithoutEvaluationByUser(user.getId_user());
     }
+
+    public Integer getEntretienByCandidatId(int candidatId, int qcmId) {
+        return entretien1Repository.findEntretienByCandidatId(candidatId, qcmId);
+    }
 }

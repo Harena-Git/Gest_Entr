@@ -4,261 +4,358 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résultats du Test QCM</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        /* Styles additionnels pour la page de résultats */
+        body {
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+            padding: 20px;
         }
         
-        .result-container {
-            max-width: 900px;
+        .result-page {
+            max-width: 700px;
             margin: 0 auto;
-            padding: 30px;
+        }
+        
+        .result-card {
             background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
         }
         
-        .test-mode-banner {
-            background: #ff9800;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .score-header {
+            background: white;
+            padding: 50px 40px;
             text-align: center;
-            font-weight: bold;
-        }
-        
-        .score-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .success-card { 
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 25px 0;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-        }
-        
-        .failure-card { 
-            background: linear-gradient(135deg, #f44336, #e53935);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 25px 0;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.3);
-        }
-        
-        .entretien-info {
-            background: #e8f5e8;
-            border: 3px solid #4CAF50;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-            position: relative;
-        }
-        
-        .entretien-info::before {
-            content: "📅";
-            position: absolute;
-            top: -20px;
-            left: 30px;
-            background: #4CAF50;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .info-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #2196F3;
-        }
-        
-        .btn-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 40px 0;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 15px 25px;
-            background: #2196F3;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-        }
-        
-        .btn-success { 
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-        
-        .btn-danger { 
-            background: linear-gradient(135deg, #f44336, #e53935);
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
-        }
-        
-        .debug-info {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 30px;
-            border: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .score-circle {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: bold;
-            margin: 0 auto 20px;
-            border: 5px solid rgba(255,255,255,0.3);
+            margin: 0 auto 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        
+        .score-header h1 {
+            color: #1e293b;
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        
+        .score-details {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        
+        .result-content {
+            padding: 40px;
+        }
+        
+        .success-banner {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .success-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+        
+        .success-banner h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        
+        .success-banner p {
+            margin: 0;
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .failure-banner {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        .failure-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+        
+        .failure-banner h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+        }
+        
+        .failure-banner p {
+            margin: 5px 0;
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .entretien-section {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .entretien-section h3 {
+            color: #047857;
+            margin: 0 0 25px 0;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-row {
+            background: white;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .info-row:last-of-type {
+            margin-bottom: 20px;
+        }
+        
+        .info-label {
+            color: #047857;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        
+        .info-value {
+            color: #065f46;
+            margin: 0;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+        
+        .info-note {
+            font-size: 0.9em;
+            color: #047857;
+            margin-top: 5px;
+        }
+        
+        .alert-box {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .alert-box p {
+            color: #1e40af;
+            margin: 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .thank-you-message {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .thank-you-message p {
+            color: #475569;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .action-footer {
+            text-align: center;
+            padding-top: 25px;
+            margin-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .result-page {
+                margin: 0;
+            }
+            
+            .result-card {
+                border-radius: 8px;
+            }
+            
+            .score-header {
+                padding: 40px 30px;
+            }
+            
+            .score-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 2.5em;
+            }
+            
+            .score-header h1 {
+                font-size: 1.6em;
+            }
+            
+            .result-content {
+                padding: 30px 20px;
+            }
+            
+            .entretien-section {
+                padding: 20px;
+            }
+            
+            .success-banner,
+            .failure-banner {
+                padding: 25px 20px;
+            }
+            
+            .success-banner h2,
+            .failure-banner h2 {
+                font-size: 1.6em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="result-container">
-        <div class="test-mode-banner">
-            🧪 MODE TEST - Candidat ID: ${candidatId} | QCM ID: ${qcmId}
-        </div>
-        
-        <div class="score-card">
-            <div class="score-circle">
-                <fmt:formatNumber value="${resultat.pourcentage}" pattern="#"/>%
+    <div class="result-page">
+        <div class="result-card">
+            <!-- En-tête avec le score -->
+            <div class="score-header">
+                <div class="score-circle">
+                    <fmt:formatNumber value="${resultat.pourcentage}" pattern="#"/>%
+                </div>
+                <h1>RÉSULTATS DU TEST</h1>
+                <p class="score-details">
+                    ${resultat.bonnesReponses} bonnes réponses sur ${resultat.totalQuestions} questions
+                </p>
             </div>
-            <h1 style="margin: 0; font-size: 2em;">RÉSULTATS DU TEST</h1>
-            <p style="font-size: 1.3em; margin: 10px 0;">
-                ${resultat.bonnesReponses} bonnes réponses sur ${resultat.totalQuestions} questions
-            </p>
-        </div>
 
-        <c:choose>
-            <c:when test="${resultat.estReussi}">
-                <div class="success-card">
-                    <div style="font-size: 4em; margin-bottom: 10px;">🎉</div>
-                    <h2 style="margin: 0; font-size: 2em;">FÉLICITATIONS !</h2>
-                    <p style="font-size: 1.2em; margin: 15px 0;">
-                        Vous avez réussi le test avec <strong>${resultat.pourcentage}%</strong> de bonnes réponses.
-                    </p>
-                </div>
+            <div class="result-content">
+                <c:choose>
+                    <c:when test="${resultat.estReussi}">
+                        <!-- Message de réussite -->
+                        <div class="success-banner">
+                            <div class="success-icon">🎉</div>
+                            <h2>FÉLICITATIONS !</h2>
+                            <p>Vous avez réussi le test avec <strong><fmt:formatNumber value="${resultat.pourcentage}" pattern="#"/>%</strong> de bonnes réponses.</p>
+                        </div>
 
-                <div class="entretien-info">
-                    <h3>ENTRETIEN AUTOMATIQUEMENT PLANIFIÉ</h3>
-                    <p style="font-size: 1.1em; margin-bottom: 20px;">
-                        <strong>Selon notre système de gestion des entretiens :</strong>
-                    </p>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <strong>📅 Date proposée :</strong><br>
-                            5 jours ouvrables après réussite
+                        <!-- Informations sur l'entretien -->
+                        <c:if test="${not empty entretien}">
+                            <div class="entretien-section">
+                                <h3>📅 Votre Entretien est Planifié</h3>
+                                
+                                <div class="info-row">
+                                    <span class="info-label">📆 Date de l'entretien</span>
+                                    <p class="info-value">
+                                        ${dateEntretienFormatted}
+                                    </p>
+                                </div>
+                                
+                                <div class="info-row">
+                                    <span class="info-label">🕐 Heure</span>
+                                    <p class="info-value">
+                                       ${heureEntretienFormatted}
+                                    </p>
+                                    <p class="info-note">
+                                        Veuillez vous présenter 15 minutes avant l'heure prévue
+                                    </p>
+                                </div>
+                                
+                                <div class="info-row">
+                                    <span class="info-label">📍 Lieu</span>
+                                    <p class="info-value">Dans l'enceinte de notre entreprise</p>
+                                </div>
+                                
+                                <div class="alert-box">
+                                    <p>
+                                        <strong>📧 Important :</strong> Un email de confirmation contenant tous les détails 
+                                        (adresse exacte, plan d'accès, documents à apporter) vous a été envoyé. 
+                                        Veuillez vérifier votre boîte de réception.
+                                    </p>
+                                </div>
+                            </div>
+                        </c:if>
+                        
+                        <c:if test="${empty entretien}">
+                            <div class="entretien-section">
+                                <h3>📅 Planification de l'Entretien</h3>
+                                <div class="info-row">
+                                    <p class="info-value">
+                                        Votre entretien est en cours de planification. Vous recevrez un email 
+                                        de confirmation avec la date, l'heure et le lieu de l'entretien dans les plus brefs délais.
+                                    </p>
+                                </div>
+                                <div class="alert-box">
+                                    <p>
+                                        <strong>📧 Note :</strong> Pensez à vérifier régulièrement votre boîte email, 
+                                        y compris vos courriers indésirables.
+                                    </p>
+                                </div>
+                            </div>
+                        </c:if>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- Message d'échec -->
+                        <div class="failure-banner">
+                            <div class="failure-icon">📚</div>
+                            <h2>SCORE INSUFFISANT</h2>
+                            <p>
+                                Votre score : <strong><fmt:formatNumber value="${resultat.pourcentage}" pattern="#"/>%</strong>
+                            </p>
+                            <p>
+                                Le score minimum requis est de 50%
+                            </p>
                         </div>
-                        <div class="info-item">
-                            <strong>⏰ Créneaux :</strong><br>
-                            Lundi-Vendredi<br>
-                            8h-12h / 14h-17h
+                        
+                        <div class="thank-you-message">
+                            <p>
+                                Nous vous remercions pour votre participation et votre intérêt pour notre entreprise. 
+                                N'hésitez pas à postuler à nouveau pour de futures opportunités.
+                            </p>
                         </div>
-                        <div class="info-item">
-                            <strong>👥 Interlocuteur :</strong><br>
-                            Responsable RH attribué automatiquement
-                        </div>
-                        <div class="info-item">
-                            <strong>📍 Lieu :</strong><br>
-                            Nos locaux (adresse envoyée par email)
-                        </div>
-                    </div>
-                    
-                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-top: 20px;">
-                        <strong>📧 Email de confirmation :</strong><br>
-                        Vous recevrez sous peu un email avec :
-                        <ul style="margin: 10px 0;">
-                            <li>Date et heure précises de l'entretien</li>
-                            <li>Nom de votre interlocuteur RH</li>
-                            <li>Adresse exacte et plan d'accès</li>
-                            <li>Documents à apporter</li>
-                        </ul>
-                    </div>
-                    
-                    <p style="margin-top: 20px; font-style: italic; color: #2e7d32;">
-                        <strong>Note :</strong> Le système utilise un algorithme intelligent pour répartir équitablement 
-                        les entretiens entre les responsables RH disponibles.
-                    </p>
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div class="failure-card">
-                    <div style="font-size: 4em; margin-bottom: 10px;">💪</div>
-                    <h2 style="margin: 0; font-size: 2em;">SCORE INSUFFISANT</h2>
-                    <p style="font-size: 1.2em; margin: 15px 0;">
-                        Votre score : <strong>${resultat.pourcentage}%</strong> (minimum requis : 50%)
-                    </p>
-                    <p>Nous vous remercions pour votre participation et votre intérêt.</p>
-                </div>
-            </c:otherwise>
-        </c:choose>
+                    </c:otherwise>
+                </c:choose>
 
-        <div class="btn-container">
-            <a href="/acceuil" class="btn btn-danger">
-                🏠 Page d'accueil
-            </a>
-        </div>
-        
-        <!-- Informations de débogage -->
-        <div class="debug-info">
-            <h4>📊 Informations techniques :</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                <div><strong>Score:</strong> <fmt:formatNumber value="${resultat.pourcentage}" pattern="#.##"/>%</div>
-                <div><strong>Bonnes réponses:</strong> ${resultat.bonnesReponses}</div>
-                <div><strong>Total questions:</strong> ${resultat.totalQuestions}</div>
-                <div><strong>Réussi:</strong> ${resultat.estReussi ? 'OUI' : 'NON'}</div>
-                <div><strong>Date:</strong> ${resultat.dateReponse}</div>
-                <div><strong>Candidat ID:</strong> ${candidatId}</div>
+                <!-- Bouton d'action -->
+                <div class="action-footer">
+                    <a href="${pageContext.request.contextPath}/acceuil" class="btn btn-primary" style="font-size: 1.1em; padding: 14px 32px;">
+                        🏠 Retour à l'Accueil
+                    </a>
+                </div>
             </div>
         </div>
     </div>

@@ -70,9 +70,9 @@ INSERT INTO annonce (date_annonce, responsabilite, date_fin, Id_poste, Id_profil
 ('2025-09-01', 'Développement et maintenance des applications Java', '2025-09-30', 1, 1),
 ('2025-09-03', 'Gestion des serveurs et réseaux internes', '2025-10-03', 2, 2);
 
-INSERT INTO etat_candidat (libelle) VALUES ('En attente');
-INSERT INTO etat_candidat (libelle) VALUES ('Recruté');
-INSERT INTO etat_candidat (libelle) VALUES ('Refusé');
+-- INSERT INTO etat_candidat (libelle) VALUES ('En attente');
+-- INSERT INTO etat_candidat (libelle) VALUES ('Recruté');
+-- INSERT INTO etat_candidat (libelle) VALUES ('Refusé');
 
 INSERT INTO etat_candidat (Id_etat_candidat, libelle) VALUES
 (1, 'Nouvelle candidature'),

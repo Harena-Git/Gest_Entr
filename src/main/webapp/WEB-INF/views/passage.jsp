@@ -3,64 +3,68 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test QCM - ${qcm.titre}</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        /* Styles additionnels spécifiques au test */
+        body {
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+            padding: 20px;
         }
         
-        .container {
+        .test-page {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
         }
         
         .timer-container {
             position: sticky;
-            top: 0;
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            top: 20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #2563eb;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         
         .timer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.2em;
+        }
+        
+        .timer-label {
+            color: #334155;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
         
         .time-display {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             font-family: 'Courier New', monospace;
+            color: #2563eb;
+            line-height: 1;
         }
         
         .time-warning {
-            color: #ffeb3b;
+            color: #ff9800;
             animation: pulse 1s infinite;
         }
         
         .time-critical {
-            color: #f44336;
+            color: #dc2626;
             animation: blink 0.5s infinite;
         }
         
         @keyframes pulse {
-            0% { opacity: 1; }
+            0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
-            100% { opacity: 1; }
         }
         
         @keyframes blink {
@@ -68,34 +72,68 @@
             50% { opacity: 0.3; }
         }
         
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 6px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            height: 100%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+        
         .test-header {
-            background: linear-gradient(135deg, #2196F3, #21CBF3);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
             margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             text-align: center;
         }
         
-        .test-info {
-            background: #f8f9fa;
+        .test-header h1 {
+            color: #1e293b;
+            margin: 0 0 15px 0;
+            font-size: 2em;
+        }
+        
+        .test-header p {
+            color: #64748b;
+            margin: 0 0 20px 0;
+            font-size: 1.1em;
+        }
+        
+        .test-meta {
+            color: #475569;
+            font-size: 0.95em;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 10px;
-            border-left: 5px solid #2196F3;
             margin-bottom: 30px;
         }
         
-        .entretien-info {
-            background: #e8f5e8;
-            border: 2px solid #4CAF50;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 25px 0;
+        .instructions h3 {
+            color: #856404;
+            margin: 0 0 15px 0;
+            font-size: 18px;
         }
         
-        .entretien-info h3 {
-            color: #2e7d32;
-            margin-top: 0;
+        .instructions ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #856404;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
         }
         
         .question-section {
@@ -103,139 +141,173 @@
         }
         
         .section-title {
-            background: #ff9800;
-            color: white;
-            padding: 15px;
+            background: white;
+            color: #1e293b;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            font-size: 1.3em;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-left: 4px solid #2563eb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .question {
             background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
             padding: 25px;
             margin-bottom: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         .question:hover {
-            border-color: #2196F3;
-            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2);
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
         
         .question-number {
-            background: #2196F3;
+            background: #2563eb;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             margin-right: 15px;
-            float: left;
+            flex-shrink: 0;
         }
         
         .question-text {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            overflow: hidden;
+            font-weight: 600;
+            font-size: 1.05em;
+            color: #1e293b;
+            flex: 1;
         }
         
         .choices {
-            margin-left: 55px;
+            padding-left: 51px;
         }
         
         .choice {
-            margin: 12px 0;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            margin: 10px 0;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            background: white;
         }
         
         .choice:hover {
-            border-color: #2196F3;
-            background: #f3f9ff;
+            border-color: #2563eb;
+            background: #f0f7ff;
+        }
+        
+        .choice.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
         }
         
         .choice input[type="radio"] {
             margin-right: 10px;
-            transform: scale(1.2);
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+            cursor: pointer;
         }
         
-        .choice.selected {
-            border-color: #2196F3;
-            background: #e3f2fd;
+        .choice label {
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+            color: #334155;
         }
         
         .submit-section {
             text-align: center;
             margin: 40px 0;
-            padding: 30px;
-            background: #f8f9fa;
-            border-radius: 15px;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
         
-        .submit-btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        .submit-section h3 {
+            color: #1e293b;
+            margin: 0 0 15px 0;
         }
         
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        .submit-section p {
+            color: #64748b;
+            margin: 0 0 25px 0;
         }
         
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 8px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        
-        .progress {
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        .instructions {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+        @media (max-width: 768px) {
+            .test-page {
+                padding: 0;
+            }
+            
+            .timer-container {
+                padding: 15px 20px;
+                border-radius: 8px;
+            }
+            
+            .timer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .time-display {
+                font-size: 2em;
+            }
+            
+            .test-header {
+                padding: 30px 20px;
+            }
+            
+            .test-header h1 {
+                font-size: 1.5em;
+            }
+            
+            .question {
+                padding: 20px 15px;
+            }
+            
+            .choices {
+                padding-left: 0;
+            }
+            
+            .submit-section {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Timer et informations importantes -->
+    <div class="test-page">
+        <!-- Timer et informations -->
         <div class="timer-container">
             <div class="timer">
                 <div>
-                    <strong>⏱️ TEMPS RESTANT</strong>
+                    <div class="timer-label">⏱️ TEMPS RESTANT</div>
                     <div id="time-remaining" class="time-display">${qcm.dureeMinutes}:00</div>
                 </div>
-                <div>
-                    <strong>🧪 TEST EN COURS</strong><br>
-                    <span>Candidat ID: ${candidatId}</span>
+                <div style="text-align: right;">
+                    <div class="timer-label">🧪 TEST EN COURS</div>
+                    <div style="color: #64748b; font-size: 0.9em; margin-top: 5px;">Restez concentré</div>
                 </div>
             </div>
             <div class="progress-bar">
@@ -247,13 +319,13 @@
         <div class="test-header">
             <h1>${qcm.titre}</h1>
             <p>${qcm.description}</p>
-            <div style="margin-top: 15px;">
+            <div class="test-meta">
                 <strong>Durée:</strong> ${qcm.dureeMinutes} minutes | 
                 <strong>Mode:</strong> Test de sélection
             </div>
         </div>
 
-        <!-- Instructions importantes -->
+        <!-- Instructions -->
         <div class="instructions">
             <h3>📋 Instructions importantes</h3>
             <ul>
@@ -262,22 +334,6 @@
                 <li>Toutes les questions sont obligatoires</li>
                 <li>Le score minimum requis est de 50%</li>
             </ul>
-        </div>
-
-        <!-- Informations sur l'entretien (si réussi) -->
-        <div class="entretien-info">
-            <h3>🎯 PROCÉDURE APRÈS RÉUSSITE</h3>
-            <p><strong>Si vous obtenez 50% ou plus :</strong></p>
-            <ul>
-                <li>✅ Un entretien sera automatiquement planifié dans nos locaux</li>
-                <li>📅 Date proposée : <strong>5 jours ouvrables</strong> après votre réussite</li>
-                <li>⏰ Créneaux disponibles : <strong>Lundi au Vendredi, 8h-12h et 14h-17h</strong></li>
-                <li>👥 Entretien avec un responsable des Ressources Humaines</li>
-                <li>🆔 Présentation obligatoire d'une pièce d'identité 15 minutes avant</li>
-            </ul>
-            <p style="margin-top: 15px; font-style: italic;">
-                <strong>Note :</strong> Le système attribue automatiquement les créneaux en fonction des disponibilités
-            </p>
         </div>
 
         <form id="qcm-form" action="/qcm/${qcm.idQcm}/submit" method="post">
@@ -291,8 +347,10 @@
                     </div>
                     <c:forEach var="question" items="${questionsGenerales}">
                         <div class="question">
-                            <div class="question-number">${question.ordre}</div>
-                            <div class="question-text">${question.libelle}</div>
+                            <div class="question-header">
+                                <span class="question-number">${question.ordre}</span>
+                                <div class="question-text">${question.libelle}</div>
+                            </div>
                             <div class="choices">
                                 <c:forEach var="choix" items="${choixParQuestionGenerale[question.idQuestionGenerale]}">
                                     <div class="choice" onclick="selectChoice(this)">
@@ -308,16 +366,17 @@
             </c:if>
 
             <!-- Questions Spécifiques -->
-            <!-- <c:if test="${not empty questions}"> -->
-                <!-- <p>fefewgergerge</p>
+            <c:if test="${not empty questions}">
                 <div class="question-section">
                     <div class="section-title">
                         🎯 QUESTIONS SPÉCIFIQUES (${questions.size()} questions)
                     </div>
                     <c:forEach var="question" items="${questions}">
                         <div class="question">
-                            <div class="question-number">${question.ordre}</div>
-                            <div class="question-text">${question.libelle}</div>
+                            <div class="question-header">
+                                <span class="question-number">${question.ordre}</span>
+                                <div class="question-text">${question.libelle}</div>
+                            </div>
                             <div class="choices">
                                 <c:forEach var="choix" items="${choixParQuestion[question.idQuestion]}">
                                     <div class="choice" onclick="selectChoice(this)">
@@ -329,37 +388,14 @@
                             </div>
                         </div>
                     </c:forEach>
-                </div> -->
-            <!-- </c:if> -->
-             <div class="question-section">
-    <div class="section-title">
-        🎯 QUESTIONS SPÉCIFIQUES (${not empty questions ? questions.size() : 0} questions)
-    </div>
-    <c:if test="${not empty questions}">
-        <c:forEach var="question" items="${questions}">
-            <div class="question">
-                <div class="question-number">${question.ordre}</div>
-                <div class="question-text">${question.libelle}</div>
-                <div class="choices">
-                    <c:forEach var="choix" items="${choixParQuestion[question.idQuestion]}">
-                        <div class="choice" onclick="selectChoice(this)">
-                            <input type="radio" name="reponse_${question.idQuestion}" 
-                                    value="${choix.id_choix}" id="choix_${choix.id_choix}">
-                            <label for="choix_${choix.id_choix}">${choix.libelle}</label>
-                        </div>
-                    </c:forEach>
                 </div>
-            </div>
-        </c:forEach>
-    </c:if>
-</div>
-
+            </c:if>
 
             <!-- Section de soumission -->
             <div class="submit-section">
                 <h3>Vous avez terminé ?</h3>
                 <p>Vérifiez vos réponses avant de soumettre. Vous ne pourrez plus modifier vos réponses après validation.</p>
-                <button type="button" onclick="submitForm()" class="submit-btn">
+                <button type="button" onclick="submitForm()" class="btn btn-primary" style="font-size: 1.1em; padding: 14px 32px;">
                     ✅ VALIDER ET SOUMETTRE LE TEST
                 </button>
             </div>
@@ -367,12 +403,11 @@
     </div>
 
     <script>
-        // Configuration du timer
         let totalTime = ${qcm.dureeMinutes} * 60;
         let remainingTime = totalTime;
         let timerInterval;
-        const warningThreshold = 300; // 5 minutes
-        const criticalThreshold = 60; // 1 minute
+        const warningThreshold = 300;
+        const criticalThreshold = 60;
 
         function startTimer() {
             timerInterval = setInterval(() => {
@@ -397,7 +432,6 @@
             timeDisplay.textContent = 
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Changer les couleurs selon le temps restant
             timeDisplay.className = 'time-display';
             if (remainingTime <= criticalThreshold) {
                 timeDisplay.classList.add('time-critical');
@@ -410,23 +444,20 @@
             const progress = (remainingTime / totalTime) * 100;
             document.getElementById('time-progress').style.width = progress + '%';
             
-            // Changer la couleur de la barre de progression
             const progressBar = document.getElementById('time-progress');
             if (remainingTime <= criticalThreshold) {
-                progressBar.style.background = 'linear-gradient(90deg, #f44336, #e53935)';
+                progressBar.style.background = 'linear-gradient(90deg, #dc2626, #b91c1c)';
             } else if (remainingTime <= warningThreshold) {
                 progressBar.style.background = 'linear-gradient(90deg, #ff9800, #f57c00)';
             }
         }
 
         function selectChoice(choiceElement) {
-            // Désélectionner les autres choix de la même question
             const questionDiv = choiceElement.closest('.question');
             questionDiv.querySelectorAll('.choice').forEach(choice => {
                 choice.classList.remove('selected');
             });
             
-            // Sélectionner le choix actuel
             choiceElement.classList.add('selected');
             const radioInput = choiceElement.querySelector('input[type="radio"]');
             radioInput.checked = true;
@@ -439,10 +470,10 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background: #f44336;
+                background: #dc2626;
                 color: white;
-                padding: 30px;
-                border-radius: 15px;
+                padding: 30px 50px;
+                border-radius: 12px;
                 text-align: center;
                 font-size: 1.5em;
                 font-weight: bold;
@@ -452,13 +483,12 @@
             alertDiv.innerHTML = `
                 <div style="font-size: 3em; margin-bottom: 10px;">⏰</div>
                 <div>Temps écoulé !</div>
-                <div style="font-size: 0.8em; margin-top: 10px;">Le test sera soumis automatiquement...</div>
+                <div style="font-size: 0.7em; margin-top: 10px; opacity: 0.9;">Le test sera soumis automatiquement...</div>
             `;
             document.body.appendChild(alertDiv);
         }
 
         function submitForm() {
-            // Vérifier si toutes les questions ont été répondues
             const totalQuestions = document.querySelectorAll('.question').length;
             const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
             
@@ -475,7 +505,6 @@
             document.getElementById('qcm-form').submit();
         }
 
-        // Empêcher la fermeture accidentelle de la page
         window.addEventListener('beforeunload', function (e) {
             if (remainingTime > 0) {
                 e.preventDefault();
@@ -483,18 +512,10 @@
             }
         });
 
-        // Démarrer le timer au chargement
         window.onload = function() {
             startTimer();
             updateTimerDisplay();
             updateProgressBar();
-            
-            // Ajouter l'interaction de sélection aux choix
-            document.querySelectorAll('.choice').forEach(choice => {
-                choice.addEventListener('click', function() {
-                    selectChoice(this);
-                });
-            });
         };
     </script>
 </body>
