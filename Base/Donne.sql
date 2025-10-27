@@ -88,19 +88,6 @@ INSERT INTO role (libelle) VALUES
 ('Manager'),
 ('Collaborateur');
 
--- Insertion des états candidats
-INSERT INTO etat_candidat (libelle) VALUES 
-('Nouvelle candidature'),
-('CV examiné'),
-('QCM envoyé'),
-('QCM complété'),
-('Entretien 1 planifié'),
-('Entretien 1 réalisé'),
-('Entretien 2 planifié'),
-('Entretien 2 réalisé'),
-('Contrat d''essai'),
-('Embauché'),
-('Refusé');
 
 -- Insertion des filières
 INSERT INTO filiere (libelle) VALUES 
@@ -270,7 +257,7 @@ INSERT INTO diplome_candidat (etablissement, annee_obtention, Id_diplome, Id_can
 
 -- Insertion profils
 INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES 
-('Mixte', 30, '3-5 ans', 1, 1),
+(NULL, 30, '3-5 ans', 1, 1),
 ('Féminin', 28, '2-4 ans', 2, 4),
 ('Masculin', 35, '5-7 ans', 3, 3);
 
@@ -291,7 +278,8 @@ INSERT INTO etat_candidat (Id_etat_candidat, libelle) VALUES
 (4, 'Entretien réalisé'),
 (5, 'En attente décision'),
 (6, 'Embauche confirmée'),
-(7, 'Candidature rejetée');
+(7, 'Candidature rejetée'),
+(8, 'CV accepte');
 
 
 

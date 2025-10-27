@@ -1,6 +1,8 @@
 package com.example.gestion.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -8,16 +10,31 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.*;
 import com.example.gestion.services.CandidatService;
+import com.example.gestion.services.ExcelExportService;
+import com.example.gestion.services.ExcelImportService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Map;
-
+import java.util.UUID;
 import java.util.Date;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException; 
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 
 
@@ -58,7 +75,14 @@ public class CandidatController {
 
     @Autowired
     private CandidatService candidatService;
+    
+    @Autowired
+    private ExcelExportService excelExportService;
+
+    @Autowired
+    private ExcelImportService excelImportService;
    
+
 
     
     @GetMapping("/form")
@@ -92,21 +116,38 @@ public class CandidatController {
             session.setAttribute("idAnnonce", idAnnonce);
         
         if (!file.isEmpty()) {
-                String uploadDir = "E:/FENITRA/S5/Gestion Entreprise (Mr Tovo)/o";
-                File uploadDirFile = new File(uploadDir);
-                if (!uploadDirFile.exists()) {
-                    uploadDirFile.mkdirs();
-                }
-                String filePath = uploadDir + file.getOriginalFilename();
-                try{
-                    file.transferTo(new File(filePath));
-                }
-               catch (IOException e) {
-                    e.printStackTrace();
-                    // gérer l'erreur comme tu veux, par ex. renvoyer un message à la JSP
-                }
-                
-                candidat.setPhoto(file.getOriginalFilename());
+            // 1️⃣ Définir le dossier d'upload
+            String uploadDir = "E:/FENITRA/S5/Gestion Entreprise (Mr Tovo)/o";
+            File uploadDirFile = new File(uploadDir);
+            if (!uploadDirFile.exists()) {
+                uploadDirFile.mkdirs(); // créer le dossier si inexistant
+            }
+
+            // 2️⃣ Récupérer l'extension du fichier
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 3️⃣ Générer un nom unique pour éviter les collisions
+            String uniqueFilename = UUID.randomUUID().toString() + extension;
+
+            // 4️⃣ Créer le fichier de destination correctement
+            File destinationFile = new File(uploadDirFile, uniqueFilename);
+
+            // 5️⃣ Transférer le fichier
+            try {
+                file.transferTo(destinationFile);
+                System.out.println("Fichier uploadé avec succès : " + destinationFile.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                // gérer l'erreur, par ex. renvoyer un message à la JSP
+                model.addAttribute("erreurUpload", "Erreur lors de l'upload du fichier.");
+            }
+
+            // 6️⃣ Sauvegarder le nom du fichier dans l'entité
+            candidat.setPhoto(uniqueFilename);
         }
 
         try {
@@ -326,20 +367,71 @@ public class CandidatController {
             return "candidat-success";
         }
         }
-
-
-
-
-   
-
         
+        /**
+     * Import des candidats depuis un fichier Excel .xlsx
+     * @param file fichier Excel envoyé depuis le formulaire
+     * @return message de succès ou erreur
+     */
+    @PostMapping("/export-excel")
+    public ResponseEntity<InputStreamResource> exportCandidatsExcel(@RequestParam("candidatIds") List<Integer> candidatIds, HttpServletResponse response) throws IOException {
+        // 🔹 Récupérer tous les candidats correspondant aux IDs reçus
+        List<Candidat> candidats = candidatRepository.findAllById(candidatIds);
+        ByteArrayInputStream in = excelExportService.candidatsToExcel(candidats);
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=candidats.xlsx");
 
-        @GetMapping("/list")
-        public String listCandidats(Model model) {
-            model.addAttribute("candidats", candidatRepository.findAll());
-            return "candidat-list";
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
+    }
+
+   @PostMapping("/import")
+    public String importCandidats(@RequestParam("file") MultipartFile file, Model model) {
+        if (file.isEmpty()) {
+            model.addAttribute("error", "Le fichier est vide !");
+            return "importResult"; // view qui affichera l’erreur
         }
+
+        try {
+            // Sauvegarde temporaire du fichier uploadé
+            String tempFilePath = System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename();
+            file.transferTo(new java.io.File(tempFilePath));
+
+            // Appel du service d’import
+            excelImportService.importCandidatsAvecDiplomes(tempFilePath);
+
+            // Récupération des candidats récents depuis le repository
+            List<Candidat> candidats = candidatRepository.findAllOrderByDateCandidatureDesc();
+
+            // Envoi de la liste vers la vue
+            model.addAttribute("candidats", candidats);
+            return "listeCandidats"; // le nom du fichier HTML/Thymeleaf à afficher
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Erreur lors de l'import : " + e.getMessage());
+            return "importResult";
+        }
+    }
+
+    @GetMapping("/importer_f")
+    public String importerFichier() {
+       
+
+        return "import_fichier";
+    }
+    @GetMapping("/list")
+    public String listCandidats(Model model) {
+        // Récupération des candidats récents depuis le repository
+        List<Candidat> candidats = candidatRepository.findAllOrderByDateCandidatureDesc();
+
+        // Envoi de la liste vers la vue
+        model.addAttribute("candidats", candidats);
+        return "listeCandidats";
+    }
+        
     }
 
     

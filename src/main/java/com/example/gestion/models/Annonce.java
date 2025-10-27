@@ -3,6 +3,8 @@ package com.example.gestion.models;
 import jakarta.persistence.*;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "annonce")
 public class Annonce {
@@ -16,7 +18,9 @@ public class Annonce {
     @Column(columnDefinition = "TEXT")
     private String responsabilite;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date_fin;
+
 
     @ManyToOne
     @JoinColumn(name = "id_poste", nullable = false)
