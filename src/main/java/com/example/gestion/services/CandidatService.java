@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import com.example.gestion.models.*;
 import com.example.gestion.repository.CandidatRepository;
 import com.example.gestion.repository.DiplomeCandidatRepository;
-import com.example.gestion.models.DiplomeCandidat;
-import com.example.gestion.models.Diplome;
+
 import java.util.Optional;
 
 @Service
@@ -31,9 +30,12 @@ public class CandidatService {
 
     public String verifierEtEnregistrer(Candidat candidat, Profil profilAnnonce) {
         // Vérification genre
-        if (profilAnnonce.getGenre() != null && !profilAnnonce.getGenre().equalsIgnoreCase(candidat.getGenre())) {
-            return "Le genre du candidat ne correspond pas au profil recherché.";
-        }
+        if (!"les deux".equalsIgnoreCase(profilAnnonce.getGenre()) 
+                        && !profilAnnonce.getGenre().equalsIgnoreCase(candidat.getGenre())) {
+                    System.out.println("Genre du profil annonce: " + profilAnnonce.getGenre());
+                    System.out.println("Genre du candidat: " + candidat.getGenre());
+                    return "Le genre du candidat ne correspond pas au profil recherché.";
+            }
 
         // Convertir Date en LocalDate
         // Vérification date de naissance et calcul de l'âge

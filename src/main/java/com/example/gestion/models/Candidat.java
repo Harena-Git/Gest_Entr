@@ -50,8 +50,9 @@ public class Candidat {
     @OneToMany(mappedBy = "candidat")
     private List<HistoriqueEtat> historiqueEtats;
 
-    @OneToMany(mappedBy = "candidat")
+    @OneToMany(mappedBy = "candidat", fetch = FetchType.EAGER)
     private List<DiplomeCandidat> diplomesCandidats = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "candidat")
     private List<ContratEssai> contratsEssai;
@@ -123,5 +124,7 @@ public class Candidat {
 
     public Date getDate_naissance() { return date_naissance; }
     public void setDate_naissance(Date date_naissance) { this.date_naissance = date_naissance; }
+
+    
 
 }
