@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar - Même style que le dashboard */
+        /* Sidebar */
         .sidebar {
             width: 260px;
             background: #495057;
@@ -128,7 +128,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
         }
 
@@ -285,6 +285,36 @@
         .quick-filter-btn.active {
             background: #007bff;
             color: white;
+        }
+
+        /* Indicateurs de filtre */
+        .department-filter-info {
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffc107;
+            font-size: 0.95em;
+        }
+        
+        .rh-badge {
+            background: #17a2b8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .rh-full-access {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #17a2b8;
+            font-size: 0.95em;
         }
 
         /* Table Styles */
@@ -485,11 +515,30 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="content-header">
-                <h2>👥 Liste des Personnels</h2>
+                <h2>👥 Liste des Personnels
+                    <c:if test="${isRH}">
+                        <span class="rh-badge">RH</span>
+                    </c:if>
+                </h2>
                 <div class="header-actions">
-                    <a href="/Embauche" class="btn-primary">➕ Nouveau Personnel</a>
+                    <c:if test="${isRH}">
+                        <a href="/Embauche" class="btn-primary">➕ Nouveau Personnel</a>
+                    </c:if>
                 </div>
             </div>
+
+            <!-- Indicateurs de permissions -->
+            <c:if test="${not empty connectedUser && not empty userDepartement && !isRH}">
+                <div class="department-filter-info">
+                    🔒 <strong>Vue restreinte</strong> : Vous visualisez uniquement les personnels de votre département
+                </div>
+            </c:if>
+            
+            <c:if test="${isRH}">
+                <div class="rh-full-access">
+                    👁️ <strong>Vue complète</strong> : En tant que RH, vous visualisez tous les personnels de l'entreprise
+                </div>
+            </c:if>
 
             <c:if test="${not empty error}">
                 <div class="error-message">
@@ -577,7 +626,14 @@
                                     Aucun résultat trouvé
                                 </c:when>
                                 <c:otherwise>
-                                    Aucun personnel trouvé
+                                    <c:choose>
+                                        <c:when test="${isRH}">
+                                            Aucun personnel trouvé
+                                        </c:when>
+                                        <c:otherwise>
+                                            Aucun personnel dans votre département
+                                        </c:otherwise>
+                                    </c:choose>
                                 </c:otherwise>
                             </c:choose>
                         </h3>
@@ -586,8 +642,11 @@
                                 <c:when test="${not empty param.search || not empty param.statut || not empty param.poste}">
                                     Aucun personnel ne correspond à vos critères de recherche.
                                 </c:when>
-                                <c:otherwise>
+                                <c:when test="${isRH}">
                                     Il n'y a actuellement aucun personnel enregistré dans le système.
+                                </c:when>
+                                <c:otherwise>
+                                    Il n'y a actuellement aucun personnel dans votre département.
                                 </c:otherwise>
                             </c:choose>
                         </p>
@@ -596,9 +655,11 @@
                                 📋 Afficher tout le personnel
                             </a>
                         </c:if>
-                        <a href="/Embauche" class="btn-primary" style="margin-top: 20px; display: inline-block; margin-left: 10px;">
-                            👔 Embaucher du personnel
-                        </a>
+                        <c:if test="${isRH}">
+                            <a href="/Embauche" class="btn-primary" style="margin-top: 20px; display: inline-block; margin-left: 10px;">
+                                👔 Embaucher du personnel
+                            </a>
+                        </c:if>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -712,7 +773,6 @@
 
         // Mise en évidence des filtres actifs
         document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
             const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
             
             quickFilterBtns.forEach(btn => {

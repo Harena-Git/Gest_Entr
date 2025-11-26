@@ -287,6 +287,13 @@
                         Liste des personnels 
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/contrat/list" class="nav-link ">
+                        <span class="nav-icon">📋</span>
+                        Gestion contrats
+                    </a>
+                </li>
+
             </ul>
 
             <div class="logout-section">

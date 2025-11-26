@@ -10,8 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.gestion.models.Personnel;
+import com.example.gestion.models.User;
+import com.example.gestion.models.Departement;
+import com.example.gestion.models.Role;
 import com.example.gestion.repository.PersonnelRepository;
+import com.example.gestion.repository.UserRepository;
+
 import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/personnel")
@@ -20,18 +26,54 @@ public class PersonnelController {
     @Autowired
     private PersonnelRepository personnelRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/list")
     public String getAllPersonnel(
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "statut", required = false) String statut,
             @RequestParam(value = "poste", required = false) String poste,
             @RequestParam(value = "tri", required = false, defaultValue = "date_desc") String tri,
-            Model model) {
+            Model model,
+            HttpSession session) {
         
         try {
+            // Récupérer l'utilisateur connecté depuis la session
+            Integer userId = (Integer) session.getAttribute("userId");
+            User connectedUser = null;
+            Departement userDepartement = null;
+            boolean isRH = false;
+
+            if (userId != null) {
+                connectedUser = userRepository.findById(userId).orElse(null);
+                if (connectedUser != null) {
+                    userDepartement = connectedUser.getDepartement();
+                    // Vérifier si l'utilisateur est RH en utilisant l'ID du rôle
+                    Role userRole = connectedUser.getRole();
+                    if (userRole != null) {
+                        // Méthode 1: Vérifier par ID du rôle (supposons que RH a l'ID 1)
+                        // Méthode 2: Utiliser toString() pour vérifier le nom
+                        String roleString = userRole.toString().toLowerCase();
+                        isRH = roleString.contains("rh") || 
+                               (getRoleId(userRole) != null && getRoleId(userRole) == 1);
+                    }
+                }
+            }
+
             List<Personnel> personnels = personnelRepository.findAll();
             
-            // Appliquer les filtres
+            // Filtrer par département si l'utilisateur n'est pas RH
+            if (!isRH && userDepartement != null) {
+                final Integer deptId = getDepartementId(userDepartement);
+                personnels = personnels.stream()
+                    .filter(p -> p.getPoste() != null && 
+                                p.getPoste().getDepartement() != null &&
+                                deptId.equals(getDepartementId(p.getPoste().getDepartement())))
+                    .collect(Collectors.toList());
+            }
+            
+            // Appliquer les filtres de recherche
             if (search != null && !search.trim().isEmpty()) {
                 String searchLower = search.toLowerCase().trim();
                 personnels = personnels.stream()
@@ -40,7 +82,9 @@ public class PersonnelController {
                          (p.getCandidat().getNom().toLowerCase().contains(searchLower) ||
                           p.getCandidat().getPrenom().toLowerCase().contains(searchLower))) ||
                         (p.getPoste() != null && 
-                         p.getPoste().getLibelle().toLowerCase().contains(searchLower))
+                         p.getPoste().getLibelle().toLowerCase().contains(searchLower)) ||
+                        (p.getPoste() != null && p.getPoste().getDepartement() != null &&
+                         getDepartementName(p.getPoste().getDepartement()).toLowerCase().contains(searchLower))
                     )
                     .collect(Collectors.toList());
             }
@@ -61,12 +105,129 @@ public class PersonnelController {
             // Appliquer le tri
             personnels = trierPersonnels(personnels, tri);
             
+            // Ajouter les informations de l'utilisateur connecté au modèle
             model.addAttribute("personnels", personnels);
+            model.addAttribute("connectedUser", connectedUser);
+            model.addAttribute("userDepartement", userDepartement);
+            model.addAttribute("isRH", isRH);
+            model.addAttribute("userDeptName", getDepartementName(userDepartement));
+            
             return "personnelList";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Erreur lors de la récupération des personnels");
             return "personnelList";
+        }
+    }
+
+    // Méthodes utilitaires pour éviter d'appeler des méthodes qui n'existent pas
+    private Integer getRoleId(Role role) {
+        try {
+            // Essayer différentes méthodes possibles pour obtenir l'ID
+            if (role == null) return null;
+            
+            // Méthode 1: Reflection pour trouver la méthode getId
+            java.lang.reflect.Method[] methods = role.getClass().getMethods();
+            for (java.lang.reflect.Method method : methods) {
+                if (method.getName().equals("getId_role") && 
+                    method.getParameterCount() == 0 &&
+                    Integer.class.isAssignableFrom(method.getReturnType())) {
+                    return (Integer) method.invoke(role);
+                }
+                if (method.getName().equals("getId") && 
+                    method.getParameterCount() == 0 &&
+                    Integer.class.isAssignableFrom(method.getReturnType())) {
+                    return (Integer) method.invoke(role);
+                }
+            }
+            
+            // Méthode 2: Utiliser toString() pour extraire l'ID
+            String roleString = role.toString();
+            if (roleString.contains("id=")) {
+                try {
+                    String idStr = roleString.split("id=")[1].split("[,\\]}]")[0];
+                    return Integer.parseInt(idStr.trim());
+                } catch (Exception e) {
+                    // Ignorer
+                }
+            }
+            
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Integer getDepartementId(Departement dept) {
+        try {
+            if (dept == null) return null;
+            
+            // Essayer différentes méthodes possibles pour obtenir l'ID
+            java.lang.reflect.Method[] methods = dept.getClass().getMethods();
+            for (java.lang.reflect.Method method : methods) {
+                if ((method.getName().equals("getId_departement") || 
+                     method.getName().equals("getId")) && 
+                    method.getParameterCount() == 0 &&
+                    Integer.class.isAssignableFrom(method.getReturnType())) {
+                    return (Integer) method.invoke(dept);
+                }
+            }
+            
+            // Fallback: utiliser toString()
+            String deptString = dept.toString();
+            if (deptString.contains("id=")) {
+                try {
+                    String idStr = deptString.split("id=")[1].split("[,\\]}]")[0];
+                    return Integer.parseInt(idStr.trim());
+                } catch (Exception e) {
+                    // Ignorer
+                }
+            }
+            
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getDepartementName(Departement dept) {
+        try {
+            if (dept == null) return "Non spécifié";
+            
+            // Essayer différentes méthodes possibles pour obtenir le nom
+            java.lang.reflect.Method[] methods = dept.getClass().getMethods();
+            for (java.lang.reflect.Method method : methods) {
+                if ((method.getName().equals("getNom_departement") || 
+                     method.getName().equals("getNom") ||
+                     method.getName().equals("getLibelle") ||
+                     method.getName().equals("getName")) && 
+                    method.getParameterCount() == 0 &&
+                    String.class.isAssignableFrom(method.getReturnType())) {
+                    String name = (String) method.invoke(dept);
+                    return name != null ? name : "Non spécifié";
+                }
+            }
+            
+            // Fallback: utiliser toString()
+            String deptString = dept.toString();
+            if (deptString.contains("nom=")) {
+                try {
+                    return deptString.split("nom=")[1].split("[,\\]}]")[0];
+                } catch (Exception e) {
+                    // Ignorer
+                }
+            }
+            if (deptString.contains("libelle=")) {
+                try {
+                    return deptString.split("libelle=")[1].split("[,\\]}]")[0];
+                } catch (Exception e) {
+                    // Ignorer
+                }
+            }
+            
+            return "Département " + getDepartementId(dept);
+        } catch (Exception e) {
+            return "Non spécifié";
         }
     }
 
@@ -112,14 +273,51 @@ public class PersonnelController {
     }
 
     @GetMapping("/details")
-    public String getPersonnel(@RequestParam("idPersonnel") Integer idPersonnel, Model model) {
+    public String getPersonnel(@RequestParam("idPersonnel") Integer idPersonnel, Model model, HttpSession session) {
         try {
+            // Vérifier les permissions
+            Integer userId = (Integer) session.getAttribute("userId");
+            User connectedUser = null;
+            boolean isRH = false;
+
+            if (userId != null) {
+                connectedUser = userRepository.findById(userId).orElse(null);
+                if (connectedUser != null) {
+                    Role userRole = connectedUser.getRole();
+                    if (userRole != null) {
+                        String roleString = userRole.toString().toLowerCase();
+                        isRH = roleString.contains("rh") || 
+                               (getRoleId(userRole) != null && getRoleId(userRole) == 1);
+                    }
+                }
+            }
+
             Personnel personnel = personnelRepository.findById(idPersonnel).orElse(null);
+            
             if (personnel != null) {
-                model.addAttribute("personnel", personnel);
+                // Vérifier si l'utilisateur a le droit de voir ce personnel
+                boolean hasAccess = isRH;
+                if (!hasAccess && connectedUser != null && connectedUser.getDepartement() != null) {
+                    Integer userDeptId = getDepartementId(connectedUser.getDepartement());
+                    Integer personnelDeptId = personnel.getPoste() != null && 
+                                            personnel.getPoste().getDepartement() != null ?
+                                            getDepartementId(personnel.getPoste().getDepartement()) : null;
+                    
+                    hasAccess = userDeptId != null && userDeptId.equals(personnelDeptId);
+                }
+                
+                if (hasAccess) {
+                    model.addAttribute("personnel", personnel);
+                } else {
+                    model.addAttribute("error", "Accès non autorisé à ce personnel");
+                    return "redirect:/personnel/list";
+                }
             } else {
                 model.addAttribute("error", "Personnel non trouvé avec l'ID : " + idPersonnel);
             }
+            
+            model.addAttribute("connectedUser", connectedUser);
+            model.addAttribute("isRH", isRH);
             return "personnelDetails";
         } catch (Exception e) {
             e.printStackTrace();
