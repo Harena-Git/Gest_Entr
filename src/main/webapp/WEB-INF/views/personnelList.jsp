@@ -161,6 +161,132 @@
             transform: translateY(-2px);
         }
 
+        /* Filtres et Recherche */
+        .filters-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .btn-search {
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #6c757d;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-reset:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 0.9em;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-filter-btn {
+            background: #e9ecef;
+            color: #495057;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .quick-filter-btn:hover {
+            background: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .quick-filter-btn.active {
+            background: #007bff;
+            color: white;
+        }
+
         /* Table Styles */
         .table-container {
             background: white;
@@ -257,6 +383,16 @@
             border-left: 4px solid #dc3545;
         }
 
+        .results-info {
+            background: #e7f3ff;
+            color: #004085;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+            font-size: 0.95em;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -273,6 +409,14 @@
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
             }
 
             .personnel-table {
@@ -353,12 +497,106 @@
                 </div>
             </c:if>
 
+            <!-- Section Recherche et Filtres -->
+            <div class="filters-section">
+                <form id="searchForm" method="GET" action="/personnel/list">
+                    <div class="search-box">
+                        <input type="text" 
+                               name="search" 
+                               class="search-input" 
+                               placeholder="🔍 Rechercher par nom, prénom, poste..."
+                               value="${param.search}">
+                        <button type="submit" class="btn-search">Rechercher</button>
+                        <a href="/personnel/list" class="btn-reset">Tout afficher</a>
+                    </div>
+
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Statut</label>
+                            <select name="statut" class="filter-select">
+                                <option value="">Tous les statuts</option>
+                                <option value="actif" ${param.statut == 'actif' ? 'selected' : ''}>Actif</option>
+                                <option value="inactif" ${param.statut == 'inactif' ? 'selected' : ''}>Inactif</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Poste</label>
+                            <select name="poste" class="filter-select">
+                                <option value="">Tous les postes</option>
+                                <option value="Developpeur" ${param.poste == 'Developpeur' ? 'selected' : ''}>Développeur</option>
+                                <option value="Designer" ${param.poste == 'Designer' ? 'selected' : ''}>Designer</option>
+                                <option value="Manager" ${param.poste == 'Manager' ? 'selected' : ''}>Manager</option>
+                                <option value="Commercial" ${param.poste == 'Commercial' ? 'selected' : ''}>Commercial</option>
+                                <option value="RH" ${param.poste == 'RH' ? 'selected' : ''}>RH</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Tri par</label>
+                            <select name="tri" class="filter-select">
+                                <option value="date_desc" ${param.tri == 'date_desc' ? 'selected' : ''}>Date embauche (récent)</option>
+                                <option value="date_asc" ${param.tri == 'date_asc' ? 'selected' : ''}>Date embauche (ancien)</option>
+                                <option value="nom_asc" ${param.tri == 'nom_asc' ? 'selected' : ''}>Nom (A-Z)</option>
+                                <option value="nom_desc" ${param.tri == 'nom_desc' ? 'selected' : ''}>Nom (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="quick-filters">
+                        <button type="button" class="quick-filter-btn ${empty param.statut && empty param.search && empty param.poste ? 'active' : ''}" 
+                                onclick="resetFilters()">Tout</button>
+                        <button type="button" class="quick-filter-btn ${param.statut == 'actif' ? 'active' : ''}" 
+                                onclick="setFilter('statut', 'actif')">👥 Actifs</button>
+                        <button type="button" class="quick-filter-btn ${param.statut == 'inactif' ? 'active' : ''}" 
+                                onclick="setFilter('statut', 'inactif')">⏸️ Inactifs</button>
+                        <button type="button" class="quick-filter-btn ${param.poste == 'Developpeur' ? 'active' : ''}" 
+                                onclick="setFilter('poste', 'Developpeur')">💻 Développeurs</button>
+                        <button type="button" class="quick-filter-btn ${param.poste == 'Manager' ? 'active' : ''}" 
+                                onclick="setFilter('poste', 'Manager')">👔 Managers</button>
+                    </div>
+                </form>
+            </div>
+
+            <c:if test="${not empty param.search || not empty param.statut || not empty param.poste}">
+                <div class="results-info">
+                    🔍 Résultats filtrés 
+                    <c:if test="${not empty param.search}">pour "<strong>${param.search}</strong>"</c:if>
+                    <c:if test="${not empty param.statut}"> | Statut: <strong>${param.statut}</strong></c:if>
+                    <c:if test="${not empty param.poste}"> | Poste: <strong>${param.poste}</strong></c:if>
+                    <c:if test="${not empty personnels}"> | <strong>${personnels.size()}</strong> résultat(s)</c:if>
+                </div>
+            </c:if>
+
             <c:choose>
                 <c:when test="${empty personnels}">
                     <div class="empty-state">
-                        <h3>Aucun personnel trouvé</h3>
-                        <p>Il n'y a actuellement aucun personnel enregistré dans le système.</p>
-                        <a href="/Embauche" class="btn-primary" style="margin-top: 20px; display: inline-block;">
+                        <h3>
+                            <c:choose>
+                                <c:when test="${not empty param.search || not empty param.statut || not empty param.poste}">
+                                    Aucun résultat trouvé
+                                </c:when>
+                                <c:otherwise>
+                                    Aucun personnel trouvé
+                                </c:otherwise>
+                            </c:choose>
+                        </h3>
+                        <p>
+                            <c:choose>
+                                <c:when test="${not empty param.search || not empty param.statut || not empty param.poste}">
+                                    Aucun personnel ne correspond à vos critères de recherche.
+                                </c:when>
+                                <c:otherwise>
+                                    Il n'y a actuellement aucun personnel enregistré dans le système.
+                                </c:otherwise>
+                            </c:choose>
+                        </p>
+                        <c:if test="${not empty param.search || not empty param.statut || not empty param.poste}">
+                            <a href="/personnel/list" class="btn-primary" style="margin-top: 20px; display: inline-block;">
+                                📋 Afficher tout le personnel
+                            </a>
+                        </c:if>
+                        <a href="/Embauche" class="btn-primary" style="margin-top: 20px; display: inline-block; margin-left: 10px;">
                             👔 Embaucher du personnel
                         </a>
                     </div>
@@ -435,5 +673,55 @@
             </c:choose>
         </div>
     </div>
+
+    <script>
+        // Fonctions pour les filtres rapides
+        function setFilter(type, value) {
+            const form = document.getElementById('searchForm');
+            const searchInput = form.querySelector('input[name="search"]');
+            const statutSelect = form.querySelector('select[name="statut"]');
+            const posteSelect = form.querySelector('select[name="poste"]');
+            
+            // Réinitialiser les autres filtres sauf celui qu'on veut appliquer
+            if (type === 'statut') {
+                statutSelect.value = value;
+                posteSelect.value = '';
+                searchInput.value = '';
+            } else if (type === 'poste') {
+                posteSelect.value = value;
+                statutSelect.value = '';
+                searchInput.value = '';
+            }
+            
+            form.submit();
+        }
+
+        function resetFilters() {
+            window.location.href = '/personnel/list';
+        }
+
+        // Soumission automatique des selects
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterSelects = document.querySelectorAll('.filter-select');
+            filterSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    document.getElementById('searchForm').submit();
+                });
+            });
+        });
+
+        // Mise en évidence des filtres actifs
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
+            
+            quickFilterBtns.forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    btn.style.transform = 'translateY(-2px)';
+                    btn.style.boxShadow = '0 4px 8px rgba(0, 123, 255, 0.3)';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
