@@ -281,6 +281,12 @@
                         Liste des Candidats 
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/personnel/list" class="nav-link ">
+                        <span class="nav-icon">📋</span>
+                        Liste des personnels 
+                    </a>
+                </li>
             </ul>
 
             <div class="logout-section">
