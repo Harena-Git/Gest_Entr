@@ -288,6 +288,46 @@ SELECT COUNT(*) AS nb_questions_specifiques
 FROM question 
 WHERE Id_qcm = 1;  -- remplace par le v_qcm_id trouvé à l'étape 1
 
+CREATE TABLE demande_conge (
+   Id_demande INT AUTO_INCREMENT PRIMARY KEY,
+   Id_personnel INT NOT NULL,
+   Id_type_conge INT NOT NULL,
+   Id_statut_conge INT NOT NULL DEFAULT 1, -- 1 = EN_ATTENTE
+   
+   date_demande DATETIME DEFAULT CURRENT_TIMESTAMP,
+   date_debut DATE NOT NULL,
+   date_fin DATE NOT NULL,
+   nb_jours INT AS (DATEDIFF(date_fin, date_debut) + 1) STORED,
+   
+   motif TEXT NOT NULL,
+   date_decision DATETIME NULL,
+   decide_par INT NULL,
+   
+   -- Contraintes de clé étrangère
+   FOREIGN KEY (Id_personnel) REFERENCES personnel(Id_personnel),
+   FOREIGN KEY (Id_type_conge) REFERENCES type_conge(Id_type_conge),
+   FOREIGN KEY (Id_statut_conge) REFERENCES statut_conge(Id_statut_conge),
+   FOREIGN KEY (decide_par) REFERENCES user_(Id_user),
+   
+   -- Contrainte pour vérifier les dates
+   CONSTRAINT chk_dates CHECK (date_fin >= date_debut)
+);
+
+-- Table type_conge
+CREATE TABLE IF NOT EXISTS type_conge (
+   Id_type_conge INT AUTO_INCREMENT,
+   libelle VARCHAR(100) NOT NULL,
+   description TEXT,
+   PRIMARY KEY(Id_type_conge)
+);
+
+CREATE TABLE IF NOT EXISTS statut_conge (
+   Id_statut_conge INT AUTO_INCREMENT,
+   libelle VARCHAR(50) NOT NULL,
+   couleur VARCHAR(20) DEFAULT '#6c757d',
+   PRIMARY KEY(Id_statut_conge),
+   UNIQUE(libelle)
+);
 
 -- Ajout de la table pour le solde de congés
 CREATE TABLE solde_conge (
