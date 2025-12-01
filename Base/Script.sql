@@ -287,3 +287,49 @@ LIMIT 1;
 SELECT COUNT(*) AS nb_questions_specifiques
 FROM question 
 WHERE Id_qcm = 1;  -- remplace par le v_qcm_id trouvé à l'étape 1
+
+
+-- Ajout de la table pour le solde de congés
+CREATE TABLE solde_conge (
+   Id_solde INT AUTO_INCREMENT,
+   Id_personnel INT NOT NULL,
+   annee INT NOT NULL,
+   jours_acquis DECIMAL(5,2) DEFAULT 30.00,
+   jours_restants DECIMAL(5,2) DEFAULT 30.00,
+   jours_pris DECIMAL(5,2) DEFAULT 0.00,
+   PRIMARY KEY(Id_solde),
+   UNIQUE KEY unique_solde_annee (Id_personnel, annee),
+   FOREIGN KEY (Id_personnel) REFERENCES personnel(Id_personnel)
+);
+
+-- Table pour les remplacements
+CREATE TABLE remplacement_conge (
+   Id_remplacement INT AUTO_INCREMENT,
+   Id_demande INT NOT NULL,
+   Id_remplacant INT NOT NULL, -- Id du personnel remplaçant
+   statut_remplacement VARCHAR(20) DEFAULT 'PROPOSE',
+   date_proposition DATETIME DEFAULT CURRENT_TIMESTAMP,
+   date_acceptation DATETIME NULL,
+   PRIMARY KEY(Id_remplacement),
+   FOREIGN KEY (Id_demande) REFERENCES demande_conge(Id_demande),
+   FOREIGN KEY (Id_remplacant) REFERENCES personnel(Id_personnel)
+);
+
+-- Ajout d'un champ pour le solde restant dans demande_conge
+ALTER TABLE demande_conge 
+ADD COLUMN nb_jours_demande DECIMAL(5,2) NULL;
+
+-- Correction: le champ nb_jours existe déjà comme colonne générée, donc on l'utilise
+
+-- Création de la table pour les historiques de validation
+CREATE TABLE historique_validation (
+   Id_historique INT AUTO_INCREMENT,
+   Id_demande INT NOT NULL,
+   Id_validateur INT NOT NULL,
+   action VARCHAR(50) NOT NULL,
+   commentaire TEXT,
+   date_action DATETIME DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY(Id_historique),
+   FOREIGN KEY (Id_demande) REFERENCES demande_conge(Id_demande),
+   FOREIGN KEY (Id_validateur) REFERENCES user_(Id_user)
+);
