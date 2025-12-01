@@ -1,0 +1,926 @@
+I. Processus de recrutement
+	Acteurs : 
+		- Utilisateur (candidat)
+		- RH (recruteur)
+		- Admin
+
+	Liste de fonctionnalités par acteur : 
+		- Utilisateur (Candidat) : 
+			- Compte & Profil :
+				- S'inscrire
+				- Se connecter
+				- Modifier ses informations personnelles
+			
+			- Consultation & Postulation : 
+				- Voir la liste des postes disponibles
+				- Filtrer / rechercher une offre
+				- Voir les détails d’une offre
+				- Postuler à un poste
+				- Voir la liste de ses candidatures
+				- Voir les statuts et avancements (ex : en attente, test, entretien, accepté, refusé)
+			
+			- Tests & Entretiens : 
+				- Faire un test QCM
+				- Voir le résultat d’un test
+				- Voir le résultat de l'entretien (accepté/refusé/pool talent)
+			
+			- Décision finale : 
+				- Voir le résultat final d’une postulation
+				- Recevoir un contrat d’essai (texte)
+				- Accepter ou refuser le contrat d’essai (PDF, si accepté)
+
+		- RH (Recruteur) : 
+			- Gestion des offres : 
+				- CRUD d'annonce de poste
+			
+			- Gestion des tests : 
+				- CRUD de test
+			
+			- Gestion des candidatures : 
+				- Voir la liste des candidatures par poste
+				- Filtrer par statut (ex : en attente, en test, en entretien, refusée, acceptée)
+				- Sélectionner une candidature pour un entretien
+				- Attribuer une note d’entretien
+				- Sélectionner un candidat final pour le poste
+				- Envoyer un contrat d’essai au candidat
+			
+			- Statistiques : 
+				- Voir le nombre de candidatures par poste
+				- Voir les taux de réussite (test, entretien)
+				- Voir un résumé des statuts (ex : 10 en attente, 5 tests, 2 entretiens…)
+
+		- Admin : 
+			- Contrôle du processus : 
+				- Valider la candidature finale sélectionnée par le RH
+			- Supervision: 
+				- Voir toutes les annonces
+				- Voir toutes les candidatures (vue globale)
+
+	URI :
+		- Utilisateur (candidat) — API /users
+			- POST /users/auth/register
+			- POST /users/auth/login
+			- PATCH /users/candidats/me
+			- GET /users/candidats/me
+
+			- GET /users/offres
+			- GET /users/offres?titre=&localisation=&type=
+			- GET /users/offres/{id_poste_offre}
+			- POST /users/offres/{id_poste_offre}/postulations
+			- GET /users/candidats/me/postulations
+			- GET /users/candidats/me/postulations/{id_postulation}
+			- GET /users/candidats/me/postulations/{id_postulation}/statut
+
+			- GET /users/tests/{id_test}/questions
+			- POST /users/tests/{id_test}/submissions
+			- GET /users/candidats/me/tests/{id_test}/resultat
+			- GET /users/candidats/me/entretiens/{id_entretien}
+
+			- GET /users/candidats/me/postulations/{id_postulation}/entretiens
+			- GET /users/candidats/me/entretiens/{id_entretien}
+			- GET /users/candidats/me/postulations/{id_postulation}/statut
+			- GET /users/candidats/me/contrats/{id_contrat}
+			- POST /users/candidats/me/contrats/{id_contrat}/decision
+
+		- RH (recruteur) — API /rh
+			- GET /rh/offres
+			- POST /rh/offres
+			- PATCH /rh/offres/{id_offre}
+			- DELETE /rh/offres/{id_offre}
+
+			- POST /rh/tests
+			- PATCH /rh/tests/{id_test}
+			- DELETE /rh/tests/{id_test}
+			- POST /rh/tests/{id_test}/questions
+			- POST /rh/questions/{id_question}/reponses
+
+			- GET /rh/postulations
+			- GET /rh/postulations/{id_postulation}
+			- GET /rh/postulations?statut=?offre_id=
+			- POST /rh/postulations/{id_postulation}/notes
+			- POST /rh/postulations/{id_postulation}/recrutement
+			- POST /rh/recrutements/{id_recrutement}/contrats
+			- GET /rh/postulations/{id_postulation}/decision
+
+			- GET /rh/stats/offres
+			- GET /rh/stats/candidats
+			- GET /rh/stats/tests
+			- GET /rh/stats/entretiens
+
+		- Admin — API /admin
+			- PATCH /admin/recrutements/{id_recrutement}/validation
+			- GET /admin/offres
+			- GET /admin/postulations
+
+II. Gestion RH
+	Acteurs : 
+		- Employé
+		- Manager
+		- RH
+		- Admin
+
+	Liste de fonctionnalités par acteur : 
+		- Employé : 
+			- Se connecter / Se déconnecter
+
+			- Dossier personnel :
+				- Voir sa fiche employé (identité, poste, service, contrat)
+				- Mettre à jour certaines infos personnelles (adresse, contact)
+			
+			- Congés & absences : 
+				- Voir son solde de congés (tous types : payé, maladie, exceptionnel)
+				- Faire une demande de congé
+				- Faire une demande d’absence (maladie, permission…)
+				- Voir l’état de ses demandes (en attente / validé / refusé)
+				- Voir l’historique de ses congés et absences
+			
+			- Temps & présence :
+				- Pointer entrée / sortie
+				- Pointer pause
+				- Voir son récapitulatif de présence (mensuel ou journalier)
+				- Voir ses retards et heures supplémentaires
+			
+			- Paie : 
+				- Voir ses fiches de paie mensuelles
+				- Télécharger une fiche de paie en PDF
+				- Voir ses primes / heures sup / retenues
+			
+			- Communication : 
+				- Messagerie RH (envoyer message + lire réponses)
+				- Chatbot RH pour questions courantes (congés, paie, documents)
+		
+		- Manager : 
+			- Supervision d’équipe :
+				-  Voir la liste des employés de son service
+				- Voir présence / absences / retards de l’équipe
+				- Voir le calendrier des congés de son équipe
+				- Voir les performances individuelles et collectives
+				- Voir l’historique des postes ou mobilités au sein de l’équipe
+
+			- Validation : 
+				- Valider ou refuser les demandes de congés
+				- Valider les demandes d’absence
+				- Valider les feuilles de temps (présence)
+
+			- Tableau de bord Manager : 
+				- Statistiques d’équipe :
+					- taux d’absentéisme
+					- performance moyenne
+					- ancienneté
+					- distribution des postes
+					- congés prévus
+
+				- Alertes :
+					- employés en retard fréquent
+					- absence répétée
+					- fin de contrat proche
+
+		- RH : 
+			- Gestion du personnel : 
+				- Voir tous les employés
+				- Créer / modifier / clôturer un contrat
+				- Ajouter documents RH (CIN, diplômes, attestations)
+				- Voir historique des postes et promotions
+				- Suivre période d’essai, renouvellement, fin de contrat
+
+			- Absences & congés : 
+				- Voir toutes les demandes de congés / absences
+				- Filtrer par service, statut, date
+				- Valider / refuser les demandes
+				- Voir le calendrier global des absences/congés
+				- Voir les anomalies :
+					- congés non validés
+					- absences répétées
+
+			- Temps & présences : 
+				- Voir tous les pointages journaliers
+				- Voir les retards et présences anormales
+				- Voir le total des heures supplémentaires
+				- Générer un relevé de présence mensuel
+			
+			- Paie : 
+				- Générer les fiches de paie
+				- Paramétrer les composants de paie (primes, heures sup, absences)
+				- Export comptable / PDF
+				- Vérifier régularisation : IRSA, CNAPS, OSTIE
+			
+			- Performance & évaluation : 
+				- Faire la fiche d’évaluation d’un employé
+				- Voir performances par service
+				- Voir historique de performance
+			
+			- Tableaux de bord & statistiques : 
+				- Nombre d’employés par service, genre, âge, poste
+				- Taux turnover
+				- Taux absentéisme
+				- Ancienneté moyenne
+				- Suivi fin de contrat (alertes 30 jours)
+				- Suivi performance globale et par équipe
+			
+			- Fonctionnalités intelligentes : 
+				- Prédiction du turnover
+				- Détection d’anomalie sur heures / paie
+				- Recommandation matching Postes ↔ Candidats (intégration module recrutement)
+			
+			- Communication : 
+				- Messagerie avec employés
+
+		- Admin : 
+			- Paramétrages : 
+				- Taux CNAPS / OSTIE / IRSA
+				- Grille salariale
+				- Paramètres de primes / pénalités
+				- Paramétrage des rôles et permissions
+
+			- Supervision globale : 
+				- Statistiques globales RH
+				- Vue consolidée de tous les employés
+				- Vue consolidée des demandes / validations
+				- Vue consolidée de la paie mensuelle
+			
+			- Audit & conformité : 
+				- Voir toutes les traces et journaux (audit logs)
+				- Voir historique des validations
+
+	URI : 
+		- Employés - API /employees
+			- Dossier personnel : 
+				- GET /employes/me
+				- PUT /employes/me
+			
+			- Congés & absences :
+				- GET /employes/me/conges/solde
+				- POST /employes/me/conges/demandes
+				- GET /employes/me/conges/demandes
+				- GET /employes/me/conges/demandes/{id}
+				- POST /employes/me/absences/demandes
+				- GET /employes/me/absences/demandes
+				- GET /employes/me/absences/demandes/{id}
+			
+			- Temps & présence : 
+				- POST /employes/me/pointages
+				- POST /employes/me/pointages/pause
+				- GET /employes/me/pointages
+				- /employes/me/pointages/anomalies
+			
+			- Paie : 
+				- GET /employes/me/paie/bulletins
+				- GET /employes/me/paie/bulletins/{id}
+				- GET /employes/me/paie/bulletins/{id}/pdf
+				- /employes/me/paie/components
+			
+			- Communication : 
+				- POST /employes/me/messages
+				- GET /employes/me/messages
+				- POST /api/chatbot
+		
+		- Manager - API /managers
+			- Supervision équipe : 
+				- GET /managers/me/equipe
+				- GET /managers/me/equipe/pointages
+				- GET /managers/me/equipe/anomalies
+				- GET /managers/me/equipe/conges/calendrier
+				- GET /managers/me/equipe/performances
+				- GET /managers/me/equipe/historique-postes
+			
+			- Validation : 
+				- PUT /managers/me/conges/demandes/{id}/statut
+				- PUT /managers/me/absences/demandes/{id}/statut
+				- PUT /managers/me/pointages/{id}/validation
+
+			- Tableau de bord Manager :
+				- GET /managers/me/dashboard/stats
+				- GET /managers/me/dashboard/alertes
+		
+		- RH - API /rh
+			- Gestion du personnel : 
+				- GET /rh/employes
+				- GET /rh/employes/{id}
+				- POST /rh/employes/{id}/contrats
+				- PUT /rh/contrats/{id}
+				- PUT /rh/contrats/{id}/cloture
+				- POST /rh/contrats/{id}/documents
+				- GET /rh/contrats/{id}/documents
+				- GET /rh/employes/{id}/historique-postes
+
+			- Absences & congés :
+				- GET /rh/conges/demandes
+				- GET /rh/conges/demandes?statut=...&service=...&date=...
+				- PUT /rh/conges/demandes/{id}/statut
+				- GET /rh/conges/calendrier
+				- GET /rh/conges/anomalies
+
+			- Temps & présence : 
+				- GET /rh/pointages
+				- GET /rh/pointages/anomalies
+				- GET /rh/pointages/heures-sup
+				- GET /rh/pointages/releve?mois=...&annee=...
+
+			- Paie : 
+				- POST /rh/paie/bulletins
+				- GET /rh/paie/bulletins
+				- GET /rh/paie/bulletins/{id}
+				- GET /rh/paie/bulletins/{id}/pdf
+				- PUT /rh/paie/parametres
+
+			- Performance : 
+				- POST /rh/employes/{id}/evaluations
+				- GET /rh/evaluations
+				- GET /rh/evaluations/services
+
+			- Tableaux de bord : 
+				- GET /rh/stats/effectifs
+				- GET /rh/stats/turnover
+				- GET /rh/stats/absenteisme
+				- GET /rh/stats/anciennete
+				- GET /rh/stats/contrats-expiration
+				- GET /rh/dashboard
+
+			- Fonctionnalités intelligentes : 
+				- GET /rh/ia/prediction-turnover
+				- GET /rh/ia/anomalies
+				- GET /rh/ia/matching
+
+			- Communication : 
+				- GET/POST /rh/messages
+		
+		- Admin - API /admin
+			- Paramétrages : 
+				- PUT /admin/paie/taux
+				- PUT /admin/grilles-salariales
+				- PUT /admin/paie/primes
+				- PUT /admin/roles
+
+			- Supervision globale :
+				- GET /admin/stats/globales
+				- GET /admin/employes
+				- GET /admin/demandes
+				- GET /admin/paie
+
+			- Audit & conformité : 
+				- GET /admin/audit/logs
+				- GET /admin/audit/validations
+
+III. Résultat finale
+	Acteurs : 
+		- Utilisateur (Candidat externe)
+		- Employé (Interne à l’entreprise)
+		- Manager
+		- RH
+		- Admin
+
+	Liste de fonctionnalités par acteur :
+		- Utilisateur (Candidat externe) : 
+			- Compte & Profil :
+				- S'inscrire
+				- Se connecter
+				- Modifier ses informations personnelles
+			
+			- Consultation & Postulation : 
+				- Voir la liste des postes disponibles
+				- Filtrer / rechercher une offre
+				- Voir les détails d’une offre
+				- Postuler à un poste
+				- Voir la liste de ses candidatures
+				- Voir les statuts et avancements (ex : en attente, test, entretien, accepté, refusé)
+			
+			- Tests & Entretiens : 
+				- Faire un test QCM
+				- Voir le résultat d’un test
+				- Voir le résultat de l'entretien (accepté/refusé/pool talent)
+			
+			- Décision finale : 
+				- Voir le résultat final d’une postulation
+				- Recevoir un contrat d’essai (texte)
+				- Accepter ou refuser le contrat d’essai (PDF, si accepté)			
+
+		- Employé (Interne à l’entreprise) : 
+			- Se connecter / Se déconnecter
+
+			- Dossier personnel :
+				- Voir sa fiche employé (identité, poste, service, contrat)
+				- Mettre à jour certaines infos personnelles (adresse, contact)
+			
+			- Congés & absences : 
+				- Voir son solde de congés (tous types : payé, maladie, exceptionnel)
+				- Faire une demande de congé
+				- Faire une demande d’absence (maladie, permission…)
+				- Voir l’état de ses demandes (en attente / validé / refusé)
+				- Voir l’historique de ses congés et absences
+			
+			- Temps & présence :
+				- Pointer entrée / sortie
+				- Pointer pause
+				- Voir son récapitulatif de présence (mensuel ou journalier)
+				- Voir ses retards et heures supplémentaires
+			
+			- Paie : 
+				- Voir ses fiches de paie mensuelles
+				- Télécharger une fiche de paie en PDF
+				- Voir ses primes / heures sup / retenues
+			
+			- Communication : 
+				- Messagerie RH (envoyer message + lire réponses)
+				- Chatbot RH pour questions courantes (congés, paie, documents)
+ 
+		- Manager : 
+			- Supervision d’équipe :
+				- Voir la liste des employés de son service
+				- Voir présence / absences / retards de l’équipe
+				- Voir le calendrier des congés de son équipe
+				- Voir les performances individuelles et collectives
+				- Voir l’historique des postes ou mobilités au sein de l’équipe
+
+			- Validation : 
+				- Valider ou refuser les demandes de congés
+				- Valider les demandes d’absence
+				- Valider les feuilles de temps (présence)
+
+			- Tableau de bord Manager : 
+				- Statistiques d’équipe :
+					- taux d’absentéisme
+					- performance moyenne
+					- ancienneté
+					- distribution des postes
+					- congés prévus
+
+				- Alertes :
+					- employés en retard fréquent
+					- absence répétée
+					- fin de contrat proche
+ 
+		- RH : 
+			- Gestion des offres : 
+				- CRUD d'annonce de poste
+			
+			- Gestion des tests : 
+				- CRUD de test
+			
+			- Gestion des candidatures : 
+				- Voir la liste des candidatures par poste
+				- Filtrer par statut (ex : en attente, en test, en entretien, refusée, acceptée)
+				- Sélectionner une candidature pour un entretien
+				- Attribuer une note d’entretien
+				- Sélectionner un candidat final pour le poste
+				- Envoyer un contrat d’essai au candidat
+			
+			- Statistiques : 
+				- Voir le nombre de candidatures par poste
+				- Voir les taux de réussite (test, entretien)
+				- Voir un résumé des statuts (ex : 10 en attente, 5 tests, 2 entretiens…)
+
+			- Gestion du personnel : 
+				- Voir tous les employés
+				- Créer / modifier / clôturer un contrat
+				- Ajouter documents RH (CIN, diplômes, attestations)
+				- Voir historique des postes et promotions
+				- Suivre période d’essai, renouvellement, fin de contrat
+
+			- Absences & congés : 
+				- Voir toutes les demandes de congés / absences
+				- Filtrer par service, statut, date
+				- Valider / refuser les demandes
+				- Voir le calendrier global des absences/congés
+				- Voir les anomalies :
+					- congés non validés
+					- absences répétées
+
+			- Temps & présences : 
+				- Voir tous les pointages journaliers
+				- Voir les retards et présences anormales
+				- Voir le total des heures supplémentaires
+				- Générer un relevé de présence mensuel
+			
+			- Paie : 
+				- Générer les fiches de paie
+				- Paramétrer les composants de paie (primes, heures sup, absences)
+				- Export comptable / PDF
+				- Vérifier régularisation : IRSA, CNAPS, OSTIE
+			
+			- Performance & évaluation : 
+				- Faire la fiche d’évaluation d’un employé
+				- Voir performances par service
+				- Voir historique de performance
+			
+			- Tableaux de bord & statistiques : 
+				- Nombre d’employés par service, genre, âge, poste
+				- Taux turnover
+				- Taux absentéisme
+				- Ancienneté moyenne
+				- Suivi fin de contrat (alertes 30 jours)
+				- Suivi performance globale et par équipe
+			
+			- Fonctionnalités intelligentes : 
+				- Prédiction du turnover
+				- Détection d’anomalie sur heures / paie
+				- Recommandation matching Postes ↔ Candidats (intégration module recrutement)
+			
+			- Communication : 
+				- Messagerie avec employés
+
+		- Admin : 
+			- Contrôle du processus : 
+				- Valider la candidature finale sélectionnée par le RH
+			
+			- Supervision: 
+				- Voir toutes les annonces
+				- Voir toutes les candidatures (vue globale)
+			
+			- Paramétrages : 
+				- Taux CNAPS / OSTIE / IRSA
+				- Grille salariale
+				- Paramètres de primes / pénalités
+				- Paramétrage des rôles et permissions
+
+			- Supervision globale : 
+				- Statistiques globales RH
+				- Vue consolidée de tous les employés
+				- Vue consolidée des demandes / validations
+				- Vue consolidée de la paie mensuelle
+
+	URI : 
+		- Utilisateur (Candidat) — API /users
+			- Compte & Profil :
+				POST /users/auth/register
+				POST /users/auth/login
+				PATCH /users/me
+
+			- Consultation & Postulation : 
+				GET /users/offres
+				GET /users/offres?search=&type=&service=...
+				GET /users/offres/{id}
+				POST /users/offres/{id}/postulations
+				GET /users/me/postulations
+				GET /users/me/postulations/{id}
+				GET /users/me/postulations/{id}/statut
+
+			- Tests & Entretiens :
+				GET /users/tests/{id}/questions
+				POST /users/tests/{id}/submissions
+				GET /users/me/tests/{id}/resultat
+				GET /users/me/postulations/{id}/entretiens
+				GET /users/me/entretiens/{id}/resultat
+
+			- Décision finale : 
+				GET /users/me/postulations/{id}/decision
+				GET /users/me/contrats/{id}
+				POST /users/me/contrats/{id}/decision
+
+		- Employé — API /employes
+			- Connexion :
+				POST /employes/auth/login
+				POST /employes/auth/logout
+
+			- Dossier personnel :
+				GET /employes/me
+				PATCH /employes/me
+
+			- Congés & Absences :
+				GET /employes/me/conges/solde
+				POST /employes/me/conges
+				POST /employes/me/absences
+				GET /employes/me/demandes
+				GET /employes/me/demandes/{id}
+
+			- Temps & Présence :
+				POST /employes/me/pointages
+				POST /employes/me/pointages/pause
+				GET /employes/me/pointages
+				GET /employes/me/pointages/recap
+				GET /employes/me/pointages/anomalies
+
+			-  Paie :
+				GET /employes/me/paie/bulletins
+				GET /employes/me/paie/bulletins/{id}
+				GET /employes/me/paie/bulletins/{id}/pdf
+				GET /employes/me/paie/details
+
+			- Communication : 
+				POST /employes/me/messages
+				GET /employes/me/messages
+				POST /chatbot
+		
+		- Manager - API /managers
+			- Supervision d’équipe : 
+				- GET /managers/me/equipe
+				- GET /managers/me/equipe/pointages
+				- GET /managers/me/equipe/absences
+				- GET /managers/me/equipe/conges/calendrier
+				- GET /managers/me/equipe/performances
+				- GET /managers/me/equipe/historique-postes
+
+			- Validation : 
+				- PUT /managers/me/conges/{id}/statut
+				- PUT /managers/me/absences/{id}/statut
+				- PUT /managers/me/pointages/{id}/validation
+
+			- Tableau de bord Manager : 
+				- GET /managers/me/dashboard/stats
+				- GET /managers/me/dashboard/alertes
+		
+		- RH - API /rh
+			- Gestion des offres : 
+				- GET /rh/offres
+				- POST /rh/offres
+				- PATCH /rh/offres/{id}
+				- DELETE /rh/offres/{id}
+
+			- Gestion des tests : 
+				- POST /rh/tests
+				- PATCH /rh/tests/{id}
+				- DELETE /rh/tests/{id}
+				- POST /rh/tests/{id}/questions
+				- POST /rh/questions/{id}/reponses
+
+			- Gestion des candidatures : 
+				- GET /rh/candidatures
+				- GET /rh/candidatures?statut=&offre_id=
+				- GET /rh/candidatures/{id}
+				- POST /rh/candidatures/{id}/entretiens
+				- POST /rh/candidatures/{id}/notes
+				- POST /rh/candidatures/{id}/selection
+				- POST /rh/candidatures/{id}/contrat-essai
+				- GET /rh/candidatures/{id}/decision
+
+			- Statistiques Recrutement : 
+				- GET /rh/stats/candidatures
+				- GET /rh/stats/tests
+				- GET /rh/stats/offres
+				- GET /rh/stats/entretiens
+
+			- Gestion du personnel : 
+				- GET /rh/employes
+				- GET /rh/employes/{id}
+				- POST /rh/employes/{id}/contrats
+				- PUT /rh/contrats/{id}
+				- PUT /rh/contrats/{id}/cloture
+				- POST /rh/contrats/{id}/documents
+				- GET /rh/contrats/{id}/documents
+				- GET /rh/employes/{id}/historique-postes
+
+			- Absences & congés : 
+				- GET /rh/demandes
+				- GET /rh/demandes?type=&statut=&service=&date
+				- PUT /rh/demandes/{id}/statut
+				- GET /rh/conges/calendrier
+				- GET /rh/conges/anomalies
+
+			- Temps & présences
+				- GET /rh/pointages
+				- GET /rh/pointages/anomalies
+				- GET /rh/pointages/heures-sup
+				- GET /rh/pointages/releves?mois=&annee=
+
+			- Paie :
+				- POST /rh/paie/bulletins
+				- GET /rh/paie/bulletins
+				- GET /rh/paie/bulletins/{id}
+				- GET /rh/paie/bulletins/{id}/pdf
+				- PUT /rh/paie/parametres
+
+			- Performance & évaluation : 
+				- POST /rh/employes/{id}/evaluations
+				- GET /rh/evaluations
+				- GET /rh/evaluations/services
+
+			- Tableaux de bord RH : 
+				- GET /rh/stats/effectifs
+				- GET /rh/stats/turnover
+				- GET /rh/stats/absenteisme
+				- GET /rh/stats/anciennete
+				- GET /rh/stats/fin-contrats
+				- GET /rh/dashboard
+
+			- Fonctionnalités intelligentes : 
+				- GET /rh/ia/prediction-turnover
+				- GET /rh/ia/anomalies
+				- GET /rh/ia/matching
+
+			- Communication :
+				- GET /rh/messages
+				- POST /rh/messages
+		
+		- Admin - API /admin
+			- Contrôle du processus : 
+				- PUT /admin/candidatures/{id}/validation-finale
+			
+			- Supervision : 
+				- GET /admin/offres
+				- GET /admin/candidatures
+				- GET /admin/employes
+				- GET /admin/demandes
+				- GET /admin/paie
+
+			- Paramétrages : 
+				- PUT /admin/taux
+				- PUT /admin/grilles-salariales
+				- PUT /admin/paie/primes
+				- PUT /admin/roles
+
+			- Supervision globale : 
+				- GET /admin/stats/globales
+				- GET /admin/stats/paie
+				- GET /admin/stats/rh
+
+			- Audit & conformité : 
+				- GET /admin/audit/logs
+				- GET /admin/audit/validations
+
+	Controllers :
+		- Utilisateur :
+			UserAuthController
+			UserProfileController
+			UserOffresController
+			UserPostulationController
+			UserTestsController
+			UserEntretiensController
+			UserDecisionController
+			UserContratsController
+
+		- Employé :
+			EmployeAuthController
+			EmployeProfileController
+			EmployeCongesAbsencesController
+			EmployePointageController
+			EmployePaieController
+			EmployeCommunicationController
+			ChatbotController
+
+		- Manager :
+			ManagerEquipeController
+			ManagerValidationController
+			ManagerDashboardController
+
+		- RH :
+			RhOffresController
+			RhTestsController
+			RhCandidaturesController
+			RhRecrutementStatsController
+			RhEmployesController
+			RhDemandesController
+			RhPointageController
+			RhPaieController
+			RhEvaluationsController
+			RhStatsController
+			RhIAController
+			RhMessagesController
+
+		- Admin :
+			AdminCandidaturesController
+			AdminSupervisionController
+			AdminParametresController
+			AdminStatsController
+			AdminAuditController
+
+	Pages à créer :
+		- Utilisateur :
+			- Compte & Profil :
+				register.html → Formulaire inscription
+				login.html → Formulaire connexion
+				profile.html → Profil utilisateur avec possibilité de modifier ses infos
+
+			- Consultation & Postulation :
+				offres.html → Liste des offres
+				offre-details.html → Détails d’une offre
+				mes-postulations.html → Liste des postulations du candidat
+				postulation-details.html → Détails d’une postulation
+
+			- Tests & Entretiens :
+				test-questions.html → Questions d’un test
+				test-result.html → Résultat d’un test
+				entretien-result.html → Résultat d’un entretien
+
+			- Décision finale :
+				contrat-details.html → Détails d’un contrat + Prise de décision sur contrat
+		
+		- Employé :
+			- Dossier personnel :
+				profile-employe.html → Profil employé
+
+			- Congés & Absences :
+				conges-solde.html → Solde de congés
+				demande-conge.html → Formulaire demande de congé
+				demande-absence.html → Formulaire demande d’absence
+				mes-demandes.html → Liste des demandes
+
+			- Temps & Présence : 
+				pointages.html → Liste des pointages
+				pointage-recap.html → Récapitulatif
+
+			- Paie :
+				bulletins.html → Liste des bulletins
+				bulletin-details.html → Détails d’un bulletin
+				bulletin-pdf.html → Visualisation PDF d’un bulletin
+				paie-details.html → Détails de la paie
+
+			- Communication : 
+				messages.html → Liste des messages
+				envoyer-message.html → Formulaire envoi message
+				chatbot.html → Interface du chatbot
+
+		- Manager :
+			- Supervision d’équipe :
+				equipe.html → Liste des membres
+				equipe-pointages.html → Pointages de l’équipe
+				equipe-absences.html → Absences de l’équipe
+				equipe-conges-calendrier.html → Calendrier des congés
+				equipe-performances.html → Performance des membres
+				equipe-historique-postes.html → Historique des postes
+
+			- Validation : 
+				conge-validation.html → Validation congés
+				absence-validation.html → Validation absences
+
+			- Tableau de bord : 
+				dashboard-manager.html → Statistiques et alertes
+
+		- RH :
+			- Gestion des offres :
+				offres-rh.html → Liste des offres
+				offre-form.html → Formulaire création/modification offre
+
+			- Gestion des tests :
+				tests-rh.html → Liste des tests
+				test-form.html → Formulaire création/modification test
+
+			- Gestion des candidatures :
+				candidatures.html → Liste candidatures
+				candidature-details.html → Détails candidature
+				entretien-form.html → Planification entretien
+				note-form.html → Ajouter note
+				selection-form.html → Sélection candidat
+				contrat-essai-form.html → Création contrat essai
+				decision.html → Décision finale candidature
+
+			- Gestion du personnel :
+				employes.html → Liste employés
+				employe-details.html → Détails employé
+				contrat-form.html → Création contrat
+				contrat-details.html
+				contrat-documents.html
+				historique-postes.html
+
+			- Absences & congés :
+				demandes.html
+				demande-details.html
+				conges-calendrier.html
+				conges-anomalies.html
+
+			- Temps & présences :
+				pointages.html
+				pointages-anomalies.html
+				heures-sup.html
+				releves.html
+
+			- Paie :
+				bulletins.html
+				bulletin-details.html
+				parametres-paie.html
+
+			- Performance & évaluation :
+				evaluation-form.html
+				evaluations.html
+				evaluations-services.html
+
+			- Tableaux de bord RH :
+				stats-effectifs.html
+				stats-turnover.html
+				stats-absenteisme.html
+				stats-anciennete.html
+				stats-fin-contrats.html
+				dashboard-rh.html
+
+			- Fonctionnalités intelligentes :
+				ia-prediction-turnover.html
+				ia-anomalies.html
+				ia-matching.html
+				
+			- Communication :
+				messages.html
+				envoyer-message.html
+
+		- Admin :
+			- Contrôle du processus :
+				validation-finale.html
+
+			- Supervision :
+				offres-admin.html
+				candidatures-admin.html
+				employes-admin.html
+				demandes-admin.html
+				paie-admin.html
+
+			- Paramétrages :
+				taux.html
+				grilles-salariales.html
+				paie-primes.html
+				roles.html
+
+			- Supervision globale :
+				stats-globales.html
+				stats-paie.html
+				stats-rh.html
+
+			- Audit & conformité :
+				audit-logs.html
+				audit-validations.html
