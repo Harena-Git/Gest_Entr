@@ -119,12 +119,12 @@ INSERT INTO plage_horaire_entretien (heure_debut, heure_fin, duree_entretien_min
 ('14:00:00', '17:00:00', 45, 'Lundi,Mardi,Mercredi,Jeudi,Vendredi');-- 1. Vérifier si un candidat a réussi le QCM
 
 INSERT INTO poste (libelle, salaire, Id_departement) VALUES 
-('Directeur Général', 80000, 1),
+('Directeur General', 80000, 1),
 ('Responsable RH', 50000, 2),
-('Développeur Fullstack', 45000, 3),
+('Developpeur Fullstack', 45000, 3),
 ('Analyste Financier', 42000, 5),
 ('Chef de Projet Marketing', 48000, 4),
-('Ingénieur Production', 46000, 6),
+('Ingenieur Production', 46000, 6),
 ('Commercial', 40000, 7);
 
 INSERT INTO profil (genre, age, annee_experience, Id_lieu, Id_diplome) VALUES 

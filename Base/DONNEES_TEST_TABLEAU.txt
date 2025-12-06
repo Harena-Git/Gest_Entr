@@ -1,0 +1,131 @@
+================================================================================
+  TABLEAU RÉCAPITULATIF - DONNÉES DE TEST PERSONNEL (Authentification)
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ID │ Nom Complet         │ Username      │ Statut    │ Poste                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 1  │ JEAN DUPONT         │ dupont.j      │ ✓ Actif   │ Développeur Fullstack │
+│ 2  │ MARIE MARTIN        │ martin.m      │ ✓ Actif   │ Analyste Financier    │
+│ 3  │ PIERRE BERNARD      │ bernard.p     │ ✓ Actif   │ Chef de Projet (Marketing)
+│ 4  │ SOPHIE THOMAS       │ thomas.s      │ ✓ Actif   │ Responsable RH        │
+│ 5  │ MARC LAURENT        │ laurent.m     │ ✓ Actif   │ Ingénieur Production  │
+│ 6  │ ANNE ROUSSEAU       │ rousseau.a    │ ✓ Actif   │ Commercial            │
+│ 7  │ LUC LECLERC         │ leclerc.l     │ ✗ Inactif │ Directeur Général     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MOT DE PASSE (identique pour tous): motdepasse123
+
+================================================================================
+EXEMPLES DE CONNEXION (Copier-coller dans le formulaire)
+================================================================================
+
+ESSAI 1 - Connexion réussie:
+   Username: dupont.j
+   Password: motdepasse123
+   Résultat: ✓ Redirection vers /mes-demandes
+
+ESSAI 2 - Connexion réussie (autre compte):
+   Username: martin.m
+   Password: motdepasse123
+   Résultat: ✓ Redirection vers /mes-demandes
+
+ESSAI 3 - Connexion échouée (compte inactif):
+   Username: leclerc.l
+   Password: motdepasse123
+   Résultat: ✗ Erreur "Utilisateur non trouvé" (car inactif)
+
+ESSAI 4 - Connexion échouée (mauvais mot de passe):
+   Username: dupont.j
+   Password: mauvais123
+   Résultat: ✗ Erreur "Identifiants invalides"
+
+ESSAI 5 - Connexion échouée (utilisateur inexistant):
+   Username: user.inexistant
+   Password: motdepasse123
+   Résultat: ✗ Erreur "Utilisateur non trouvé"
+
+================================================================================
+FLUX DE TEST COMPLET - DEMANDE DE CONGÉ
+================================================================================
+
+1. AUTHENTIFICATION
+   URL: http://localhost:8081/login
+   Action: Se connecter avec dupont.j / motdepasse123
+   Résultat: Redirection vers http://localhost:8081/mes-demandes
+
+2. CONSULTATION DES DEMANDES
+   URL: http://localhost:8081/mes-demandes
+   Affichage: 
+   - Solde de congé restant
+   - Liste des demandes existantes
+   - Bouton "Nouvelle demande"
+
+3. CRÉATION D'UNE DEMANDE
+   URL: http://localhost:8081/personnel/conge/nouvelle-demande
+   Formulaire:
+   - Date de début: 2025-01-10
+   - Date de fin: 2025-01-15
+   - Motif: Congés payés
+   Action: Soumettre
+   Résultat: Message "Demande de congé créée avec succès!"
+
+4. VÉRIFICATION DE LA DEMANDE
+   URL: http://localhost:8081/mes-demandes
+   Affichage: La nouvelle demande apparaît dans la liste
+
+5. DÉCONNEXION
+   URL: http://localhost:8081/logout
+   Résultat: Redirection vers /login
+
+================================================================================
+REQUÊTES SQL UTILES POUR DEBUG
+================================================================================
+
+-- Voir tous les personnels avec comptes:
+SELECT id_personnel, username, actif, DATE(date_embauche) as date_emb 
+FROM personnel 
+WHERE username IS NOT NULL;
+
+-- Voir un personnel spécifique:
+SELECT * FROM personnel WHERE username = 'dupont.j';
+
+-- Voir les demandes d'un personnel:
+SELECT dc.id_demande_conge, dc.date_debut, dc.date_fin, sd.libelle as statut
+FROM demande_conge dc
+LEFT JOIN statut_demande sd ON dc.id_statut_demande = sd.id_statut_demande
+WHERE dc.id_personnel = 1;
+
+-- Vérifier le solde d'un personnel:
+SELECT id_personnel, solde_annuel, solde_restant
+FROM solde_conge
+WHERE id_personnel = 1;
+
+-- Voir tous les personnels actifs:
+SELECT id_personnel, username, CONCAT(c.nom, ' ', c.prenom) as nom_complet, actif
+FROM personnel p
+LEFT JOIN candidat c ON p.id_candidat = c.id_candidat
+WHERE p.username IS NOT NULL AND p.actif = 1;
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problème: "Utilisateur non trouvé" lors de la connexion
+Solution: Vérifier que:
+  1. Le username existe dans la table personnel
+  2. Le champ 'actif' est à 1 (ou true/yes selon la BD)
+  3. Pas d'espace avant/après le username
+  
+Problème: "Identifiants invalides"
+Solution: Vérifier que:
+  1. Le mot de passe est correct (les hashs sont sensibles à la casse)
+  2. Refaire le hash BCrypt du mot de passe
+  3. Vérifier que le hash est correctement inséré en BD
+
+Problème: Connexion OK mais erreur "Personnel non trouvé" après
+Solution: Vérifier que:
+  1. Le champ 'personnel_id' de la table user_ pointe vers le bon personnel
+  2. OU utiliser directement personnelRepository.findByUsername() (notre système)
+
+================================================================================

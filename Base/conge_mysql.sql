@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS statut_demande (
   libelle VARCHAR(50),
   PRIMARY KEY (Id_statut_demande),
   UNIQUE KEY uk_statut_libelle (libelle)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ;
 
 -- decision_validation
 CREATE TABLE IF NOT EXISTS decision_validation (

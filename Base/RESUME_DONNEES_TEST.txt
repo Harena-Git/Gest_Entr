@@ -1,0 +1,197 @@
+================================================================================
+                      RÉSUMÉ DES DONNÉES DE TEST
+                    SYSTÈME D'AUTHENTIFICATION PERSONNEL
+================================================================================
+
+📁 FICHIERS SQL CRÉÉS:
+   ✅ Base/03_ALTER_PERSONNEL_ADD_AUTH.sql
+      → Ajoute les colonnes username et password à la table personnel
+      
+   ✅ Base/04_INSERT_PERSONNEL_ACCOUNTS.sql  
+      → Exemples de base + vérification des comptes créés
+      
+   ✅ Base/05_DONNEES_TEST_PERSONNEL.sql
+      → 7 comptes de test complets avec tous les détails
+      
+   ✅ Base/VERIFICATION_INSTALLATION.sql
+      → Requêtes pour vérifier l'installation et déboguer
+
+================================================================================
+                      👥 7 COMPTES DE TEST CRÉÉS
+================================================================================
+
+Tous les comptes utilisent le mot de passe par défaut: "motdepasse123"
+
+┌──┬─────────────────────┬──────────────┬──────────┬─────────────────────────┐
+│ID │ Nom                 │ Username     │ Statut   │ Poste                   │
+├──┼─────────────────────┼──────────────┼──────────┼─────────────────────────┤
+│1 │ Jean DUPONT         │ dupont.j     │ ✓ Actif  │ Développeur Fullstack   │
+│2 │ Marie MARTIN        │ martin.m     │ ✓ Actif  │ Analyste Financier      │
+│3 │ Pierre BERNARD      │ bernard.p    │ ✓ Actif  │ Chef de Projet Marketing│
+│4 │ Sophie THOMAS       │ thomas.s     │ ✓ Actif  │ Responsable RH          │
+│5 │ Marc LAURENT        │ laurent.m    │ ✓ Actif  │ Ingénieur Production    │
+│6 │ Anne ROUSSEAU       │ rousseau.a    │ ✓ Actif  │ Commercial              │
+│7 │ Luc LECLERC         │ leclerc.l    │ ✗ Inactif│ Directeur Général       │
+└──┴─────────────────────┴──────────────┴──────────┴─────────────────────────┘
+
+================================================================================
+                      🔑 HASH BCRYPT (TOUS LES COMPTES)
+================================================================================
+
+Mot de passe: motdepasse123
+
+Hash: $2a$10$H0d1T5reLbWoQR1FTM8zL.xwmtXjq3xQ8Q5f3q7K0j9w5G1f5Jdha
+      ├─ Préfixe: $2a$ (version BCrypt)
+      ├─ Coût: $10$ (force de calcul)
+      └─ Reste: H0d1T5reLbWoQR1FTM8zL... (hash + salt combinés)
+
+✅ Tous les 7 comptes utilisent ce même hash pour les tests
+
+================================================================================
+                      📝 EXEMPLES DE CONNEXION (À COPIER)
+================================================================================
+
+CONNEXION 1 - Réussie:
+   URL: http://localhost:8081/login
+   Username: dupont.j
+   Password: motdepasse123
+   Redirection: /mes-demandes (succès)
+
+CONNEXION 2 - Réussie (autre):
+   Username: martin.m
+   Password: motdepasse123
+   Redirection: /mes-demandes (succès)
+
+CONNEXION 3 - Échouée (inactif):
+   Username: leclerc.l
+   Password: motdepasse123
+   Erreur: "Utilisateur non trouvé" (car actif=0)
+
+CONNEXION 4 - Échouée (mauvais password):
+   Username: dupont.j
+   Password: autreMDP123
+   Erreur: "Identifiants invalides"
+
+CONNEXION 5 - Échouée (utilisateur inexistant):
+   Username: inexistant.x
+   Password: motdepasse123
+   Erreur: "Utilisateur non trouvé"
+
+================================================================================
+                      ✅ PROCÉDURE D'INSTALLATION
+================================================================================
+
+ÉTAPE 1: Exécuter les scripts SQL (dans cet ordre):
+
+   # 1. Modifier la structure de personnel
+   mysql -u root -p gestion_entreprise < Base/03_ALTER_PERSONNEL_ADD_AUTH.sql
+   
+   # 2. Insérer les données de base
+   mysql -u root -p gestion_entreprise < Base/04_INSERT_PERSONNEL_ACCOUNTS.sql
+   
+   # 3. Ajouter les 7 comptes de test complets
+   mysql -u root -p gestion_entreprise < Base/05_DONNEES_TEST_PERSONNEL.sql
+
+ÉTAPE 2: Vérifier l'installation:
+
+   # Afficher tous les comptes créés
+   mysql -u root -p gestion_entreprise < Base/VERIFICATION_INSTALLATION.sql
+
+ÉTAPE 3: Démarrer l'application:
+
+   # Compiler et démarrer
+   ./mvnw clean install
+   ./mvnw spring-boot:run
+
+ÉTAPE 4: Tester:
+
+   # Ouvrir le navigateur
+   http://localhost:8081/login
+   
+   # Se connecter avec: dupont.j / motdepasse123
+
+================================================================================
+                      🧪 FLUX COMPLET DE TEST
+================================================================================
+
+1. ACCÈS À L'APPLICATION
+   └─ http://localhost:8081
+   
+2. REDIRECTION VERS LOGIN
+   └─ http://localhost:8081/login (automatique)
+   
+3. CONNEXION
+   ├─ Username: dupont.j
+   ├─ Password: motdepasse123
+   └─ Soumettre
+
+4. SUCCÈS - Redirection vers les demandes
+   └─ http://localhost:8081/mes-demandes
+   └─ Affichage: Solde (25 jours) + liste des demandes
+
+5. CRÉATION D'UNE DEMANDE
+   ├─ Cliquer "Nouvelle demande"
+   ├─ Formulaire affiche le personnel connecté automatiquement
+   ├─ Date début: 2025-01-10
+   ├─ Date fin: 2025-01-15
+   ├─ Motif: Congés payés
+   └─ Soumettre
+
+6. CONFIRMATION
+   ├─ Message: "Demande de congé créée avec succès!"
+   └─ La demande apparaît dans /mes-demandes
+
+7. DÉCONNEXION
+   ├─ http://localhost:8081/logout
+   └─ Redirection vers /login
+
+================================================================================
+                      🔍 VÉRIFICATION DE L'INSTALLATION
+================================================================================
+
+Requête SQL pour vérifier:
+   mysql> USE gestion_entreprise;
+   
+   mysql> SELECT username, actif, 
+          DATE_FORMAT(date_embauche, '%d/%m/%Y') as date_emb
+          FROM personnel WHERE username IS NOT NULL;
+
+Résultat attendu:
+   +-----------+-------+-----------+
+   | username  | actif | date_emb  |
+   +-----------+-------+-----------+
+   | dupont.j  |     1 | 20/01/2024|
+   | martin.m  |     1 | 25/02/2024|
+   | bernard.p |     1 | 15/03/2024|
+   | thomas.s  |     1 | 10/04/2024|
+   | laurent.m |     1 | 20/05/2024|
+   | rousseau.a|     1 | 10/06/2024|
+   | leclerc.l |     0 | 15/01/2023|
+   +-----------+-------+-----------+
+
+================================================================================
+                      💡 POINTS CLÉS
+================================================================================
+
+✓ Tous les comptes utilisent la MÊME données (pour la facilité de test)
+✓ Les mots de passe sont en BCRYPT (jamais en texte clair)
+✓ Les personnels INACTIFS (actif=0) ne peuvent pas se connecter
+✓ Chaque username est UNIQUE (contrainte UNIQUE en BD)
+✓ Spring Security gère automatiquement la validation
+✓ Le personnel connecté est récupéré via Principal en Java
+✓ Les demandes de congé sont liées automatiquement au personnel
+
+================================================================================
+                      🚀 PRÊT POUR LES TESTS!
+================================================================================
+
+Tous les fichiers nécessaires ont été créés.
+Les données de test sont prêtes.
+
+Prochaines étapes:
+  1. Exécuter les scripts SQL
+  2. Démarrer l'application
+  3. Se connecter avec un des comptes de test
+  4. Créer une demande de congé
+
+================================================================================

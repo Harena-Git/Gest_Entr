@@ -1,7 +1,15 @@
 package com.example.gestion.models;
 
-import jakarta.persistence.*;
 import java.util.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "personnel")
@@ -12,6 +20,8 @@ public class Personnel {
 
     private Date date_embauche;
     private Boolean actif;
+    private String username;  // Nouveau: identifiant unique pour login
+    private String password;  // Nouveau: mot de passe haché (BCrypt)
 
     @OneToOne
     @JoinColumn(name = "id_candidat")
@@ -29,6 +39,12 @@ public class Personnel {
 
     public Boolean getActif() { return actif; }
     public void setActif(Boolean actif) { this.actif = actif; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public Candidat getCandidat() { return candidat; }
     public void setCandidat(Candidat candidat) { this.candidat = candidat; }

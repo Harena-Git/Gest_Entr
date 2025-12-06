@@ -1,5 +1,6 @@
 package com.example.gestion.controllers;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -36,17 +37,28 @@ public class DemandeCongeController {
     private PersonnelRepository personnelRepository;
 
     /**
+     * Récupère le Personnel associé à l'utilisateur connecté
+     */
+    private Personnel getPersonnelConnecte(Principal principal) {
+        if (principal == null) {
+            return null;
+        }
+        Optional<Personnel> personnel = personnelRepository.findByUsername(principal.getName());
+        return personnel.orElse(null);
+    }
+
+    /**
      * Afficher le formulaire de demande de congé
      */
     @GetMapping("/nouvelle-demande")
-    public String afficherFormulaire(Model model, @RequestParam Integer idPersonnel) {
-        Optional<Personnel> personnel = personnelRepository.findById(idPersonnel);
-        if (personnel.isEmpty()) {
-            return "redirect:/error";
+    public String afficherFormulaire(Model model, Principal principal) {
+        Personnel personnel = getPersonnelConnecte(principal);
+        if (personnel == null) {
+            return "redirect:/login";
         }
 
-        Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(idPersonnel);
-        model.addAttribute("personnel", personnel.get());
+        Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel());
+        model.addAttribute("personnel", personnel);
         model.addAttribute("soldeRestant", soldeRestant);
         model.addAttribute("demandeConge", new DemandeConge());
 
@@ -57,16 +69,16 @@ public class DemandeCongeController {
      * Créer une nouvelle demande de congé
      */
     @PostMapping("/creer")
-    public String creerDemande(@RequestParam Integer idPersonnel,
-                               @RequestParam String dateDebut,
+    public String creerDemande(@RequestParam String dateDebut,
                                @RequestParam String dateFin,
                                @RequestParam String motif,
+                               Principal principal,
                                RedirectAttributes redirectAttributes) {
         try {
-            Optional<Personnel> personnel = personnelRepository.findById(idPersonnel);
-            if (personnel.isEmpty()) {
-                redirectAttributes.addFlashAttribute("erreur", "Personnel non trouvé");
-                return "redirect:/personnel/conge/nouvelle-demande?idPersonnel=" + idPersonnel;
+            Personnel personnel = getPersonnelConnecte(principal);
+            if (personnel == null) {
+                redirectAttributes.addFlashAttribute("erreur", "Utilisateur non connecté ou personnel non trouvé");
+                return "redirect:/login";
             }
 
             // Parser les dates
@@ -75,36 +87,34 @@ public class DemandeCongeController {
             Date fin = sdf.parse(dateFin);
 
             // Créer la demande
-            DemandeConge demande = demandeCongeService.creerDemande(personnel.get(), debut, fin, motif);
+            demandeCongeService.creerDemande(personnel, debut, fin, motif);
 
             redirectAttributes.addFlashAttribute("succes", "Demande de congé créée avec succès!");
-            return "redirect:/personnel/conge/mes-demandes?idPersonnel=" + idPersonnel;
+            return "redirect:/personnel/conge/mes-demandes";
 
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("erreur", e.getMessage());
-            return "redirect:/personnel/conge/nouvelle-demande?idPersonnel=" + idPersonnel;
+            return "redirect:/personnel/conge/nouvelle-demande";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erreur", "Erreur lors de la création: " + e.getMessage());
-            return "redirect:/personnel/conge/nouvelle-demande?idPersonnel=" + idPersonnel;
+            return "redirect:/personnel/conge/nouvelle-demande";
         }
     }
 
     /**
-     * Afficher les demandes du personnel
+     * Afficher les demandes du personnel connecté
      */
     @GetMapping("/mes-demandes")
-    public String afficherMesDemandes(Model model, @RequestParam Integer idPersonnel) {
-        Optional<Personnel> personnel = personnelRepository.findById(idPersonnel);
-        if (personnel.isEmpty()) {
-            return "redirect:/error";
+    public String afficherMesDemandes(Model model, Principal principal) {
+        Personnel personnel = getPersonnelConnecte(principal);
+        if (personnel == null) {
+            return "redirect:/login";
         }
 
-        Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(idPersonnel);
-        List<DemandeConge> demandes = personnelRepository.findById(idPersonnel)
-            .map(p -> demandeCongeService.obtenirDemandesEnAttente(p))
-            .orElse(List.of());
+        Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel());
+        List<DemandeConge> demandes = demandeCongeService.obtenirDemandesEnAttente(personnel);
 
-        model.addAttribute("personnel", personnel.get());
+        model.addAttribute("personnel", personnel);
         model.addAttribute("soldeRestant", soldeRestant);
         model.addAttribute("demandes", demandes);
 
@@ -115,24 +125,34 @@ public class DemandeCongeController {
      * Afficher le détail d'une demande
      */
     @GetMapping("/details/{idDemande}")
-    public String afficherDetails(Model model, @PathVariable Integer idDemande) {
+    public String afficherDetails(Model model, @PathVariable Integer idDemande, Principal principal) {
+        Personnel personnel = getPersonnelConnecte(principal);
+        if (personnel == null) {
+            return "redirect:/login";
+        }
+
         Optional<DemandeConge> demande = demandeCongeService.obtenirDemande(idDemande);
         if (demande.isEmpty()) {
             return "redirect:/error";
         }
 
         model.addAttribute("demande", demande.get());
+        model.addAttribute("personnel", personnel);
 
         return "conge/details-demande";
     }
 
     /**
-     * API pour vérifier le solde disponible
+     * API pour vérifier le solde disponible (utilisateur connecté)
      */
-    @GetMapping("/api/solde/{idPersonnel}")
+    @GetMapping("/api/solde")
     @ResponseBody
-    public Integer verifierSolde(@PathVariable Integer idPersonnel) {
-        return soldeCongeService.obtenirSoldeRestant(idPersonnel);
+    public Integer verifierSolde(Principal principal) {
+        Personnel personnel = getPersonnelConnecte(principal);
+        if (personnel == null) {
+            return 0;
+        }
+        return soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel());
     }
 
     /**

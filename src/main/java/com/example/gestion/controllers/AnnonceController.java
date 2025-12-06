@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.gestion.models.Annonce;
+import com.example.gestion.models.Candidat;
 import com.example.gestion.models.Departement;
 import com.example.gestion.models.Lieu;
-import com.example.gestion.models.Candidat;
 import com.example.gestion.repository.AnnonceRepository;
-import com.example.gestion.repository.LieuRepository;
+import com.example.gestion.repository.CandidatRepository;
 import com.example.gestion.repository.DepartementRepository;
-import com.example.gestion.repository.CandidatRepository;   
+import com.example.gestion.repository.LieuRepository;   
 
 @Controller
 public class AnnonceController {
@@ -43,88 +43,95 @@ public class AnnonceController {
                                 @RequestParam(value = "salaireMax", required = false) Integer salaireMax,
                                 @RequestParam(value = "motCle", required = false) String motCle,
                                 Model model) {
-        LocalDate today = LocalDate.now();
+        try {
+            LocalDate today = LocalDate.now();
 
-       
-        // Liste des départements pour le filtre
-        List<Departement> departements = departementRepository.findAll();
+           
+            // Liste des départements pour le filtre
+            List<Departement> departements = departementRepository.findAll();
 
-        // Récupération de toutes les annonces initialement
-        List<Annonce> annonces = annonceRepository.findAll();
+            // Récupération de toutes les annonces initialement
+            List<Annonce> annonces = annonceRepository.findAll();
 
-        // Filtrer les annonces par date
-         annonces = annonces.stream()
-                .filter(annonce -> {
-                    LocalDate dateFin = annonce.getDate_fin().toInstant()
-                            .atZone(java.time.ZoneId.systemDefault())
-                            .toLocalDate();
-                    return !dateFin.isBefore(today);
-                })
-                .collect(Collectors.toList()); 
-
-        // Si un lieu est sélectionné, filtrer par lieu
-        if (idLieu != null) {
-            annonces = annonces.stream()
-                    .filter(annonce -> annonce.getProfil().getLieu() != null
-                            && annonce.getProfil().getLieu().getId_lieu().equals(idLieu))
-                    .collect(Collectors.toList());
-        }
-        if (idDepartement != null) {
-            annonces = annonces.stream()
-                    .filter(annonce -> annonce.getPoste() != null
-                            && annonce.getPoste().getDepartement() != null
-                            && annonce.getPoste().getDepartement().getId_departement().equals(idDepartement))
-                    .collect(Collectors.toList());
-        }
-        if (experience != null && !experience.isEmpty()) {
-            annonces = annonces.stream()
-                    .filter(a -> {
-                        int anneeExp = a.getProfil().getAnnee_experience(); // Assure-toi que Profil a un champ experience en années
-                        switch (experience) {
-                            case "0-0": return anneeExp == 0;
-                            case "1-2": return anneeExp >= 1 && anneeExp <= 2;
-                            case "3-5": return anneeExp >= 3 && anneeExp <= 5;
-                            case "5+":  return anneeExp > 5;
-                        }
-                        return true;
+            // Filtrer les annonces par date
+             annonces = annonces.stream()
+                    .filter(annonce -> {
+                        LocalDate dateFin = annonce.getDate_fin().toInstant()
+                                .atZone(java.time.ZoneId.systemDefault())
+                                .toLocalDate();
+                        return !dateFin.isBefore(today);
                     })
+                    .collect(Collectors.toList()); 
+
+            // Si un lieu est sélectionné, filtrer par lieu
+            if (idLieu != null) {
+                annonces = annonces.stream()
+                        .filter(annonce -> annonce.getProfil().getLieu() != null
+                                && annonce.getProfil().getLieu().getId_lieu().equals(idLieu))
+                        .collect(Collectors.toList());
+            }
+            if (idDepartement != null) {
+                annonces = annonces.stream()
+                        .filter(annonce -> annonce.getPoste() != null
+                                && annonce.getPoste().getDepartement() != null
+                                && annonce.getPoste().getDepartement().getId_departement().equals(idDepartement))
+                        .collect(Collectors.toList());
+            }
+            if (experience != null && !experience.isEmpty()) {
+                annonces = annonces.stream()
+                        .filter(a -> {
+                            int anneeExp = a.getProfil().getAnnee_experience(); 
+                            switch (experience) {
+                                case "0-0": return anneeExp == 0;
+                                case "1-2": return anneeExp >= 1 && anneeExp <= 2;
+                                case "3-5": return anneeExp >= 3 && anneeExp <= 5;
+                                case "5+":  return anneeExp > 5;
+                            }
+                            return true;
+                        })
+                        .collect(Collectors.toList());
+            }
+            
+            if (salaireMax != null) {
+                annonces = annonces.stream()
+                        .filter(a -> a.getPoste() != null
+                                && a.getPoste().getSalaire() != null
+                                && a.getPoste().getSalaire() <= salaireMax)
+                        .collect(Collectors.toList());
+            }
+
+            // Filtrer par mot-clé sur le champ responsabilite
+            if (motCle != null && !motCle.isEmpty()) {
+                String motCleLower = motCle.toLowerCase();
+                annonces = annonces.stream()
+                        .filter(a -> a.getResponsabilite() != null &&
+                                a.getResponsabilite().toLowerCase().contains(motCleLower))
+                        .collect(Collectors.toList());
+            }
+
+            // Construire la liste unique des lieux pour le filtre
+            List<Lieu> lieux = annonces.stream() 
+                    .map(a -> a.getProfil().getLieu())
+                    .filter(l -> l != null)
+                    .distinct()
                     .collect(Collectors.toList());
+
+            model.addAttribute("annonces", annonces);
+            model.addAttribute("lieux", lieux);
+            model.addAttribute("lieuSelectionne", idLieu);
+            model.addAttribute("departementSelectionne", idDepartement);
+            model.addAttribute("departements", departements);
+            model.addAttribute("experienceSelectionnee", experience);
+            model.addAttribute("salaireMax", salaireMax);
+            model.addAttribute("motCle", motCle);
+
+            return "Acceuil";
+        } catch (Exception e) {
+            System.err.println("ERREUR dans /acceuil: " + e.getMessage());
+            e.printStackTrace();
+            model.addAttribute("erreur", e.getMessage());
+            return "Acceuil";
         }
-        
-        if (salaireMax != null) {
-            annonces = annonces.stream()
-                    .filter(a -> a.getPoste() != null
-                            && a.getPoste().getSalaire() != null
-                            && a.getPoste().getSalaire() <= salaireMax)
-                    .collect(Collectors.toList());
-        }
-
-        // Filtrer par mot-clé sur le champ responsabilite
-        if (motCle != null && !motCle.isEmpty()) {
-            String motCleLower = motCle.toLowerCase();
-            annonces = annonces.stream()
-                    .filter(a -> a.getResponsabilite() != null &&
-                            a.getResponsabilite().toLowerCase().contains(motCleLower))
-                    .collect(Collectors.toList());
-        }
-
-        // Construire la liste unique des lieux pour le filtre
-        List<Lieu> lieux = annonces.stream() // <-- utiliser la liste filtrée par date (optionnel)
-                .map(a -> a.getProfil().getLieu())
-                .filter(l -> l != null)
-                .distinct()
-                .collect(Collectors.toList());
-
-        model.addAttribute("annonces", annonces);
-        model.addAttribute("lieux", lieux);
-        model.addAttribute("lieuSelectionne", idLieu);
-        model.addAttribute("departementSelectionne", idDepartement);
-        model.addAttribute("departements", departements);
-        model.addAttribute("experienceSelectionnee", experience);
-        model.addAttribute("salaireMax", salaireMax);
-        model.addAttribute("motCle", motCle);
-
-        return "Acceuil";
     }
     @GetMapping("/expirees")
     public String annoncesExpirees(Model model) {
