@@ -89,6 +89,64 @@
             font-size: 1.2em;
         }
 
+        /* Section repliable */
+        .nav-section {
+            margin-bottom: 5px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .section-header:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: white;
+        }
+
+        .section-header.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: white;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .chevron {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .section-content.open {
+            max-height: 500px;
+        }
+
+        .section-content .nav-link {
+            padding-left: 52px;
+            font-size: 0.95em;
+        }
+
         .logout-section {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -135,94 +193,6 @@
             font-weight: 600;
         }
 
-        .annonces-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .annonce-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .annonce-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .card-header {
-            background: #495057;
-            color: white;
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .card-text {
-            color: #6c757d;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .card-text strong {
-            color: #495057;
-            display: inline-block;
-            min-width: 140px;
-        }
-
-        .card-footer {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .btn-details {
-            display: inline-block;
-            background: #495057;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 0.95em;
-        }
-
-        .btn-details:hover {
-            background: #343a40;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(73, 80, 87, 0.3);
-        }
-
-        .empty-state {
-            background: white;
-            border-radius: 12px;
-            padding: 60px 20px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .empty-state h3 {
-            color: #495057;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            color: #6c757d;
-        }
-
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -234,11 +204,100 @@
                 margin-left: 0;
                 padding: 20px;
             }
-
-            .annonces-grid {
-                grid-template-columns: 1fr;
-            }
         }
+
+        /* État vide */
+        .empty-state {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+
+        .empty-state h3 {
+            color: #495057;
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            font-size: 1em;
+        }
+
+        /* Grille des annonces */
+        .annonces-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        /* Carte annonce */
+        .annonce-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .annonce-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        /* Header */
+        .card-header {
+            background: #495057;
+            padding: 15px;
+        }
+
+        .card-header .card-title {
+            margin: 0;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        /* Body */
+        .card-body {
+            padding: 15px 20px;
+            color: #495057;
+        }
+
+        .card-body p {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        /* Footer */
+        .card-footer {
+            margin-top: auto;
+            padding: 15px;
+            background: #f1f3f5;
+            text-align: center;
+        }
+
+        /* Bouton détails */
+        .btn-details {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #495057;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: background 0.2s ease;
+        }
+
+        .btn-details:hover {
+            background: #343a40;
+        }
+
     </style>
 </head>
 <body>
@@ -247,41 +306,55 @@
         <nav class="sidebar">
             <div class="sidebar-header">
                 <h4>👨‍💼 Admin Panel</h4>
-                <p>Gestion des annonces</p>
             </div>
             
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="/admin/annonces" class="nav-link active">
-                        <span class="nav-icon">📋</span>
-                        Annonces
-                    </a>
+                <!-- Section Candidat -->
+                <li class="nav-section">
+                    <div class="section-header" onclick="toggleSection('candidat')">
+                        <div class="section-title">
+                            <span class="nav-icon">👔</span>
+                            Candidat
+                        </div>
+                        <span class="chevron" id="chevron-candidat">▼</span>
+                    </div>
+                    <div class="section-content" id="section-candidat">
+                        <a href="/admin/annonces" class="nav-link">
+                            <span class="nav-icon">📋</span>
+                            Annonces
+                        </a>
+                        <a href="/Embauche" class="nav-link">
+                            <span class="nav-icon">👔</span>
+                            Embaucher
+                        </a>
+                        <a href="/mes-entretiens" class="nav-link">
+                            <span class="nav-icon">📅</span>
+                            Mes entretiens
+                        </a>
+                        <a href="/expirees" class="nav-link">
+                            <span class="nav-icon">⏰</span>
+                            Annonces expirées
+                        </a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a href="/Embauche" class="nav-link">
-                        <span class="nav-icon">👔</span>
-                        Embaucher
-                    </a>
+
+                <!-- Section Personnel -->
+                <li class="nav-section">
+                    <div class="section-header" onclick="toggleSection('personnel')">
+                        <div class="section-title">
+                            <span class="nav-icon">👥</span>
+                            Personnel
+                        </div>
+                        <span class="chevron" id="chevron-personnel">▼</span>
+                    </div>
+                    <div class="section-content" id="section-personnel">
+                        <a href="/stat/personnel" class="nav-link">
+                            <span class="nav-icon">📊</span>
+                            Statistique
+                        </a>
+                    </div>
                 </li>
-                <li class="nav-item">
-                    <a href="/mes-entretiens" class="nav-link">
-                        <span class="nav-icon">📅</span>
-                        Mes entretiens
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/expirees" class="nav-link">
-                        <span class="nav-icon">⏰</span>
-                        Annonces expirées
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/candidat/list" class="nav-link ">
-                        <span class="nav-icon">📋</span>
-                        Liste des Candidats 
-                    </a>
-                </li>
-            </ul>
+            </ul>      
 
             <div class="logout-section">
                 <a href="/acceuil" class="btn-logout">
@@ -336,5 +409,38 @@
         </div>
     </div>
 
-    <script>
-        // Gestion de la navigation active
+ <script>
+        let currentOpenSection = null;
+
+        function toggleSection(sectionName) {
+            const section = document.getElementById('section-' + sectionName);
+            const chevron = document.getElementById('chevron-' + sectionName);
+            const header = chevron.parentElement;
+
+            // Si on clique sur la section déjà ouverte, on la ferme
+            if (currentOpenSection === sectionName) {
+                section.classList.remove('open');
+                chevron.classList.remove('open');
+                header.classList.remove('active');
+                currentOpenSection = null;
+                return;
+            }
+
+            // Fermer la section actuellement ouverte
+            if (currentOpenSection) {
+                const oldSection = document.getElementById('section-' + currentOpenSection);
+                const oldChevron = document.getElementById('chevron-' + currentOpenSection);
+                const oldHeader = oldChevron.parentElement;
+                
+                oldSection.classList.remove('open');
+                oldChevron.classList.remove('open');
+                oldHeader.classList.remove('active');
+            }
+
+            // Ouvrir la nouvelle section
+            section.classList.add('open');
+            chevron.classList.add('open');
+            header.classList.add('active');
+            currentOpenSection = sectionName;
+        }
+    </script>
