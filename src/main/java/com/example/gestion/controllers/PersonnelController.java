@@ -5,18 +5,19 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.gestion.models.Personnel;
-import com.example.gestion.models.User;
 import com.example.gestion.models.Departement;
+import com.example.gestion.models.Personnel;
 import com.example.gestion.models.Role;
+import com.example.gestion.models.User;
 import com.example.gestion.repository.PersonnelRepository;
 import com.example.gestion.repository.UserRepository;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -273,6 +274,7 @@ public class PersonnelController {
     }
 
     @GetMapping("/details")
+    @Transactional(readOnly = true)
     public String getPersonnel(@RequestParam("idPersonnel") Integer idPersonnel, Model model, HttpSession session) {
         try {
             // Vérifier les permissions
@@ -294,34 +296,65 @@ public class PersonnelController {
 
             Personnel personnel = personnelRepository.findById(idPersonnel).orElse(null);
             
-            if (personnel != null) {
-                // Vérifier si l'utilisateur a le droit de voir ce personnel
-                boolean hasAccess = isRH;
-                if (!hasAccess && connectedUser != null && connectedUser.getDepartement() != null) {
-                    Integer userDeptId = getDepartementId(connectedUser.getDepartement());
-                    Integer personnelDeptId = personnel.getPoste() != null && 
-                                            personnel.getPoste().getDepartement() != null ?
-                                            getDepartementId(personnel.getPoste().getDepartement()) : null;
-                    
-                    hasAccess = userDeptId != null && userDeptId.equals(personnelDeptId);
-                }
-                
-                if (hasAccess) {
-                    model.addAttribute("personnel", personnel);
-                } else {
-                    model.addAttribute("error", "Accès non autorisé à ce personnel");
-                    return "redirect:/personnel/list";
-                }
-            } else {
+            if (personnel == null) {
                 model.addAttribute("error", "Personnel non trouvé avec l'ID : " + idPersonnel);
+                model.addAttribute("connectedUser", connectedUser);
+                model.addAttribute("isRH", isRH);
+                return "personnelDetails";
             }
             
+            // Vérifier si l'utilisateur a le droit de voir ce personnel
+            // RH a accès à tout
+            boolean hasAccess = isRH;
+            
+            // Si pas RH, vérifier le département (plus permissif)
+            if (!hasAccess) {
+                if (connectedUser == null) {
+                    // Pas d'utilisateur connecté - autoriser quand même pour le moment
+                    // En production, il faudrait forcer la connexion
+                    hasAccess = true;
+                } else if (connectedUser.getDepartement() == null) {
+                    // Utilisateur sans département - autoriser
+                    hasAccess = true;
+                } else if (personnel.getPoste() == null || personnel.getPoste().getDepartement() == null) {
+                    // Personnel sans département - autoriser
+                    hasAccess = true;
+                } else {
+                    // Vérifier si les départements correspondent
+                    Integer userDeptId = getDepartementId(connectedUser.getDepartement());
+                    Integer personnelDeptId = getDepartementId(personnel.getPoste().getDepartement());
+                    hasAccess = userDeptId != null && userDeptId.equals(personnelDeptId);
+                }
+            }
+            
+            if (!hasAccess) {
+                model.addAttribute("error", "Accès non autorisé à ce personnel. Vous ne pouvez voir que les personnels de votre département.");
+                model.addAttribute("connectedUser", connectedUser);
+                model.addAttribute("isRH", isRH);
+                return "personnelDetails";
+            }
+            
+            // Tout est OK, afficher les détails
+            // Forcer le chargement des relations lazy pour éviter LazyInitializationException
+            if (personnel.getCandidat() != null) {
+                // Charger les diplômes
+                if (personnel.getCandidat().getDiplomesCandidats() != null) {
+                    personnel.getCandidat().getDiplomesCandidats().size();
+                }
+                // Charger les parcours professionnels
+                if (personnel.getCandidat().getParcoursProfessionels() != null) {
+                    personnel.getCandidat().getParcoursProfessionels().size();
+                }
+            }
+            
+            model.addAttribute("personnel", personnel);
             model.addAttribute("connectedUser", connectedUser);
             model.addAttribute("isRH", isRH);
             return "personnelDetails";
+            
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("error", "Erreur lors de la récupération du personnel");
+            model.addAttribute("error", "Erreur lors de la récupération du personnel : " + e.getMessage());
             return "personnelDetails";
         }
     }

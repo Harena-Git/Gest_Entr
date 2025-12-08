@@ -814,7 +814,7 @@
                                             </c:choose>
                                         </td>
                                         <td>
-                                            <a href="/personnel/details?idPersonnel=${personnel.id_personnel}" 
+                                            <a href="${pageContext.request.contextPath}/personnel/details?idPersonnel=${personnel.id_personnel}" 
                                                class="btn-details">
                                                 👁️ Détails
                                             </a>
