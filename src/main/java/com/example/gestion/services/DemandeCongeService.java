@@ -46,14 +46,31 @@ public class DemandeCongeService {
                                              ", Solde disponible: " + soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel()));
         }
 
-        // Obtenir le statut "En attente"
+        // Obtenir le statut "En attente" ou créer un statut par défaut
+        StatutDemande statut = null;
         Optional<StatutDemande> statutOpt = statutDemandeRepository.findByLibelle("En attente");
+        
         if (statutOpt.isEmpty()) {
-            throw new RuntimeException("Le statut 'En attente' n'existe pas en base de données");
+            // Chercher un autre statut existant ou en créer un
+            try {
+                statut = new StatutDemande();
+                statut.setLibelle("En attente");
+                statut = statutDemandeRepository.save(statut);
+            } catch (Exception e) {
+                // En dernier recours, chercher n'importe quel statut
+                List<StatutDemande> allStatuts = statutDemandeRepository.findAll();
+                if (!allStatuts.isEmpty()) {
+                    statut = allStatuts.get(0);
+                } else {
+                    throw new RuntimeException("Aucun statut de demande n'existe en base de données");
+                }
+            }
+        } else {
+            statut = statutOpt.get();
         }
 
         // Créer la demande
-        DemandeConge demande = new DemandeConge(dateDebut, dateFin, nombreJours, motif, personnel, statutOpt.get());
+        DemandeConge demande = new DemandeConge(dateDebut, dateFin, nombreJours, motif, personnel, statut);
         return demandeCongeRepository.save(demande);
     }
 

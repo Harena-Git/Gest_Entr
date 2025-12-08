@@ -54,7 +54,7 @@ public class DemandeCongeController {
     public String afficherFormulaire(Model model, Principal principal) {
         Personnel personnel = getPersonnelConnecte(principal);
         if (personnel == null) {
-            return "redirect:/login";
+            return "redirect:/nouvelle-demande";
         }
 
         Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel());
@@ -78,7 +78,7 @@ public class DemandeCongeController {
             Personnel personnel = getPersonnelConnecte(principal);
             if (personnel == null) {
                 redirectAttributes.addFlashAttribute("erreur", "Utilisateur non connecté ou personnel non trouvé");
-                return "redirect:/login";
+                return "redirect:/nouvelle-demande";
             }
 
             // Parser les dates
@@ -108,7 +108,7 @@ public class DemandeCongeController {
     public String afficherMesDemandes(Model model, Principal principal) {
         Personnel personnel = getPersonnelConnecte(principal);
         if (personnel == null) {
-            return "redirect:/login";
+            return "redirect:/mes-demandes";
         }
 
         Integer soldeRestant = soldeCongeService.obtenirSoldeRestant(personnel.getId_personnel());
@@ -128,7 +128,7 @@ public class DemandeCongeController {
     public String afficherDetails(Model model, @PathVariable Integer idDemande, Principal principal) {
         Personnel personnel = getPersonnelConnecte(principal);
         if (personnel == null) {
-            return "redirect:/login";
+            return "redirect:/details-demande";
         }
 
         Optional<DemandeConge> demande = demandeCongeService.obtenirDemande(idDemande);

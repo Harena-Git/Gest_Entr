@@ -1,4 +1,5 @@
 com\example\gestion\models\EtatCandidat.class
+com\example\gestion\controllers\TestPersonnelController.class
 com\example\gestion\models\Lieu.class
 com\example\gestion\services\AnnonceService.class
 com\example\gestion\services\DepartementService.class
@@ -47,6 +48,7 @@ com\example\gestion\services\DemandeCongeService.class
 com\example\gestion\models\EvaluationEntretien2.class
 com\example\gestion\models\FiliereDTO.class
 com\example\gestion\models\Question.class
+com\example\gestion\controllers\PublicCongeController.class
 com\example\gestion\models\DiplomeCandidat.class
 com\example\gestion\services\CandidatService.class
 com\example\gestion\models\DecisionValidation.class
@@ -65,6 +67,7 @@ com\example\gestion\services\ProfilService.class
 com\example\gestion\models\Diplome.class
 com\example\gestion\repository\EtatCandidatRepository.class
 com\example\gestion\controllers\Entretien1Controller.class
+com\example\gestion\controllers\RootController.class
 com\example\gestion\models\Poste.class
 com\example\gestion\models\Reponse.class
 com\example\gestion\repository\ValidationCongeRHRepository.class
@@ -75,7 +78,6 @@ com\example\gestion\repository\ReponseRepository.class
 com\example\gestion\repository\RoleRepository.class
 com\example\gestion\controllers\ValidationCongeChefController.class
 com\example\gestion\repository\PersonnelRepository.class
-com\example\gestion\config\WebConfig.class
 com\example\gestion\models\NiveauDTO.class
 com\example\gestion\services\EvaluationEntretien1Service.class
 com\example\gestion\models\Niveau.class
@@ -103,6 +105,7 @@ com\example\gestion\models\Departement.class
 com\example\gestion\controllers\DemandeCongeController.class
 com\example\gestion\services\ValidationCongeChefService.class
 com\example\gestion\models\ContratEssaiGenerator.class
+com\example\gestion\controllers\AppErrorController.class
 com\example\gestion\repository\FiliereRepository.class
 com\example\gestion\models\ContratEssaiGenerator$1.class
 com\example\gestion\repository\ChoixRepository.class
@@ -118,3 +121,4 @@ com\example\gestion\models\Filiere.class
 com\example\gestion\repository\DiplomeCandidatRepository.class
 com\example\gestion\repository\PosteRepository.class
 com\example\gestion\repository\EvaluationEntretien1Repository.class
+com\example\gestion\controllers\TestController.class

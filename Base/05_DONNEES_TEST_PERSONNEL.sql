@@ -61,7 +61,7 @@ INSERT INTO personnel (date_embauche, actif, id_candidat, id_poste, username, pa
 VALUES 
   ('2024-01-20', 1, 
    (SELECT id_candidat FROM candidat WHERE nom = CAST('DUPONT' AS CHAR CHARACTER SET utf8mb4) LIMIT 1),
-   (SELECT id_poste FROM poste WHERE libelle = CAST('Développeur Fullstack' AS CHAR CHARACTER SET utf8mb4) LIMIT 1),
+   (SELECT id_poste FROM poste WHERE libelle = CAST('Developpeur Fullstack' AS CHAR CHARACTER SET utf8mb4) LIMIT 1),
    'dupont.j', 'dupont12'),
    
   ('2024-02-25', 1,

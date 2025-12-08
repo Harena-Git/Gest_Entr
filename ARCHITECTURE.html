@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture - Demande de Congé Public</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .diagram {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 150px;
+            margin: 10px;
+            flex: 1;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #667eea;
+            margin: 0 10px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .code {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature-list li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .endpoint {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            color: #0066cc;
+        }
+        
+        .method-get {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .method-post {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .method-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .session-flow {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .session-flow h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            margin-bottom: 30px;
+            padding-left: 40px;
+            position: relative;
+        }
+        
+        .timeline-item:before {
+            content: "●";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        .timeline-item:after {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 25px;
+            width: 2px;
+            height: calc(100% + 15px);
+            background: #ddd;
+        }
+        
+        .timeline-item:last-child:after {
+            display: none;
+        }
+        
+        .timeline-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Architecture - Système de Demande de Congé Public</h1>
+        
+        <h2>📊 Flux d'utilisation</h2>
+        <div class="diagram">
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-title">1. Connexion (ID simple)</div>
+                    <div class="timeline-desc">L'employé accède à /public/conge/login et entre son ID</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title">2. Validation & Stockage en session</div>
+                    <div class="timeline-desc">L'ID est validé et stocké dans la session HTTP</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title">3. Formulaire de demande</div>
+                    <div class="timeline-desc">L'employé remplit la demande (dates, motif)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title">4. Création de la demande</div>
+                    <div class="timeline-desc">La demande est créée avec l'ID de la session</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title">5. Consultation & Gestion</div>
+                    <div class="timeline-desc">L'employé peut voir ses demandes précédentes</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-title">6. Déconnexion</div>
+                    <div class="timeline-desc">L'ID est supprimé de la session</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>🔗 Points d'accès (Endpoints)</h2>
+        <div class="diagram">
+            <div class="endpoint">
+                <span class="method-badge method-get">GET</span> 
+                <strong>/public/conge/login</strong> - Affiche le formulaire de connexion
+            </div>
+            <div class="endpoint">
+                <span class="method-badge method-post">POST</span> 
+                <strong>/public/conge/login</strong> - Traite la connexion (stocke l'ID en session)
+            </div>
+            <div class="endpoint">
+                <span class="method-badge method-get">GET</span> 
+                <strong>/public/conge/nouvelle-demande</strong> - Affiche le formulaire de demande
+            </div>
+            <div class="endpoint">
+                <span class="method-badge method-post">POST</span> 
+                <strong>/public/conge/creer</strong> - Crée une nouvelle demande
+            </div>
+            <div class="endpoint">
+                <span class="method-badge method-get">GET</span> 
+                <strong>/public/conge/mes-demandes</strong> - Liste les demandes de l'employé
+            </div>
+            <div class="endpoint">
+                <span class="method-badge method-get">GET</span> 
+                <strong>/public/conge/logout</strong> - Déconnecte l'employé
+            </div>
+        </div>
+        
+        <h2>🔒 Sécurité</h2>
+        <div class="highlight">
+            <strong>⚠️ Mode Simulation :</strong> Ce système est une <strong>simulation</strong> 
+            pour permettre les tests sans authentification Spring Security. 
+            <br><br>
+            <strong>Actuellement :</strong> N'importe qui peut entrer n'importe quel ID d'employé existant
+            <br><br>
+            <strong>En production :</strong> Ajouter une vérification supplémentaire :
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>Mot de passe</li>
+                <li>Code secret envoyé par email</li>
+                <li>Token OTP (One-Time Password)</li>
+                <li>Authentification par QR code</li>
+            </ul>
+        </div>
+        
+        <h2>📁 Architecture des fichiers</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fichier</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PublicCongeController.java</code></td>
+                        <td>Controller</td>
+                        <td>Gère les routes publiques /public/conge/**</td>
+                    </tr>
+                    <tr>
+                        <td><code>conge-login.jsp</code></td>
+                        <td>View</td>
+                        <td>Formulaire de connexion simple</td>
+                    </tr>
+                    <tr>
+                        <td><code>conge-nouvelle-demande.jsp</code></td>
+                        <td>View</td>
+                        <td>Formulaire de demande avec affichage ID</td>
+                    </tr>
+                    <tr>
+                        <td><code>conge-mes-demandes.jsp</code></td>
+                        <td>View</td>
+                        <td>Liste des demandes de congé</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <h2>💾 Gestion de la session</h2>
+        <div class="session-flow">
+            <h3>Attributs stockés dans la session :</h3>
+            <div class="code">
+// Après connexion réussie :
+session.setAttribute("employeId", personnel.getId_personnel());
+session.setAttribute("employeNom", personnel.getCandidat().getNom());
+
+// Récupération dans les pages :
+Integer employeId = (Integer) session.getAttribute("employeId");
+
+// Suppression à la déconnexion :
+session.removeAttribute("employeId");
+session.removeAttribute("employeNom");
+            </div>
+        </div>
+        
+        <h2>✨ Fonctionnalités implémentées</h2>
+        <ul class="feature-list">
+            <li>Connexion simple avec ID d'employé</li>
+            <li>Validation de l'existence et de l'activation de l'employé</li>
+            <li>Stockage sécurisé en session HTTP</li>
+            <li>Affichage brut de l'ID connecté dans la demande</li>
+            <li>Vérification du solde de congé</li>
+            <li>Création de demande avec les règles métier</li>
+            <li>Consultation de l'historique des demandes</li>
+            <li>Gestion des statuts (En attente, Approuvée, Rejetée)</li>
+            <li>Déconnexion propre</li>
+            <li>Interface responsive et user-friendly</li>
+        </ul>
+        
+        <h2>🚀 Étapes de test</h2>
+        <div class="diagram">
+            <ol style="margin-left: 20px;">
+                <li>Accéder à <code>http://localhost:8080/public/conge/login</code></li>
+                <li>Entrer un ID d'employé existant (ex: 1)</li>
+                <li>Vérifier que l'ID s'affiche dans le formulaire</li>
+                <li>Remplir les dates et créer une demande</li>
+                <li>Vérifier la demande dans "Mes demandes"</li>
+                <li>Tester la déconnexion</li>
+            </ol>
+        </div>
+        
+        <h2>📝 Dépendances utilisées</h2>
+        <div class="diagram">
+            <ul style="margin-left: 20px;">
+                <li><code>jakarta.servlet.http.HttpSession</code> - Gestion de session</li>
+                <li><code>org.springframework.stereotype.Controller</code> - Décorateur Spring</li>
+                <li><code>DemandeCongeService</code> - Service métier existant</li>
+                <li><code>SoldeCongeService</code> - Service pour le solde</li>
+                <li><code>PersonnelRepository</code> - Accès BD</li>
+            </ul>
+        </div>
+        
+        <h2>🔄 Intégration avec le système existant</h2>
+        <div class="highlight">
+            ✅ <strong>Aucune modification des entités métier</strong><br>
+            ✅ <strong>Réutilisation des services existants</strong><br>
+            ✅ <strong>Respect de la configuration Spring Security</strong><br>
+            ✅ <strong>Compatible avec l'authentification existante</strong><br>
+            ✅ <strong>Tables de base de données inchangées</strong>
+        </div>
+        
+        <div style="margin-top: 40px; text-align: center; color: #666; font-size: 14px;">
+            <p>Dernière mise à jour : 8 décembre 2025</p>
+            <p>État : ✅ Implémenté et compilé avec succès</p>
+        </div>
+    </div>
+</body>
+</html>

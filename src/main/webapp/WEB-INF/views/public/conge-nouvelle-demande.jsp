@@ -23,10 +23,11 @@
         .alert { padding: 12px; margin-bottom: 20px; border-radius: 4px; }
         .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .jours-info { margin-top: 10px; padding: 10px; background-color: #f0f8ff; border-left: 3px solid #667eea; display: none; }
+        .jours-info.show { display: block; }
     </style>
 </head>
 <body>
-<jsp:include page="/WEB-INF/views/menu_bar.jsp" />
 <div class="container">
     <h2>Nouvelle demande de congé</h2>
 
@@ -53,7 +54,9 @@
         Solde restant : <span style="font-size: 18px; font-weight: bold; color: #667eea;">${soldeRestant} jours</span>
     </div>
 
-    <form action="${pageContext.request.contextPath}/personnel/conge/creer" method="post">
+    <form action="${pageContext.request.contextPath}/public/conge/creer" method="post">
+        <input type="hidden" name="id" value="${employeId}" />
+        
         <div class="form-group">
             <label for="dateDebut">Date de début <span style="color: red;">*</span></label>
             <input type="date" id="dateDebut" name="dateDebut" required />
@@ -68,6 +71,10 @@
             <label for="motif">Motif de congé</label>
             <input type="text" id="motif" name="motif" maxlength="255" placeholder="Ex: Vacances, congé maladie, etc." />
         </div>
+
+        <div id="joursInfo" class="jours-info">
+            <strong>Nombre de jours: <span id="joursCount">0</span></strong>
+        </div>
         
         <div class="form-group">
             <button type="submit">✅ Envoyer la demande</button>
@@ -75,5 +82,31 @@
         </div>
     </form>
 </div>
+
+<script>
+    // Calcul du nombre de jours de congés
+    const dateDebut = document.getElementById('dateDebut');
+    const dateFin = document.getElementById('dateFin');
+    const joursInfo = document.getElementById('joursInfo');
+    const joursCount = document.getElementById('joursCount');
+
+    function calculerJours() {
+        if (dateDebut.value && dateFin.value) {
+            const debut = new Date(dateDebut.value);
+            const fin = new Date(dateFin.value);
+            const diffTime = Math.abs(fin - debut);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            joursCount.textContent = diffDays;
+            joursInfo.classList.add('show');
+        } else {
+            joursInfo.classList.remove('show');
+        }
+    }
+
+    dateDebut.addEventListener('change', calculerJours);
+    dateFin.addEventListener('change', calculerJours);
+</script>
+
 </body>
 </html>
