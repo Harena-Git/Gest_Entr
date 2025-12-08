@@ -1,10 +1,16 @@
 package com.example.gestion.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import com.example.gestion.models.*;
 import com.example.gestion.services.*;
+import com.example.gestion.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
@@ -20,6 +26,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +58,9 @@ public class ChefController {
 
     @Autowired
     private PresenceAbsenceService presenceAbsenceService;
+
+    @Autowired
+    private DepartementRepository departementRepository;
 
         // ========== DASHBOARD CHEF ==========
     @GetMapping("/dashboard")
@@ -117,12 +127,58 @@ public class ChefController {
         return "chef/dashboard";
     }
 
-    // ========== GÉNÉRATION RELEVÉS DÉPARTEMENT ==========
     @GetMapping("/releves")
-    public String pageReleves(Model model, HttpSession session) {
-        if (!estChef(session)) return "redirect:/admin/login";
-        return "chef/releves";
+public String pageReleves(Model model, HttpSession session) throws IOException {
+    if (!estChef(session)) return "redirect:/admin/login";
+
+    List<Map<String, Object>> fichiers = relevePresenceService.listerReleves("departement");
+
+    // Filtrer par département
+    Integer departementId = (Integer) session.getAttribute("userDepartement");
+    String departementNom = departementRepository.findById(departementId)
+            .map(d -> d.getDepartement().replace(" ", "_"))
+            .orElse("");
+
+    fichiers = fichiers.stream()
+            .filter(f -> f.get("nom").toString().contains(departementNom))
+            .collect(Collectors.toList());
+
+    // Formater la date et la taille
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat df = new DecimalFormat("0.00");
+    
+    for (Map<String, Object> file : fichiers) {
+        // Date
+        Object dateObj = file.get("dateModification");
+        if (dateObj != null && dateObj instanceof Date) {
+            file.put("formattedDate", sdf.format((Date) dateObj));
+        } else {
+            file.put("formattedDate", "-");
+        }
+        
+        // Taille
+        Object tailleObj = file.get("taille");
+        if (tailleObj != null && tailleObj instanceof Number) {
+            double tailleOctets = ((Number) tailleObj).doubleValue();
+            double tailleKb = tailleOctets / 1024.0;
+            
+            // Stocker comme nombre
+            file.put("tailleKb", Double.valueOf(tailleKb));
+            
+            // Stocker comme chaîne formatée
+            file.put("tailleFormatee", df.format(tailleKb) + " KB");
+        } else {
+            file.put("tailleKb", 0.0);
+            file.put("tailleFormatee", "0 KB");
+        }
     }
+    
+    model.addAttribute("fichiers", fichiers);
+    return "chef/releves";
+}
+
+
+
 
     @PostMapping("/generer-releve-departement")
     public String genererReleveDepartement(
@@ -276,34 +332,66 @@ public class ChefController {
     }
 
     // ========== TÉLÉCHARGER RELEVÉ EXISTANT ==========
-    @GetMapping("/telecharger-releve/{filename}")
-    public ResponseEntity<Resource> telechargerReleve(
-            @PathVariable String filename,
-            HttpSession session) {
-        
+    @GetMapping("/telecharger-releve/{nomFichier:.+}")
+public ResponseEntity<Resource> telechargerReleve(@PathVariable String nomFichier,
+                                                   HttpSession session) {
+    try {
+        // 1. Vérifier authentification
         if (!estChef(session)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         
-        try {
-            // Chemin vers le fichier
-            Path filePath = Paths.get("E:/HP/Documents/S5/Mr Tovo/Gest_Entr/src/main/resources/static/releves/" + filename);
-            Resource resource = new UrlResource(filePath.toUri());
-            
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // 2. Vérifier que le fichier appartient au département
+        Integer departementId = (Integer) session.getAttribute("userDepartement");
+        String departementNom = departementRepository.findById(departementId)
+                .map(d -> d.getDepartement().replace(" ", "_"))
+                .orElse("");
+        
+        if (!nomFichier.contains(departementNom)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        
+        // 3. Chercher le fichier dans plusieurs emplacements
+        String repertoireProjet = System.getProperty("user.dir");
+        Path[] cheminsPossibles = {
+            // Emplacement dans les ressources statiques (pour HTTP)
+            Paths.get(repertoireProjet, "src/main/resources/static/releves/departement", nomFichier),
+            // Emplacement relatif (pour debug)
+            Paths.get("releves/departement", nomFichier),
+            // Emplacement dans target après compilation
+            Paths.get("target/classes/static/releves/departement", nomFichier)
+        };
+        
+        Path fichierPath = null;
+        for (Path chemin : cheminsPossibles) {
+            if (Files.exists(chemin)) {
+                fichierPath = chemin;
+                System.out.println("Fichier trouvé à: " + chemin.toAbsolutePath());
+                break;
+            }
+        }
+        
+        if (fichierPath == null) {
+            System.out.println("Fichier non trouvé: " + nomFichier);
+            return ResponseEntity.notFound().build();
+        }
+        
+        // 4. Créer la ressource
+        Resource resource = new UrlResource(fichierPath.toUri());
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, 
+                        "attachment; filename=\"" + nomFichier + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(Files.size(fichierPath))
+                .body(resource);
+                
+    } catch (Exception e) {
+        System.err.println("Erreur téléchargement: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
+}
     // ========== VALIDER PLUSIEURS JUSTIFICATIONS ==========
     @PostMapping("/valider-multiple")
     @ResponseBody
