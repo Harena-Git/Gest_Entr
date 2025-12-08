@@ -2,6 +2,7 @@ package com.example.gestion.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "heures_supplementaire")
@@ -10,7 +11,7 @@ public class HeuresSupplementaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_heures_supplementaire")
-    private Long id;
+    private Integer idHeuresSupplementaire;
 
     @Column(name = "nb_heures")
     private Integer nbHeures;
@@ -30,23 +31,24 @@ public class HeuresSupplementaire {
     @JoinColumn(name = "Id_personnel") // Cette colonne doit exister dans votre table
     private Personnel personnel;
 
+    @OneToMany(mappedBy = "heuresSupplementaire")
+    private List<PersonnelHeureSupp> personnelHeureSupps;
+
     // Constructeurs
     public HeuresSupplementaire() {}
 
-    public HeuresSupplementaire(Integer nbHeures, Double montant, LocalDate dateHeureSup, HeuresSupType heuresSupType, Personnel personnel) {
+    public HeuresSupplementaire(Integer nbHeures, HeuresSupType heuresSupType) {
         this.nbHeures = nbHeures;
-        this.montant = montant;
-        this.dateHeureSup = dateHeureSup;
         this.heuresSupType = heuresSupType;
-        this.personnel = personnel;
     }
 
-    public Long getId() {
-        return id;
+    // Getters et Setters
+    public Integer getIdHeuresSupplementaire() {
+        return idHeuresSupplementaire;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdHeuresSupplementaire(Integer idHeuresSupplementaire) {
+        this.idHeuresSupplementaire = idHeuresSupplementaire;
     }
 
     public Integer getNbHeures() {
@@ -91,7 +93,7 @@ public class HeuresSupplementaire {
     }
 
     // Méthode utilitaire pour calculer le montant automatiquement
-    public void calculerMontant(Double salaireHoraire) {
+    public void calculerMontantBemaso(Double salaireHoraire) {
         if (heuresSupType != null && heuresSupType.getTaux() != null && nbHeures != null && salaireHoraire != null) {
             this.montant = nbHeures * salaireHoraire * heuresSupType.getTaux();
         }
@@ -103,5 +105,21 @@ public class HeuresSupplementaire {
 
     public int getAnnee() {
         return dateHeureSup != null ? dateHeureSup.getYear() : 0;
+    }
+    public List<PersonnelHeureSupp> getPersonnelHeureSupps() {
+        return personnelHeureSupps;
+    }
+
+    public void setPersonnelHeureSupps(List<PersonnelHeureSupp> personnelHeureSupps) {
+        this.personnelHeureSupps = personnelHeureSupps;
+    }
+
+    // Méthode utilitaire pour calculer le montant
+    public void calculerMontant(Double tauxHoraire) {
+        if (nbHeures != null && heuresSupType != null && tauxHoraire != null) {
+            Double tauxBD = heuresSupType.getTaux() != null ? heuresSupType.getTaux() : 0.0;
+            // calculer en double puis convertir en Double pour la propriété montant
+            this.montant = Double.valueOf(tauxHoraire.doubleValue() * nbHeures.doubleValue() * tauxBD.doubleValue());
+        }
     }
 }

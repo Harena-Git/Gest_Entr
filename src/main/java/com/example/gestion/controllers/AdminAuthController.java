@@ -23,47 +23,57 @@ public class AdminAuthController {
         return "admin/login";
     }
 
-   /*  @PostMapping("/admin/login")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
-                        Model model) {
-        User user = userRepository.findByNom(username);
-        if (user != null && user.getMot_de_passe().equals(password) && user.getRole() != null && user.getRole().getLibelle().equalsIgnoreCase("ADMIN")) {
-            // Authentification réussie, redirige vers la page admin (à adapter)
-            return "redirect:/admin/dashboard";
-        } else {
-            model.addAttribute("error", "Identifiants invalides ou accès refusé.");
-            return "admin/login";
-        }
-    }*/
-
     @PostMapping("/admin/login")
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password") String password,
-                        Model model,HttpSession session) {
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        Model model, HttpSession session) {
         if (username == null || password == null) {
             model.addAttribute("error", "Veuillez remplir tous les champs.");
             return "admin/login";
         }
+        
         String usernameTrim = username.trim();
         String passwordTrim = password.trim();
 
         User user = userRepository.findByNom(usernameTrim);
-        Integer idUser = userRepository.findIdUser(usernameTrim, passwordTrim);
-        session.setAttribute("idUser", idUser);
+        
         if (user == null) {
             model.addAttribute("error", "Utilisateur introuvable.");
             return "admin/login";
         }
+        
         if (!user.getMot_de_passe().equals(passwordTrim)) {
             model.addAttribute("error", "Mot de passe incorrect.");
             return "admin/login";
         }
-      /*   if (user.getRole() == null || !user.getRole().getLibelle().equalsIgnoreCase("ADMIN")) {
-            model.addAttribute("error", "Accès réservé à l'administrateur.");
-            return "admin/login";
-        } */
-        // Authentification réussie
-        return "redirect:/admin/dashboard";
+
+        // 🆕 STOCKER LES INFORMATIONS UTILISATEUR DANS LA SESSION
+        session.setAttribute("user", user);
+        session.setAttribute("userId", user.getId_user());
+        session.setAttribute("userNom", user.getNom());
+        session.setAttribute("userRole", user.getRole().getLibelle());
+        session.setAttribute("userDepartement", user.getDepartement().getId_departement());
+
+        // Redirection selon le rôle
+        String userRole = user.getRole().getLibelle();
+        switch (userRole) {
+            case "Responsable RH":
+                return "redirect:/rh/dashboard";
+            case "Chef de département":
+                System.out.println("Role : "+ userRole);
+                return "redirect:/chef/dashboard";
+            case "Administrateur":
+                return "redirect:/admin/dashboard";
+            default:
+                System.out.println("Rôle non géré: " + userRole);
+                model.addAttribute("error", "Rôle non autorisé.");
+                return "admin/login";
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/acceuil";
     }
 }

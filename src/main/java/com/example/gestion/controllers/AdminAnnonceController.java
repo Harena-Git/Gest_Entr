@@ -41,13 +41,13 @@ public class AdminAnnonceController {
     }
 
     @PostMapping("/choose-department")
-    public String processDepartmentChoice(@RequestParam("departementId") Integer departementId) {
+    public String processDepartmentChoice(@RequestParam Integer departementId) {
         return "redirect:/admin/annonces/new?departementId=" + departementId;
     }
 
     // Étape 2 : Formulaire d'annonce filtré par département
     @GetMapping("/new")
-    public String showCreateForm(@RequestParam("departementId") Integer departementId, Model model) {
+    public String showCreateForm(@RequestParam Integer departementId, Model model) {
         model.addAttribute("annonce", new Annonce());
         var postes = posteRepository.findAll().stream().filter(p -> p.getDepartement() != null && p.getDepartement().getId_departement().equals(departementId)).toList();
         model.addAttribute("postes", postes);
@@ -85,16 +85,16 @@ public class AdminAnnonceController {
 
     @PostMapping
     public String create(
-            @RequestParam("responsabilite") String responsabilite,
-            @RequestParam("posteId") Integer posteId,
-            @RequestParam("genre") String genre,
-            @RequestParam("age") Integer age,
-            @RequestParam("annee_experience") Integer annee_experience,
-            @RequestParam("lieuId") Integer lieuId,
-            @RequestParam("niveauId") Integer niveauId,
-            @RequestParam("filiereId") Integer filiereId,
+            @RequestParam String responsabilite,
+            @RequestParam Integer posteId,
+            @RequestParam String genre,
+            @RequestParam Integer age,
+            @RequestParam Integer annee_experience,
+            @RequestParam Integer lieuId,
+            @RequestParam Integer niveauId,
+            @RequestParam Integer filiereId,
             @RequestParam("date_fin") String dateFinStr,
-            @RequestParam("departementId") Integer departementId,
+            @RequestParam Integer departementId,
             Model model
     ) {
         try {
@@ -147,7 +147,7 @@ public class AdminAnnonceController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+    public String showEditForm(@PathVariable Integer id, Model model) {
         Optional<Annonce> annonce = annonceRepository.findById(id);
         if (annonce.isPresent()) {
             model.addAttribute("annonce", annonce.get());
@@ -161,7 +161,7 @@ public class AdminAnnonceController {
     }
 
     @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Integer id, @ModelAttribute Annonce annonce, Model model) {
+    public String update(@PathVariable Integer id, @ModelAttribute Annonce annonce, Model model) {
         try {
             annonce.setId_annonce(id);
             annonceRepository.save(annonce);
@@ -177,13 +177,13 @@ public class AdminAnnonceController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Integer id) {
+    public String delete(@PathVariable Integer id) {
         annonceRepository.deleteById(id);
         return "redirect:/admin/annonces";
     }
 
     @GetMapping("/{id}")
-    public String detail(@PathVariable("id") Integer id, Model model) {
+    public String detail(@PathVariable Integer id, Model model) {
         Optional<Annonce> annonce = annonceRepository.findById(id);
         if (annonce.isPresent()) {
             model.addAttribute("annonce", annonce.get());

@@ -26,7 +26,7 @@ public class ProfilController {
     }
 
     @GetMapping("/profil")
-    public String getProfil(@RequestParam("idProfil") Integer idProfil, @RequestParam(value="idAnnonce", required=false) Integer idAnnonce,
+    public String getProfil(@RequestParam Integer idProfil, @RequestParam(required=false) Integer idAnnonce,
                             Model model) {
         try {
             Profil profil = profilRepository.findById(idProfil).orElse(null);

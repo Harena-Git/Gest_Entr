@@ -2,6 +2,7 @@ package com.example.gestion.models;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+
 import java.util.List;
 
 @Entity
@@ -11,7 +12,7 @@ public class HeuresSupType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_heures_sup")
-    private Integer id;
+    private Integer idHeuresSup;
 
     @Column(name = "libelle", length = 50)
     private String libelle;
@@ -31,12 +32,12 @@ public class HeuresSupType {
     }
 
     // Getters et Setters
-    public Integer getId() {
-        return id;
+    public Integer getIdHeuresSup() {
+        return idHeuresSup;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIdHeuresSup(Integer idHeuresSup) {
+        this.idHeuresSup = idHeuresSup;
     }
 
     public String getLibelle() {

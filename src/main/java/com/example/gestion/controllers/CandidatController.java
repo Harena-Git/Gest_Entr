@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import java.util.List;
@@ -86,7 +85,7 @@ public class CandidatController {
 
     
     @GetMapping("/form")
-    public String showForm(@RequestParam(name = "idAnnonce", required = false) Integer idAnnonce,
+    public String showForm(@RequestParam(required = false) Integer idAnnonce,
                         Model model) throws Exception {
         model.addAttribute("candidat", new Candidat());
 
@@ -107,9 +106,9 @@ public class CandidatController {
 
 
     @PostMapping("/save")
-    public String saveCandidat(@RequestParam("idAnnonce") Integer idAnnonce,
+    public String saveCandidat(@RequestParam Integer idAnnonce,
                             @ModelAttribute Candidat candidat,
-                            @RequestParam("file") MultipartFile file,
+                            @RequestParam MultipartFile file,
                             @RequestParam Map<String, String> requestParams,
                             Model model,HttpSession session) throws Exception {
 
@@ -211,12 +210,12 @@ public class CandidatController {
     }
 
     @PostMapping("/diplome-save")
-    public String saveDiplome(@RequestParam("idCandidat") Integer idCandidat,
+    public String saveDiplome(@RequestParam Integer idCandidat,
                             @RequestParam("diplomes.etablissement") String etablissement,
                             @RequestParam("diplomes.annee_obtention") Integer anneeObtention,
                             @RequestParam("diplomes.idFiliere") Integer idFiliere, // radio
                             @RequestParam("diplomes.id_niveau") Integer id_niveau,
-                            @RequestParam("action") String action,
+                            @RequestParam String action,
                             Model model,
                             HttpSession session) {
 
@@ -266,8 +265,8 @@ public class CandidatController {
 
     @PostMapping("/parcours-save")
     public String saveParcours(@ModelAttribute ParcoursProfessionel parcours,
-                            @RequestParam("idCandidat") Integer idCandidat,
-                            @RequestParam("action") String action,
+                            @RequestParam Integer idCandidat,
+                            @RequestParam String action,
                             Model model,
                             HttpSession session) {
         Candidat candidat = candidatRepository.findById(idCandidat)
@@ -374,7 +373,7 @@ public class CandidatController {
      * @return message de succès ou erreur
      */
     @PostMapping("/export-excel")
-    public ResponseEntity<InputStreamResource> exportCandidatsExcel(@RequestParam("candidatIds") List<Integer> candidatIds, HttpServletResponse response) throws IOException {
+    public ResponseEntity<InputStreamResource> exportCandidatsExcel(@RequestParam List<Integer> candidatIds, HttpServletResponse response) throws IOException {
         // 🔹 Récupérer tous les candidats correspondant aux IDs reçus
         List<Candidat> candidats = candidatRepository.findAllById(candidatIds);
         ByteArrayInputStream in = excelExportService.candidatsToExcel(candidats);
@@ -389,7 +388,7 @@ public class CandidatController {
     }
 
    @PostMapping("/import")
-    public String importCandidats(@RequestParam("file") MultipartFile file, Model model) {
+    public String importCandidats(@RequestParam MultipartFile file, Model model) {
         if (file.isEmpty()) {
             model.addAttribute("error", "Le fichier est vide !");
             return "importResult"; // view qui affichera l’erreur
