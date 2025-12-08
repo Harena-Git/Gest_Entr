@@ -1,11 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin</title>
+    <title>${pageTitle != null ? pageTitle : 'Gestion RH'}</title>
     <style>
         * {
             margin: 0;
@@ -34,6 +34,7 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         .sidebar-header {
@@ -55,6 +56,7 @@
 
         .nav-menu {
             padding: 20px 0;
+            list-style: none;
         }
 
         .nav-item {
@@ -205,113 +207,29 @@
                 padding: 20px;
             }
         }
-
-        /* État vide */
-        .empty-state {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-top: 20px;
-        }
-
-        .empty-state h3 {
-            color: #495057;
-            font-size: 1.6em;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            color: #6c757d;
-            font-size: 1em;
-        }
-
-        /* Grille des annonces */
-        .annonces-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-
-        /* Carte annonce */
-        .annonce-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .annonce-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-        }
-
-        /* Header */
-        .card-header {
-            background: #495057;
-            padding: 15px;
-        }
-
-        .card-header .card-title {
-            margin: 0;
-            color: white;
-            font-size: 1.2em;
-        }
-
-        /* Body */
-        .card-body {
-            padding: 15px 20px;
-            color: #495057;
-        }
-
-        .card-body p {
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
-        /* Footer */
-        .card-footer {
-            margin-top: auto;
-            padding: 15px;
-            background: #f1f3f5;
-            text-align: center;
-        }
-
-        /* Bouton détails */
-        .btn-details {
-            display: inline-block;
-            padding: 10px 16px;
-            background: #495057;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.95em;
-            transition: background 0.2s ease;
-        }
-
-        .btn-details:hover {
-            background: #343a40;
-        }
-
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <h4>👨‍💼 Admin Panel</h4>
+                <h4>👨‍💼 Gestion RH</h4>
+                <p>Système de gestion</p>
             </div>
             
             <ul class="nav-menu">
+                <!-- Accueil -->
+                <li class="nav-item">
+                    <a href="/acceuil" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        Accueil
+                    </a>
+                </li>
+
                 <!-- Section Candidat -->
                 <li class="nav-section">
-                    <div class="section-header" onclick="toggleSection('candidat')">
+                    <div class="section-header" onclick="toggleLayoutSection('candidat')">
                         <div class="section-title">
                             <span class="nav-icon">👔</span>
                             Candidat
@@ -324,7 +242,7 @@
                             Annonces
                         </a>
                         <a href="/Embauche" class="nav-link">
-                            <span class="nav-icon">👔</span>
+                            <span class="nav-icon">💼</span>
                             Embaucher
                         </a>
                         <a href="/mes-entretiens" class="nav-link">
@@ -340,7 +258,7 @@
 
                 <!-- Section Personnel -->
                 <li class="nav-section">
-                    <div class="section-header" onclick="toggleSection('personnel')">
+                    <div class="section-header" onclick="toggleLayoutSection('personnel')">
                         <div class="section-title">
                             <span class="nav-icon">👥</span>
                             Personnel
@@ -352,19 +270,17 @@
                             <span class="nav-icon">📊</span>
                             Statistique
                         </a>
-                        <a href="/personnel/list" class="nav-link ">
+                        <a href="/personnel/list" class="nav-link">
                             <span class="nav-icon">📋</span>
-                            Liste des personnels 
+                            Liste des personnels
                         </a>
-                        <a href="/contrat/list" class="nav-link ">
-                            <span class="nav-icon">📋</span>
+                        <a href="/contrat/list" class="nav-link">
+                            <span class="nav-icon">📄</span>
                             Gestion contrats
-                    </a>
+                        </a>
                     </div>
-                    
-               
                 </li>
-            </ul>      
+            </ul>
 
             <div class="logout-section">
                 <a href="/acceuil" class="btn-logout">
@@ -374,72 +290,33 @@
             </div>
         </nav>
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <div class="main-content">
-            <div class="content-header">
-                <h2>📊 Tableau de bord - Annonces</h2>
-            </div>
-
-            <c:choose>
-                <c:when test="${empty annonces}">
-                    <div class="empty-state">
-                        <h3>Aucune annonce disponible</h3>
-                        <p>Il n'y a actuellement aucune annonce à afficher.</p>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <div class="annonces-grid">
-                        <c:forEach var="annonce" items="${annonces}">
-                            <div class="annonce-card">
-                                <div class="card-header">
-                                    <h5 class="card-title">${annonce.poste.libelle}</h5>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text">${annonce.responsabilite}</p>
-                                    <p class="card-text">
-                                        <strong>Profil recherché:</strong> ${annonce.profil.genre}
-                                    </p>
-                                    <p class="card-text">
-                                        <strong>Date publication:</strong> ${annonce.date_annonce}
-                                    </p>
-                                    <p class="card-text">
-                                        <strong>Date de fin:</strong> ${annonce.date_fin}
-                                    </p>
-                                </div>
-                                <div class="card-footer">
-                                    <a href="/admin/annonces/${annonce.id_annonce}" class="btn-details">
-                                        👁️ Voir les détails
-                                    </a>
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:otherwise>
-            </c:choose>
+            <jsp:include page="${pageContent}" />
         </div>
     </div>
 
- <script>
-        let currentOpenSection = null;
+    <script>
+        let currentLayoutOpenSection = null;
 
-        function toggleSection(sectionName) {
+        function toggleLayoutSection(sectionName) {
             const section = document.getElementById('section-' + sectionName);
             const chevron = document.getElementById('chevron-' + sectionName);
             const header = chevron.parentElement;
 
             // Si on clique sur la section déjà ouverte, on la ferme
-            if (currentOpenSection === sectionName) {
+            if (currentLayoutOpenSection === sectionName) {
                 section.classList.remove('open');
                 chevron.classList.remove('open');
                 header.classList.remove('active');
-                currentOpenSection = null;
+                currentLayoutOpenSection = null;
                 return;
             }
 
             // Fermer la section actuellement ouverte
-            if (currentOpenSection) {
-                const oldSection = document.getElementById('section-' + currentOpenSection);
-                const oldChevron = document.getElementById('chevron-' + currentOpenSection);
+            if (currentLayoutOpenSection) {
+                const oldSection = document.getElementById('section-' + currentLayoutOpenSection);
+                const oldChevron = document.getElementById('chevron-' + currentLayoutOpenSection);
                 const oldHeader = oldChevron.parentElement;
                 
                 oldSection.classList.remove('open');
@@ -451,6 +328,8 @@
             section.classList.add('open');
             chevron.classList.add('open');
             header.classList.add('active');
-            currentOpenSection = sectionName;
+            currentLayoutOpenSection = sectionName;
         }
     </script>
+</body>
+</html>
