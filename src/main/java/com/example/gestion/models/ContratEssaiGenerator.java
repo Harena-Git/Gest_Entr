@@ -125,17 +125,23 @@ public class ContratEssaiGenerator {
                 "\nCette rémunération pourra être révisée à l'issue de la période d'essai selon les résultats obtenus.");
             
             ajouterArticle(document, "Article 6 - DURÉE ET HORAIRES DE TRAVAIL",
-                "La durée hebdomadaire de travail est fixée à 35" + 
-                " heures, réparties sur 5 jours par semaine.\n\n" +
-                "Les horaires de travail sont les suivants : " + "8h00 - 12h00 et 14h00 - 17h00" + "\n\n" +
-                "En fonction des nécessités du service, l'employé pourra être amené à effectuer des heures supplémentaires " +
-                "qui seront rémunérées ou récupérées conformément aux dispositions légales et conventionnelles.");
+                """
+                La durée hebdomadaire de travail est fixée à 35\
+                 heures, réparties sur 5 jours par semaine.
+                
+                Les horaires de travail sont les suivants : \
+                8h00 - 12h00 et 14h00 - 17h00
+                
+                En fonction des nécessités du service, l'employé pourra être amené à effectuer des heures supplémentaires \
+                qui seront rémunérées ou récupérées conformément aux dispositions légales et conventionnelles.""");
             
             ajouterArticle(document, "Article 7 - CONGÉS PAYÉS",
-                "L'employé bénéficie de congés payés conformément aux dispositions légales en vigueur, " +
-                "soit 2,5 jours ouvrables par mois de travail effectif.\n\n" +
-                "Les dates de congés sont fixées d'un commun accord entre les parties, en tenant compte " +
-                "des nécessités du service et des souhaits de l'employé.");
+                """
+                L'employé bénéficie de congés payés conformément aux dispositions légales en vigueur, \
+                soit 2,5 jours ouvrables par mois de travail effectif.
+                
+                Les dates de congés sont fixées d'un commun accord entre les parties, en tenant compte \
+                des nécessités du service et des souhaits de l'employé.""");
             
             ajouterArticle(document, "Article 8 - PÉRIODE D'ESSAI",
                 "Durant la période d'essai de " + infos.getDureeContrat() + " mois, chacune des parties peut rompre " +
@@ -148,28 +154,36 @@ public class ContratEssaiGenerator {
                 "par accord écrit et exprès des deux parties avant son terme initial.");
             
             ajouterArticle(document, "Article 9 - CONFIDENTIALITÉ ET NON-CONCURRENCE",
-                "L'employé s'engage à ne divulguer aucune information confidentielle concernant l'entreprise, " +
-                "ses clients, ses fournisseurs, ses partenaires, ses méthodes de travail ou tout élément " +
-                "relevant du secret des affaires, tant pendant la durée du contrat qu'après sa cessation.\n\n");
+                """
+                L'employé s'engage à ne divulguer aucune information confidentielle concernant l'entreprise, \
+                ses clients, ses fournisseurs, ses partenaires, ses méthodes de travail ou tout élément \
+                relevant du secret des affaires, tant pendant la durée du contrat qu'après sa cessation.
+                
+                """);
             
             ajouterArticle(document, "Article 10 - PROPRIÉTÉ INTELLECTUELLE",
                 "Toutes les créations, inventions, développements ou améliorations réalisés par l'employé " +
                 "dans le cadre de l'exécution du présent contrat sont et demeureront la propriété exclusive de l'entreprise.");
             
             ajouterArticle(document, "Article 11 - RUPTURE DU CONTRAT",
-                "Le contrat prendra fin automatiquement à son terme, sauf renouvellement par accord des parties.\n\n" +
-                "Il peut également être rompu avant son terme :\n" +
-                "• Durant la période d'essai dans les conditions de l'article 8\n" +
-                "• Pour motif économique ou personnel grave\n" +
-                "• D'un commun accord entre les parties\n" +
-                "• En cas de force majeure");
+                """
+                Le contrat prendra fin automatiquement à son terme, sauf renouvellement par accord des parties.
+                
+                Il peut également être rompu avant son terme :
+                • Durant la période d'essai dans les conditions de l'article 8
+                • Pour motif économique ou personnel grave
+                • D'un commun accord entre les parties
+                • En cas de force majeure""");
             
             ajouterArticle(document, "Article 12 - DISPOSITIONS GÉNÉRALES",
-                "Le présent contrat est soumis au droit français et à la Convention Collective " + 
-                "Nationale des Cadres de la Métallurgie.\n\n" +
-                "Toute modification du présent contrat devra faire l'objet d'un avenant écrit signé par les deux parties.\n\n" +
-                "En cas de litige relatif à l'interprétation ou l'exécution du présent contrat, les parties s'engagent " +
-                "à rechercher une solution amiable avant toute action contentieuse.");
+                """
+                Le présent contrat est soumis au droit français et à la Convention Collective \
+                Nationale des Cadres de la Métallurgie.
+                
+                Toute modification du présent contrat devra faire l'objet d'un avenant écrit signé par les deux parties.
+                
+                En cas de litige relatif à l'interprétation ou l'exécution du présent contrat, les parties s'engagent \
+                à rechercher une solution amiable avant toute action contentieuse.""");
             
             // Signatures
             document.add(new Paragraph(" ", TEXTE_FONT));

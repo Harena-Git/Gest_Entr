@@ -33,7 +33,7 @@ public class QcmController {
     
     @GetMapping("/{qcmId}")
     public String showQcm(@PathVariable Integer qcmId, 
-                         @RequestParam(name = "candidatId", required = false) Integer candidatId,
+                         @RequestParam(required = false) Integer candidatId,
                          Model model, HttpSession session) {
         
         // Si pas de candidatId, en créer un fictif pour le test
@@ -50,7 +50,7 @@ public class QcmController {
 
             if (questions == null) {
                 System.err.println("⚠️ Aucune question spécifique trouvée pour ce QCM !" + qcmId);
-            } else if (questions instanceof Collection && ((Collection<?>) questions).isEmpty()) {
+            } else if (questions instanceof Collection<?> collection && collection.isEmpty()) {
                 System.err.println("⚠️ La liste des questions spécifiques est vide !" + qcmId);
             }
             model.addAttribute("questions", qcmData.get("questions"));
