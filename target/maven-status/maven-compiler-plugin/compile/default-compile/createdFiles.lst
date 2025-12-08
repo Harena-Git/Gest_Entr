@@ -64,6 +64,7 @@ com\example\gestion\repository\QuestionRepository.class
 com\example\gestion\repository\DepartementRepository.class
 com\example\gestion\repository\NiveauRepository.class
 com\example\gestion\services\ProfilService.class
+com\example\gestion\controllers\PublicValidationCongeRHController.class
 com\example\gestion\models\Diplome.class
 com\example\gestion\repository\EtatCandidatRepository.class
 com\example\gestion\controllers\Entretien1Controller.class
@@ -76,6 +77,7 @@ com\example\gestion\models\Remplacement.class
 com\example\gestion\config\SecurityConfig.class
 com\example\gestion\repository\ReponseRepository.class
 com\example\gestion\repository\RoleRepository.class
+com\example\gestion\controllers\PublicValidationCongeChefController.class
 com\example\gestion\controllers\ValidationCongeChefController.class
 com\example\gestion\repository\PersonnelRepository.class
 com\example\gestion\models\NiveauDTO.class
@@ -120,5 +122,6 @@ com\example\gestion\models\StatutDemande.class
 com\example\gestion\models\Filiere.class
 com\example\gestion\repository\DiplomeCandidatRepository.class
 com\example\gestion\repository\PosteRepository.class
+com\example\gestion\config\DataInitializer.class
 com\example\gestion\repository\EvaluationEntretien1Repository.class
 com\example\gestion\controllers\TestController.class

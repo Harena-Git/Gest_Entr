@@ -455,3 +455,17 @@ CREATE TABLE Asso_37(
    FOREIGN KEY(Id_personnel) REFERENCES personnel(Id_personnel),
    FOREIGN KEY(Id_heures_supplementaire) REFERENCES heures_supplementaire(Id_heures_supplementaire)
 );
+
+
+
+INSERT INTO decision_validation (libelle) VALUES
+('Approuvée'),                         
+('Rejetée'),                           
+('Approuvée avec modifications'),      
+('En attente'),                       
+('À reviser'),                        
+('Conditionnel'),                     
+('Reportée'),                         
+('Annulée'),                          
+('Automatiquement approuvée'),        
+('Nécessite approbation supérieure'); 

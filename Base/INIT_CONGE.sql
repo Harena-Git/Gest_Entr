@@ -19,8 +19,14 @@ ON CONFLICT DO NOTHING;
 INSERT INTO decision_validation (libelle) VALUES 
 ('Approuvée'),
 ('Rejetée'),
+('Approuvée avec modifications'),
 ('En attente'),
-('Modifiée')
+('À reviser'),
+('Conditionnel'),
+('Reportée'),
+('Annulée'),
+('Automatiquement approuvée'),
+('Nécessite approbation supérieure')
 ON CONFLICT DO NOTHING;
 
 -- 3. EXEMPLE DE CRÉATION D'UN SOLDE DE CONGÉ (à adapter)

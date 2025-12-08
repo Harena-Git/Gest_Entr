@@ -18,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
      List<User> findByDepartement( Departement departement);
 
+     @Query("SELECT u FROM User u WHERE u.personnel.id_personnel = :idPersonnel")
+     Optional<User> findByPersonnelId(Integer idPersonnel);
+
     @Query("SELECT u.id FROM User u WHERE u.nom = ?1 AND u.mot_de_passe = ?2")
      Integer findIdUser(String username, String password);
 }

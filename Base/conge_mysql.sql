@@ -165,4 +165,30 @@ CREATE TABLE IF NOT EXISTS remplacement (
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- ============================================================================
+-- INITIALISATION DES DONNÉES
+-- ============================================================================
+
+-- Statuts de demande de congé
+INSERT IGNORE INTO statut_demande (libelle) VALUES 
+('En attente'),
+('Approuvée par chef'),
+('Approuvée par RH'),
+('Rejetée par chef'),
+('Rejetée par RH'),
+('Annulée');
+
+-- Décisions de validation
+INSERT IGNORE INTO decision_validation (libelle) VALUES 
+('Approuvée'),
+('Rejetée'),
+('Approuvée avec modifications'),
+('En attente'),
+('À reviser'),
+('Conditionnel'),
+('Reportée'),
+('Annulée'),
+('Automatiquement approuvée'),
+('Nécessite approbation supérieure');
+
 -- End of conge_mysql.sql
