@@ -5,7 +5,7 @@ INSERT INTO fiche_paie (
 ) VALUES
 (
     2025, 11, 1200.00, 1350.00, 1250.00, 1100.00,
-    50.00, 100.00, 150.00, 2
+    50.00, 100.00, 150.00, 5
 );
 
 INSERT INTO fiche_paie (
@@ -14,7 +14,7 @@ INSERT INTO fiche_paie (
 ) VALUES
 (
     2025, 10, 1200.00, 1350.00, 1250.00, 1100.00,
-    50.00, 100.00, 150.00, 2
+    50.00, 100.00, 150.00, 5
 );
 
 -- Fiche de paie pour le personnel 3
@@ -24,15 +24,15 @@ INSERT INTO fiche_paie (
 ) VALUES
 (
     2025, 11, 1500.00, 1700.00, 1600.00, 1400.00,
-    80.00, 120.00, 200.00, 3
+    80.00, 120.00, 200.00, 6
 );
 
 INSERT INTO complement_salaire (annee, mois, indemnite, rappels, autres, id_personnel, avance)
 VALUES 
-(2025, 11, 50000, 10000, 5000, 2, 700000),   -- Personnel 2 pour novembre 2025
-(2025, 11, 40000, 0, 3000, 3, 600000),       -- Personnel 3 pour novembre 2025
-(2025, 10, 30000, 5000, 2000, 2, 80000),    -- Personnel 2 pour octobre 2025
-(2025, 10, 35000, 2000, 1000, 3, 9000000);    -- Personnel 3 pour octobre 2025
+(2025, 11, 50000, 10000, 5000, 5, 700000),   -- Personnel 2 pour novembre 2025
+(2025, 11, 40000, 0, 3000, 6, 600000),       -- Personnel 3 pour novembre 2025
+(2025, 10, 30000, 5000, 2000, 5, 80000),    -- Personnel 2 pour octobre 2025
+(2025, 10, 35000, 2000, 1000, 6, 9000000);    -- Personnel 3 pour octobre 2025
 
 INSERT INTO type_retenu (libelle, taux, type_enum) VALUES
 ('CNaPS', 1.0, 'EMPLOYE'),
@@ -43,16 +43,16 @@ INSERT INTO type_retenu (libelle, taux, type_enum) VALUES
 ('Autres', 100.0, 'AUTRE');
 
 INSERT INTO retenu (annee, mois, id_personnel, id_plafond, id_type_retenu, montant_defaut) VALUES
-(2025, 10, 2, 1, 1, 0), -- CNAPS employé pour le personnel 2
-(2025, 10, 2, 1, 2, 0), -- CNAPS patronal pour le personnel 2
-(2025, 10, 3, 1, 1, 0), -- CNAPS employé pour le personnel 3
-(2025, 10, 3, 1, 2, 0), -- CNAPS patronal pour le personnel 3
-(2025, 10, 2, 1, 3, 0), -- OSTIE employé pour le personnel 2
-(2025, 10, 2, 1, 4, 0), -- OSTIE patronal pour le personnel 2
-(2025, 10, 3, 1, 3, 0), -- OSTIE employé pour le personnel 3
-(2025, 10, 3, 1, 4, 0), -- OSTIE patronal pour le personnel 3
-(2025, 11, 2, 1, 6, 10500), -- Autres retenus pour le personnel 2
-(2025, 11, 3, 1, 6, 5000), -- Autres retenus pour le personnel 3
+(2025, 10, 5, 1, 1, 0), -- CNAPS employé pour le personnel 2
+(2025, 10, 5, 1, 2, 0), -- CNAPS patronal pour le personnel 2
+(2025, 10, 6, 1, 1, 0), -- CNAPS employé pour le personnel 3
+(2025, 10, 6, 1, 2, 0), -- CNAPS patronal pour le personnel 3
+(2025, 10, 5, 1, 3, 0), -- OSTIE employé pour le personnel 2
+(2025, 10, 5, 1, 4, 0), -- OSTIE patronal pour le personnel 2
+(2025, 10, 6, 1, 3, 0), -- OSTIE employé pour le personnel 3
+(2025, 10, 6, 1, 4, 0), -- OSTIE patronal pour le personnel 3
+(2025, 11, 5, 1, 6, 10500), -- Autres retenus pour le personnel 2
+(2025, 11, 6, 1, 6, 5000); -- Autres retenus pour le personnel 3
 
 MariaDB [gestion_entreprise]> select * from retenu;
 +-----------+-------+------+----------------+--------------+------------+----------------+
@@ -91,16 +91,16 @@ MariaDB [gestion_entreprise]> select * from retenu;
 +-----------+-------+------+----------------+--------------+------------+----------------+
 
 INSERT INTO retenu (annee, mois, id_personnel, id_plafond, id_type_retenu, montant_defaut) VALUES
-(2025, 12, 2, 1, 1, 0), -- CNAPS employé pour le personnel 2
-(2025, 12, 2, 1, 2, 0), -- CNAPS patronal pour le personnel 2
-(2025, 12, 3, 1, 1, 0), -- CNAPS employé pour le personnel 3
-(2025, 12, 3, 1, 2, 0), -- CNAPS patronal pour le personnel 3
-(2025, 12, 2, 1, 3, 0), -- OSTIE employé pour le personnel 2
-(2025, 12, 2, 1, 4, 0), -- OSTIE patronal pour le personnel 2
-(2025, 12, 3, 1, 3, 0), -- OSTIE employé pour le personnel 3
-(2025, 12, 3, 1, 4, 0), -- OSTIE patronal pour le personnel 3
-(2025, 12, 2, 1, 5, 10500), -- Autres retenus pour le personnel 2
-(2025, 12, 3, 1, 5, 5000); -- Autres retenus pour le personnel 3
+(2025, 12, 5, 1, 1, 0), -- CNAPS employé pour le personnel 2
+(2025, 12, 5, 1, 2, 0), -- CNAPS patronal pour le personnel 2
+(2025, 12, 6, 1, 1, 0), -- CNAPS employé pour le personnel 3
+(2025, 12, 6, 1, 2, 0), -- CNAPS patronal pour le personnel 3
+(2025, 12, 5, 1, 3, 0), -- OSTIE employé pour le personnel 2
+(2025, 12, 5, 1, 4, 0), -- OSTIE patronal pour le personnel 2
+(2025, 12, 6, 1, 3, 0), -- OSTIE employé pour le personnel 3
+(2025, 12, 6, 1, 4, 0), -- OSTIE patronal pour le personnel 3
+(2025, 12, 5, 1, 5, 10500), -- Autres retenus pour le personnel 2
+(2025, 12, 6, 1, 5, 5000); -- Autres retenus pour le personnel 3
 
 INSERT INTO plafond (date_, montant) VALUES
 ('2025-11-01', 1000000);
@@ -108,14 +108,14 @@ INSERT INTO plafond (date_, montant) VALUES
 -- Impôts pour MAT001 (Razafimanjato Elodie) - Novembre 2025
 INSERT INTO impot (annee, autres_impots, enfant_chargenbr, enfant_chargepu, igrnet, impot_du, mois, id_personnel) 
 VALUES 
-(2025, 50000.0, 2.0, 10000.0, 150000.0, 500000.0, 12, 2),
-(2025, 30000.0, 1.0, 8000.0, 120000.0, 450000.0, 10, 2);
+(2025, 50000.0, 2.0, 10000.0, 150000.0, 500000.0, 12, 5),
+(2025, 30000.0, 1.0, 8000.0, 120000.0, 450000.0, 10, 5);
 
 -- Impôts pour MAT002 (Bakomalala Fenitra) - Novembre 2025
 INSERT INTO impot (annee, autres_impots, enfant_chargenbr, enfant_chargepu, igrnet, impot_du, mois, id_personnel) 
 VALUES 
-(2025, 40000.0, 3.0, 12000.0, 180000.0, 600000.0, 12, 3),
-(2025, 25000.0, 2.0, 9000.0, 140000.0, 480000.0, 10, 3);
+(2025, 40000.0, 3.0, 12000.0, 180000.0, 600000.0, 12, 6),
+(2025, 25000.0, 2.0, 9000.0, 140000.0, 480000.0, 10, 6);
 
 -- Données d'exemple
 INSERT INTO IRSA (tranche_min, tranche_max, taux, date_debut, date_fin, est_actif) VALUES
@@ -134,16 +134,43 @@ INSERT INTO heures_sup_type (libelle, taux) VALUES
 
 -- Heures supplémentaires pour le personnel MAT001 (id_personnel = 2)
 INSERT INTO heures_supplementaire (nb_heures, montant, date_heure_sup, id_heures_sup, id_personnel) VALUES
-(4, 120000, '2025-12-15', 1, 2),   -- 4 heures de nuit
-(8, 300000, '2025-12-20', 2, 2),   -- 8 heures weekend
-(6, 360000, '2025-12-25', 3, 2);   -- 6 heures fériées
+(4, 120000, '2025-12-15', 1, 5),   -- 4 heures de nuit
+(8, 300000, '2025-12-20', 2, 5),   -- 8 heures weekend
+(6, 360000, '2025-12-25', 3, 5);   -- 6 heures fériées
 
 -- Heures supplémentaires pour le personnel MAT002 (id_personnel = 3)  
 INSERT INTO heures_supplementaire (nb_heures, montant, date_heure_sup, id_heures_sup, id_personnel) VALUES
-(5, 137500, '2025-12-10', 1, 3),   -- 5 heures de nuit
-(3, 112500, '2025-12-18', 2, 3),   -- 3 heures weekend
-(4, 160000, '2025-12-22', 3, 3),   -- 4 heures fériées
-(10, 220000, '2025-12-28', 4, 3);  -- 10 heures simples
+(5, 137500, '2025-12-10', 1, 6),   -- 5 heures de nuit
+(3, 112500, '2025-12-18', 2, 6),   -- 3 heures weekend
+(4, 160000, '2025-12-22', 3, 6),   -- 4 heures fériées
+(10, 220000, '2025-12-28', 4, 6);  -- 10 heures simples
 
 -- Vérifier l'insertion
 SELECT * FROM heures_supplementaire; 
+
+
+
+
+mysql> SELECT * FROM fiche_paie;
++---------------+-------+------+-------------+--------------+--------------+-------------------+-------------+---------------+-----------------+--------------+-------------+---------------+----------+--------------+
+| id_fiche_paie | annee | mois | net_a_payer | salaire_base | salaire_brut | salaire_imposable | salaire_net | total_absence | total_heure_sup | total_impots | total_prime | total_retenus | id_impot | id_personnel |
++---------------+-------+------+-------------+--------------+--------------+-------------------+-------------+---------------+-----------------+--------------+-------------+---------------+----------+--------------+
+|             6 |  2025 |   11 |        NULL |         1200 |         1350 |              1250 |        1100 |             0 |              50 |         NULL |         100 |           150 |        6 |            5 |
+|             7 |  2025 |   10 |        NULL |         1200 |         1350 |              1250 |        1100 |             0 |              50 |         NULL |         100 |           150 |        5 |            5 |
+|             8 |  2025 |   11 |        NULL |         1500 |         1700 |              1600 |        1400 |             0 |              80 |         NULL |         120 |           200 |        7 |            6 |
++---------------+-------+------+-------------+--------------+--------------+-------------------+-------------+---------------+-----------------+--------------+-------------+---------------+----------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT * FROM impot;
++----------+-------+---------------+------------------+-----------------+--------+----------+------+--------------+
+| id_impot | annee | autres_impots | enfant_chargenbr | enfant_chargepu | igrnet | impot_du | mois | id_personnel |
++----------+-------+---------------+------------------+-----------------+--------+----------+------+--------------+
+|        5 |  2025 |         30000 |                1 |            8000 | 120000 |   450000 |   10 |            5 |
+|        6 |  2025 |         50000 |                2 |           10000 | 150000 |   500000 |   11 |            5 |
+|        7 |  2025 |         35000 |                2 |            9000 | 160000 |   520000 |   11 |            6 |
+|        8 |  2025 |         50000 |                2 |           10000 | 150000 |   500000 |   12 |            5 |
+|        9 |  2025 |         40000 |                3 |           12000 | 180000 |   600000 |   12 |            6 |
++----------+-------+---------------+------------------+-----------------+--------+----------+------+--------------+
+5 rows in set (0.00 sec)
+
+mysql>

@@ -586,7 +586,11 @@
                         <a href="/contrat/list" class="nav-link ">
                             <span class="nav-icon">📋</span>
                             Gestion contrats
-                    </a>
+                        </a>
+                        <a href="/paie/etats" class="nav-link">
+                            <span class="nav-icon">💰</span>
+                            État de paie
+                        </a>
                     </div>
                     
                
@@ -762,6 +766,7 @@
                                     <th>Date d'embauche</th>
                                     <th>Statut</th>
                                     <th>Actions</th>
+                                    <th>Fiche de paie</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -813,6 +818,9 @@
                                                class="btn-details">
                                                 👁️ Détails
                                             </a>
+                                        </td>
+                                         <td>
+                                            <a href="/personnels/${personnel.id_personnel}/fichePaie">Voir Fiche de Paie</a>
                                         </td>
                                     </tr>
                                 </c:forEach>

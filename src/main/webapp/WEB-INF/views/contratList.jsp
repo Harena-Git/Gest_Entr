@@ -554,7 +554,11 @@
                         <a href="/contrat/list" class="nav-link ">
                             <span class="nav-icon">📋</span>
                             Gestion contrats
-                    </a>
+                        </a>
+                        <a href="/paie/etats" class="nav-link">
+                            <span class="nav-icon">💰</span>
+                            État de paie
+                        </a>
                     </div>
                     
                
