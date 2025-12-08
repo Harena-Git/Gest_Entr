@@ -56,10 +56,16 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
             
-            <dependency>
+        <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.29</version> <!-- ou version plus récente -->
         </dependency>
 
 		  <!-- Spring Boot Web (REST controllers) -->

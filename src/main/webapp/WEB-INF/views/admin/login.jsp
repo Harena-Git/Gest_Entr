@@ -168,6 +168,29 @@
                 padding: 30px 20px;
             }
         }
+
+        .login-options {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .login-options a {
+            color: #495057;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 8px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .login-options a:hover {
+            background: #f8f9fa;
+            border-color: #495057;
+        }
     </style>
 </head>
 <body>
@@ -201,6 +224,9 @@
                 </c:if>
                 
                 <button type="submit">Se connecter</button>
+                <div class="login-options">
+                    <a href="/personnel/login">👤 Je suis Personnel</a>
+                </div>
             </form>
         </div>
     </div>

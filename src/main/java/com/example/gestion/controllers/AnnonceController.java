@@ -39,9 +39,9 @@ public class AnnonceController {
    @GetMapping("/acceuil")
     public String getAllAnnonces(@RequestParam(value = "lieu", required = false) Integer idLieu,
                                 @RequestParam(value = "departement", required = false) Integer idDepartement,
-                                @RequestParam(value = "experience", required = false) String experience,
-                                @RequestParam(value = "salaireMax", required = false) Integer salaireMax,
-                                @RequestParam(value = "motCle", required = false) String motCle,
+                                @RequestParam(required = false) String experience,
+                                @RequestParam(required = false) Integer salaireMax,
+                                @RequestParam(required = false) String motCle,
                                 Model model) {
         LocalDate today = LocalDate.now();
 
@@ -135,7 +135,7 @@ public class AnnonceController {
 
     // 2. Détails d'une annonce : candidats recrutés et refusés
     @GetMapping("/{id}/candidats")
-    public String candidatsAnnonce(@PathVariable("id") Integer id, Model model) {
+    public String candidatsAnnonce(@PathVariable Integer id, Model model) {
         Annonce annonce = annonceRepository.findById(id).orElseThrow(() -> new RuntimeException("Annonce introuvable"));
 
         List<Candidat> recrutes = candidatRepository.findRecrutesByAnnonceId(id);
