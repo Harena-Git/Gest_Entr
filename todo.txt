@@ -1,0 +1,127 @@
+raha misy planning , de miexecute planning fotsny ny rH 
+raha misy conge tsy ao anaty planning de avant 15 jours tokony tafapetraka 
+
+historique demande , raha tsy misy ao @historique de demande vo foana 
+
+
+rupture du contrat : 
+Gestion planning conge , similarite des personnels , validation 
+turnover:impiry niova ny personnel tao @poste
+
+Fiche de paie , plafonnement, 
+taux journalier :tauxmensuel/30
+conge paye (rupture decontrat): nombre de conge non pris *salaire /30
+
+etat de paie , fiche de paie , planning de conge , Statistique(apres les donnees)
+
+heure supplementaire: (20 h autorise par semaine )
+
+173,33
+Fonctionnalite 
+    A-Gestion du personnels
+        Recherche(par mot cle) et filtre 
+        -Liste employe (chaque User departement mahita ny personnelny, RH mahita ny rehetra )
+            Fiche employe(avec photo) avec bouton de (voir contrat )
+            Liste de contrat 
+                (type de contrat : contrat d'essai, stage , CDD, CDI)
+                -avec bouton nouvelle contrat 
+                -sur le contrat ( raha mbola tsy nirenouvelena de afaka asina bouton renouvelement)
+
+
+    B-Gestion des absences et conge/planning de conge
+        -cote personnel
+            -demande de conge (date debut, date fin , motif)
+                -empêcher la demande d’un congé si le solde est insuffisant
+            -solde conge
+            -liste de demande avec status 
+        -cote chef departement
+            -liste de conge a accepter 
+        -cote RH
+            -liste de conge a accepter(avec filtre)
+            -validation
+                -mettre à jour le solde(du personnel) après validation du congé.
+            -remplacement automatique()_cherche
+            -le remplacant est proposer , accepter ou modifier par RH
+            Le remplacement est enregistré dans la table remplacement.
+            Le remplaçant reçoit une notification automatique.
+
+    D-Etat de paie 
+        -admin
+            -liste d'etat de paie avec filtre (date et mois)
+            -fiche de paie (plus d'information)
+        -personnel
+            -son fiche de paie 
+            
+    C-Presence et Absence 
+    cote personnel:
+        -il y a le pointage de presence(insertion dans le table)
+        -retard de 15 min (impact sur le salaire )
+        -absence non justifie(impact sur le salaire)
+            impact salaire : calcul d'heure ou min , faire moins du salaire de base 
+        -justification d'absence 
+            insertion dans le table
+        -cote chef de departement 
+            alerte absence repete sans justification
+            validation de justification d'absence
+        -cote RH
+            validation de justification d'absence
+
+    D-Statistique 
+
+ 
+✅ 1. Liste des colonnes (proprement structurée)
+🔹 Colonnes liées à l’identité :
+DATE
+NBRE
+N MATRICULE
+N CNAPS
+NOM ET PRENOMS
+DATE D'EMBAUCHE
+CAT
+FONCTION
+🔹 Colonnes liées au temps / absences :
+ABSENCE DU MOIS
+🔹 Colonnes liées au salaire brut :
+SALAIRE DE BASE
+RETENU SUR ABSENCE
+SALAIRE DE BASE DU MOIS
+INDEMNITE
+RAPPEL
+AUTRES
+HR SUP / MAJ
+SALAIRE BRUT
+🔹 Cotisations :
+CNAPS 1%
+CNAPS 8%
+OSTIE 1%
+OSTIE 5%
+🔹 Impôts :
+REVENU IMPOSABLE
+IMPOT DU
+ENFANT A CHARGE
+MONTANT
+IGR NET
+🔹 Retenues diverses :
+AUTRES RETENU
+TOTAL RETENUES
+🔹 Net :
+SALAIRE NET
+AVANCE
+NET A PAYER
+AUTRE INDEMNITE
+NET DU MOIS
+
+
+Explications :
+Salaire de Base : salaire contractuel de l’employé.
+Retenue Absence : montant retiré à cause d’absences.
+Salaire de Base du Mois : salaire de base après retenue absence.
+Heures Sup : montant des heures supplémentaires.
+Salaire Brut : Salaire de base du mois + heures sup + primes éventuelles.
+CNAPS 1% / 8%, OSTIE 1% / 5% : cotisations salariales et patronales.
+Salaire Imposable : salaire brut utilisé pour le calcul de l’impôt.
+Impôt : retenue IRSA ou IGR.
+Total Retenues : somme de toutes les retenues (CNAPS, OSTIE, impôt, absences…).
+Salaire Net : salaire brut - total retenues.
+Avance : si l’employé a reçu une avance sur salaire.
+Net à Payer : salaire net final après avance et autres ajustements.

@@ -10,6 +10,8 @@ public class Personnel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_personnel;
 
+    private String num_cnaps;
+    private String matricule;
     private Date date_embauche;
     private Boolean actif;
 
@@ -23,6 +25,12 @@ public class Personnel {
 
     public Integer getId_personnel() { return id_personnel; }
     public void setId_personnel(Integer id_personnel) { this.id_personnel = id_personnel; }
+
+    public String getNum_cnaps() { return num_cnaps; }
+    public void setNum_cnaps(String num_cnaps) { this.num_cnaps = num_cnaps; }
+
+    public String getMatricule() { return matricule; }
+    public void setMatricule(String matricule) { this.matricule = matricule; }
 
     public Date getDate_embauche() { return date_embauche; }
     public void setDate_embauche(Date date_embauche) { this.date_embauche = date_embauche; }
