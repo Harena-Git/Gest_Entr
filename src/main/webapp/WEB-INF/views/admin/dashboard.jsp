@@ -290,7 +290,33 @@
                 <li class="nav-item">
                     <a href="/contrat/list" class="nav-link ">
                         <span class="nav-icon">📋</span>
-                        Gestion contrats
+                        Gestion contrats d'essai
+                    </a>
+                </li>
+                
+                <!-- Nouvelle section : Gestion du Personnel -->
+                <li class="nav-item" style="margin-top: 20px; padding: 10px 20px; background: rgba(255,255,255,0.1);">
+                    <strong style="color: white; font-size: 0.9em;">📁 GESTION DU PERSONNEL</strong>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="/admin/contrats" class="nav-link">
+                        <span class="nav-icon">📝</span>
+                        Contrats de Travail
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="/admin/historique-postes" class="nav-link">
+                        <span class="nav-icon">📈</span>
+                        Historique Postes
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="/admin/documents" class="nav-link">
+                        <span class="nav-icon">📂</span>
+                        Documents RH
                     </a>
                 </li>
 
