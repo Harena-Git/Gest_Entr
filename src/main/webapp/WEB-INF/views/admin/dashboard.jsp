@@ -319,6 +319,13 @@
                         Documents RH
                     </a>
                 </li>
+                
+                <li class="nav-item">
+                    <a href="/personnel/list" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Fiches Employés
+                    </a>
+                </li>
 
             </ul>
 

@@ -721,8 +721,12 @@
                                         </td>
                                         <td>
                                             <a href="/personnel/details?idPersonnel=${personnel.id_personnel}" 
-                                               class="btn-details">
+                                               class="btn-details" style="margin-right: 5px;">
                                                 👁️ Détails
+                                            </a>
+                                            <a href="/admin/personnel/${personnel.id_personnel}/fiche" 
+                                               class="btn-primary" style="padding: 8px 12px; font-size: 0.85em; text-decoration: none; display: inline-block;">
+                                                📋 Fiche complète
                                             </a>
                                         </td>
                                     </tr>
