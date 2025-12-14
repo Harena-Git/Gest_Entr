@@ -1,14 +1,22 @@
 package com.example.gestion.controllers;
 
-import com.example.gestion.models.*;
-import com.example.gestion.repository.*;
-import com.example.gestion.services.*;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import com.example.gestion.models.ContratTravail;
+import com.example.gestion.models.DocumentPersonnel;
+import com.example.gestion.models.HistoriquePoste;
+import com.example.gestion.models.Personnel;
+import com.example.gestion.repository.PersonnelRepository;
+import com.example.gestion.services.ContratTravailService;
+import com.example.gestion.services.DocumentPersonnelService;
+import com.example.gestion.services.HistoriquePosteService;
 
 @Controller
 @RequestMapping("/admin/personnel")
