@@ -243,6 +243,13 @@ CREATE TABLE contrat_essai(
    FOREIGN KEY(Id_candidat) REFERENCES candidat(Id_candidat)
 );
 
+-- CREATE TABLE etat_candidat(
+--    Id_etat_candidat INT AUTO_INCREMENT,
+--    libelle VARCHAR(50) NOT NULL,
+--    PRIMARY KEY(Id_etat_candidat),
+--    UNIQUE(libelle)
+-- );
+
 CREATE TABLE diplome_candidat(
    Id_diplome_candidat INT AUTO_INCREMENT,
    etablissement VARCHAR(150),

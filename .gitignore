@@ -1,0 +1,58 @@
+# Fichiers compilés Java
+*.class
+
+# Fichiers de configuration
+pom.xml
+application.properties
+
+# Répertoires de build Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Logs
+*.log
+logs/
+
+# Fichiers de package
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Fichiers IDE - IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Fichiers IDE - Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# Fichiers IDE - NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+
+# Fichiers IDE - VS Code
+.vscode/
+*.code-workspace
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*~.nib
