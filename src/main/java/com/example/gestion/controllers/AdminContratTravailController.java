@@ -66,7 +66,23 @@ public class AdminContratTravailController {
     }
     
     @PostMapping("/enregistrer")
-    public String enregistrerContrat(@ModelAttribute ContratTravail contrat) {
+    public String enregistrerContrat(@ModelAttribute ContratTravail contrat,
+                                    @org.springframework.web.bind.annotation.RequestParam(value = "personnelId", required = false) Integer personnelId,
+                                    @org.springframework.web.bind.annotation.RequestParam(value = "typeContratId", required = false) Integer typeContratId) {
+        // Récupérer et associer le personnel si l'ID est fourni
+        if (personnelId != null) {
+            Personnel personnel = personnelRepository.findById(personnelId)
+                    .orElseThrow(() -> new IllegalArgumentException("Personnel invalide: " + personnelId));
+            contrat.setPersonnel(personnel);
+        }
+        
+        // Récupérer et associer le type de contrat si l'ID est fourni
+        if (typeContratId != null) {
+            com.example.gestion.models.TypeContrat typeContrat = typeContratRepository.findById(typeContratId)
+                    .orElseThrow(() -> new IllegalArgumentException("Type de contrat invalide: " + typeContratId));
+            contrat.setTypeContrat(typeContrat);
+        }
+        
         contratTravailService.saveContrat(contrat);
         return "redirect:/admin/contrats?success=1";
     }

@@ -36,7 +36,8 @@ public class HistoriquePosteService {
         historiquePosteRepository.deleteById(id);
     }
     
-    public List<HistoriquePoste> getHistoriquesByType(String type) {
-        return historiquePosteRepository.findByTypeMouvement(type);
-    }
+    // Méthode commentée car findByTypeMouvement n'existe plus dans le repository
+    // public List<HistoriquePoste> getHistoriquesByType(String type) {
+    //     return historiquePosteRepository.findByTypeMouvement(type);
+    // }
 }

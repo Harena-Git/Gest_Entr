@@ -378,39 +378,12 @@
                                value="<fmt:formatDate value='${contrat.date_fin}' pattern='yyyy-MM-dd'/>"
                                required/>
                     </div>
-
-                    <div class="form-group">
-                        <label for="salaire">
-                            Salaire (Ar) <span class="required">*</span>
-                        </label>
-                        <input type="number" 
-                               id="salaire" 
-                               name="salaire" 
-                               step="0.01"
-                               value="${contrat.salaire}"
-                               placeholder="Ex: 500000"
-                               required/>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="poste">
-                            Poste <span class="required">*</span>
-                        </label>
-                        <input type="text" 
-                               id="poste" 
-                               name="poste" 
-                               value="${contrat.poste}"
-                               placeholder="Ex: Développeur Java"
-                               required/>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="conditions">
-                            Conditions du contrat
-                        </label>
-                        <textarea id="conditions" 
-                                  name="conditions" 
-                                  placeholder="Décrivez les conditions et clauses du contrat d'essai...">${contrat.conditions}</textarea>
+                    
+                    <div style="padding: 15px; background: #e7f3ff; border-left: 4px solid #007bff; border-radius: 5px; margin: 20px 0;">
+                        <p style="margin: 0; color: #004085;">
+                            <strong>ℹ️ Note :</strong> Le contrat d'essai est lié au candidat sélectionné. 
+                            Les informations sur le poste et le salaire sont définies lors de l'embauche.
+                        </p>
                     </div>
 
                     <div class="form-actions">

@@ -30,10 +30,10 @@
             
             <div class="form-group">
                 <label for="personnel">Employé *</label>
-                <select name="personnel.id_personnel" id="personnel" required>
+                <select name="personnelId" id="personnel" required>
                     <option value="">-- Sélectionner un employé --</option>
                     <c:forEach items="${personnels}" var="pers">
-                        <option value="${pers.id_personnel}" ${contrat.personnel.id_personnel == pers.id_personnel ? 'selected' : ''}>
+                        <option value="${pers.id_personnel}" ${contrat.personnel != null && contrat.personnel.id_personnel == pers.id_personnel ? 'selected' : ''}>
                             ${pers.candidat.nom} ${pers.candidat.prenom} - ${pers.poste.libelle}
                         </option>
                     </c:forEach>
@@ -42,10 +42,10 @@
 
             <div class="form-group">
                 <label for="typeContrat">Type de Contrat *</label>
-                <select name="typeContrat.id_type_contrat" id="typeContrat" required onchange="toggleDateFin()">
+                <select name="typeContratId" id="typeContrat" required onchange="toggleDateFin()">
                     <option value="">-- Sélectionner un type --</option>
                     <c:forEach items="${typesContrat}" var="type">
-                        <option value="${type.id_type_contrat}" ${contrat.typeContrat.id_type_contrat == type.id_type_contrat ? 'selected' : ''}>
+                        <option value="${type.id_type_contrat}" ${contrat.typeContrat != null && contrat.typeContrat.id_type_contrat == type.id_type_contrat ? 'selected' : ''}>
                             ${type.libelle}
                         </option>
                     </c:forEach>
@@ -84,6 +84,7 @@
                 <div class="form-group">
                     <label for="statut">Statut *</label>
                     <select name="statut" id="statut" required>
+                        <option value="">-- Sélectionner un statut --</option>
                         <option value="Actif" ${contrat.statut == 'Actif' ? 'selected' : ''}>Actif</option>
                         <option value="Terminé" ${contrat.statut == 'Terminé' ? 'selected' : ''}>Terminé</option>
                         <option value="Renouvelé" ${contrat.statut == 'Renouvelé' ? 'selected' : ''}>Renouvelé</option>
@@ -91,10 +92,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="renouvele" ${contrat.renouvele ? 'checked' : ''}>
+                    <label for="renouvele">
+                        <input type="checkbox" name="renouvele" id="renouvele" value="true" ${contrat.renouvele ? 'checked' : ''}>
                         Contrat Renouvelé
                     </label>
+                    <input type="hidden" name="_renouvele" value="on">
                 </div>
             </div>
 
