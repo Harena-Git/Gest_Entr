@@ -5,6 +5,7 @@
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page import="java.util.Locale" %>
+<%@ page import="com.example.gestion.models.JustificationAbsence" %>
 
 <%
     LocalDate aujourdhuiLocal = LocalDate.now();
@@ -52,7 +53,7 @@
     </div>
     
     <!-- Validations en attente -->
-    <div class="card">
+    <%-- <div class="card">
         <div class="card-header">
             <h2 class="card-title">✅ Validations en attente</h2>
             <div class="card-badge" style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em;">
@@ -182,8 +183,8 @@
             </div>
         </c:if>
     </div>
-    
-    <!-- Justifications en attente de validation chef -->
+     --%>
+    <%-- <!-- Justifications en attente de validation chef -->
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">📋 Justifications en attente de validation chef</h2>
@@ -275,9 +276,9 @@
                 </c:if>
             </div>
         </div>
-    </div>
+    </div> --%>
     
-    <!-- Navigation rapide -->
+    <%-- <!-- Navigation rapide -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
         <a href="${pageContext.request.contextPath}/rh/validations" class="btn btn-primary" style="padding: 14px 24px; text-align: center;">
             ✅ Gérer les validations
@@ -291,7 +292,6 @@
         <a href="${pageContext.request.contextPath}/rh/audit" class="btn btn-secondary" style="padding: 14px 24px; text-align: center;">
             📋 Audit & Rapports
         </a>
-    </div>
+    </div> --%>
 </div>
 
-<%@ include file="/WEB-INF/views/layout/footer.jsp" %>

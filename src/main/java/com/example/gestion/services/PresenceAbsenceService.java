@@ -34,6 +34,32 @@ public class PresenceAbsenceService {
     @Autowired
     private AuditLogService auditLogService;
 
+    private PresenceAbsence getPresenceForJustification(Personnel personnel, LocalDate date) {
+        return presenceAbsenceRepository.findByPersonnelAndDate(personnel, date)
+                .orElseGet(() -> {
+                    // Créer une présence d'absence si non trouvée
+                    PresenceAbsence presence = new PresenceAbsence();
+                    presence.setPersonnel(personnel);
+                    presence.setDate(date);
+                    presence.setPresent(false);
+                    return presenceAbsenceRepository.save(presence);
+                });
+    }
+
+    public PresenceAbsence getOrCreatePresenceByPersonnelAndDate(Integer idPersonnel, LocalDate date) {
+        Personnel personnel = personnelRepository.findById(idPersonnel)
+                .orElseThrow(() -> new RuntimeException("Personnel non trouvé"));
+        
+        return presenceAbsenceRepository.findByPersonnelAndDate(personnel, date)
+                .orElseGet(() -> {
+                    PresenceAbsence presence = new PresenceAbsence();
+                    presence.setPersonnel(personnel);
+                    presence.setDate(date);
+                    presence.setPresent(false);
+                    return presenceAbsenceRepository.save(presence);
+                });
+    }
+
     // ========== POINTAGE ENTRÉE ==========
     public PresenceAbsence enregistrerEntree(Integer actorId, String actorType, LocalDate date, LocalTime heureArrivee) {
         // Vérifier si une entrée existe déjà

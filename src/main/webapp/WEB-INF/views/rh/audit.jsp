@@ -5,147 +5,37 @@
 <%@ include file="/WEB-INF/views/layout/header.jsp" %>
 
 <div class="main-container">
-    <!-- Validations contradictoires -->
-    <c:if test="${not empty validationsContradictoires && validationsContradictoires.size() > 0}">
-        <div class="card" style="border-left: 5px solid #dc3545;">
-            <div class="card-header">
-                <h2 class="card-title">⚠️ Validations contradictoires</h2>
-                <div class="card-badge" style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9em;">
-                    ${validationsContradictoires.size()} contradictions
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Personnel</th>
-                            <th>Type</th>
-                            <th>Décision Chef</th>
-                            <th>Décision RH</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="validation" items="${validationsContradictoires}" varStatus="status">
-                            <tr>
-                                <td>
-                                    <strong>
-                                        <c:choose>
-                                            <c:when test="${validation.validationAbsChef.justificationAbsence != null}">
-                                                ${validation.validationAbsChef.justificationAbsence.personnel.candidat.nom}
-                                            </c:when>
-                                            <c:when test="${validation.validationAbsChef.justificationRetard != null}">
-                                                ${validation.validationAbsChef.justificationRetard.personnel.candidat.nom}
-                                            </c:when>
-                                            <c:otherwise>
-                                                ${validation.validationAbsChef.presenceAbsence.personnel.candidat.nom}
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </strong>
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${validation.validationAbsChef.justificationAbsence != null}">Absence</c:when>
-                                        <c:when test="${validation.validationAbsChef.justificationRetard != null}">Retard</c:when>
-                                        <c:otherwise>Présence</c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td>
-                                    <span class="status ${validation.validationAbsChef.decisionValidation.libelle == 'accepté' ? 'status-present' : 'status-absent'}">
-                                        ${validation.validationAbsChef.decisionValidation.libelle}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="status ${validation.decisionValidation.libelle == 'accepté' ? 'status-present' : 'status-absent'}">
-                                        ${validation.decisionValidation.libelle}
-                                    </span>
-                                </td>
-                                <td>
-                                    <fmt:parseDate value="${validation.dateValidation}" pattern="yyyy-MM-dd" var="parsedDateContra" type="date" />
-                                    <fmt:formatDate value="${parsedDateContra}" pattern="dd/MM/yyyy" />
-                                </td>
-                                <td>
-                                    <form action="${pageContext.request.contextPath}/rh/resoudre-contradiction" method="post" style="display: inline;">
-                                        <input type="hidden" name="idValidationRh" value="${validation.idValidationAbsRh}" />
-                                        <button type="submit" name="resolution" value="valider_chef" 
-                                                class="btn btn-success" style="padding: 6px 12px; font-size: 0.85em;">
-                                            ✅ Valider chef
-                                        </button>
-                                        <button type="submit" name="resolution" value="valider_rh" 
-                                                class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85em;">
-                                            ❌ Valider RH
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Statistiques d'audit -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-number">${statsAudit.validationsAujourdhui}</div>
+            <div class="stat-label">Validations aujourd'hui</div>
         </div>
-    </c:if>
+        
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number">${statsAudit.tauxConcordance}%</div>
+            <div class="stat-label">Taux concordance</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-number">${statsAudit.tempsMoyenValidation}</div>
+            <div class="stat-label">Heures moy. traitement</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number">${statsAudit.chefsActifs}</div>
+            <div class="stat-label">Chefs actifs</div>
+        </div>
+    </div>
     
     <!-- Historique complet des validations -->
     <div class="card">
         <div class="card-header">
             <h2 class="card-title">📋 Historique des validations</h2>
-            <div class="card-actions">
-                <form action="${pageContext.request.contextPath}/rh/exporter-audit-excel" method="post">
-                    <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">
-                        📥 Exporter l'audit (Excel)
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Filtres -->
-        <div style="padding: 20px; border-bottom: 1px solid #e9ecef;">
-            <form action="${pageContext.request.contextPath}/rh/audit" method="get" 
-                  style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
-                <div class="form-group">
-                    <label style="font-size: 0.9em;">Date début</label>
-                    <input type="date" name="dateDebut" 
-                           value="${param.dateDebut}" 
-                           style="padding: 10px; font-size: 0.9em; border: 1px solid #dee2e6; border-radius: 4px;" />
-                </div>
-                
-                <div class="form-group">
-                    <label style="font-size: 0.9em;">Date fin</label>
-                    <input type="date" name="dateFin" 
-                           value="${param.dateFin}" 
-                           style="padding: 10px; font-size: 0.9em; border: 1px solid #dee2e6; border-radius: 4px;" />
-                </div>
-                
-                <div class="form-group">
-                    <label style="font-size: 0.9em;">Type</label>
-                    <select name="type" style="padding: 10px; font-size: 0.9em; border: 1px solid #dee2e6; border-radius: 4px;">
-                        <option value="">Tous</option>
-                        <option value="absence" ${param.type == 'absence' ? 'selected' : ''}>Absence</option>
-                        <option value="retard" ${param.type == 'retard' ? 'selected' : ''}>Retard</option>
-                        <option value="presence" ${param.type == 'presence' ? 'selected' : ''}>Présence</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label style="font-size: 0.9em;">Département</label>
-                    <select name="departement" style="padding: 10px; font-size: 0.9em; border: 1px solid #dee2e6; border-radius: 4px;">
-                        <option value="">Tous</option>
-                        <c:forEach var="dept" items="${departements}">
-                            <option value="${dept.id_departement}" ${param.departement == dept.id_departement ? 'selected' : ''}>
-                                ${dept.departement}
-                            </option>
-                        </c:forEach>
-                    </select>
-                </div>
-                
-                <div class="form-group" style="align-self: end;">
-                    <button type="submit" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9em;">
-                        🔍 Filtrer
-                    </button>
-                </div>
-            </form>
         </div>
         
         <!-- Tableau d'historique -->
@@ -166,13 +56,27 @@
                     <c:forEach var="validation" items="${historiqueValidations}" varStatus="status">
                         <tr>
                             <td>
-                                <fmt:parseDate value="${validation.dateValidation}" pattern="yyyy-MM-dd" var="parsedDateHist" type="date" />
-                                <fmt:formatDate value="${parsedDateHist}" pattern="dd/MM/yyyy" />
-                                <br>
-                                <small>
-                                    <fmt:parseDate value="${validation.dateValidation}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDateTimeHist" type="both" />
-                                    <fmt:formatDate value="${parsedDateTimeHist}" pattern="HH:mm" />
-                                </small>
+                                <%-- Afficher directement la date sans parser --%>
+                                <c:if test="${not empty validation.dateValidation}">
+                                    <c:set var="dateParts" value="${validation.dateValidation.toString().split('T')}" />
+                                    <c:if test="${dateParts[0] != null}">
+                                        <%-- Formater la date --%>
+                                        <c:set var="dateStr" value="${dateParts[0]}" />
+                                        <c:set var="year" value="${dateStr.substring(0, 4)}" />
+                                        <c:set var="month" value="${dateStr.substring(5, 7)}" />
+                                        <c:set var="day" value="${dateStr.substring(8, 10)}" />
+                                        ${day}/${month}/${year}
+                                    </c:if>
+                                    <br>
+                                    <small>
+                                        <c:if test="${dateParts[1] != null}">
+                                            <c:set var="timeStr" value="${dateParts[1]}" />
+                                            <c:set var="hour" value="${timeStr.substring(0, 2)}" />
+                                            <c:set var="minute" value="${timeStr.substring(3, 5)}" />
+                                            ${hour}:${minute}
+                                        </c:if>
+                                    </small>
+                                </c:if>
                             </td>
                             <td>
                                 <strong>
@@ -212,20 +116,11 @@
                                 <span class="status ${validation.validationAbsChef.decisionValidation.libelle == 'accepté' ? 'status-present' : 'status-absent'}">
                                     ${validation.validationAbsChef.decisionValidation.libelle}
                                 </span>
-                                <br>
-                                <small>${validation.validationAbsChef.user.nom}</small>
-                                <br>
-                                <small>
-                                    <fmt:parseDate value="${validation.validationAbsChef.dateValidation}" pattern="yyyy-MM-dd" var="parsedDateChef" type="date" />
-                                    <fmt:formatDate value="${parsedDateChef}" pattern="dd/MM HH:mm" />
-                                </small>
                             </td>
                             <td>
                                 <span class="status ${validation.decisionValidation.libelle == 'accepté' ? 'status-present' : 'status-absent'}">
                                     ${validation.decisionValidation.libelle}
                                 </span>
-                                <br>
-                                <small>${validation.user.nom}</small>
                             </td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -268,65 +163,6 @@
                 </tbody>
             </table>
         </div>
-        
-        <!-- Pagination -->
-        <c:if test="${totalPages > 1}">
-            <div style="padding: 20px; border-top: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center;">
-                <div style="color: #6c757d; font-size: 0.9em;">
-                    Affichage ${(page-1)*size+1}-${Math.min(page*size, totalElements)} sur ${totalElements} validations
-                </div>
-                <div style="display: flex; gap: 5px;">
-                    <c:if test="${page > 1}">
-                        <a href="${pageContext.request.contextPath}/rh/audit?page=${page-1}&dateDebut=${param.dateDebut}&dateFin=${param.dateFin}&type=${param.type}&departement=${param.departement}" 
-                           class="btn btn-primary" style="padding: 8px 12px; text-decoration: none;">«</a>
-                    </c:if>
-                    
-                    <c:forEach begin="1" end="${totalPages}" var="i">
-                        <c:choose>
-                            <c:when test="${i == page}">
-                                <span class="btn btn-primary" style="padding: 8px 12px;">${i}</span>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="${pageContext.request.contextPath}/rh/audit?page=${i}&dateDebut=${param.dateDebut}&dateFin=${param.dateFin}&type=${param.type}&departement=${param.departement}" 
-                                   class="btn" style="padding: 8px 12px; background: #e9ecef; text-decoration: none;">${i}</a>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                    
-                    <c:if test="${page < totalPages}">
-                        <a href="${pageContext.request.contextPath}/rh/audit?page=${page+1}&dateDebut=${param.dateDebut}&dateFin=${param.dateFin}&type=${param.type}&departement=${param.departement}" 
-                           class="btn btn-primary" style="padding: 8px 12px; text-decoration: none;">»</a>
-                    </c:if>
-                </div>
-            </div>
-        </c:if>
-    </div>
-    
-    <!-- Statistiques d'audit -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">📅</div>
-            <div class="stat-number">${statsAudit.validationsAujourdhui}</div>
-            <div class="stat-label">Validations aujourd'hui</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">✅</div>
-            <div class="stat-number">${statsAudit.tauxConcordance}%</div>
-            <div class="stat-label">Taux concordance</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">⏱️</div>
-            <div class="stat-number">${statsAudit.tempsMoyenValidation}</div>
-            <div class="stat-label">Heures moy. traitement</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-number">${statsAudit.chefsActifs}</div>
-            <div class="stat-label">Chefs actifs</div>
-        </div>
     </div>
     
     <!-- Logs d'audit système -->
@@ -350,8 +186,24 @@
                     <c:forEach var="log" items="${logsAudit}" varStatus="status">
                         <tr>
                             <td>
-                                <fmt:parseDate value="${log.timestamp}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedTimestamp" type="both" />
-                                <fmt:formatDate value="${parsedTimestamp}" pattern="dd/MM/yyyy HH:mm:ss" />
+                                <%-- Afficher directement le timestamp sans parser --%>
+                                <c:if test="${not empty log.timestamp}">
+                                    <c:set var="timestampStr" value="${log.timestamp.toString()}" />
+                                    <c:if test="${not empty timestampStr}">
+                                        <c:set var="timestampParts" value="${timestampStr.split('T')}" />
+                                        <c:if test="${timestampParts[0] != null && timestampParts[1] != null}">
+                                            <%-- Formater la date --%>
+                                            <c:set var="datePart" value="${timestampParts[0]}" />
+                                            <c:set var="timePart" value="${timestampParts[1].substring(0, 8)}" />
+                                            
+                                            <c:set var="year" value="${datePart.substring(0, 4)}" />
+                                            <c:set var="month" value="${datePart.substring(5, 7)}" />
+                                            <c:set var="day" value="${datePart.substring(8, 10)}" />
+                                            
+                                            ${day}/${month}/${year} ${timePart}
+                                        </c:if>
+                                    </c:if>
+                                </c:if>
                             </td>
                             <td>
                                 <span class="status ${log.action.contains('CREATE') ? 'status-present' : log.action.contains('DELETE') ? 'status-absent' : 'status-pending'}">
@@ -387,13 +239,34 @@
                 </tbody>
             </table>
         </div>
-        
-        <div style="text-align: center; padding: 20px;">
-            <a href="${pageContext.request.contextPath}/rh/logs-complets" class="btn btn-primary" style="padding: 10px 20px;">
-                📋 Voir tous les logs
-            </a>
-        </div>
     </div>
 </div>
+
+<style>
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.status-present {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-absent {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+</style>
 
 <%@ include file="/WEB-INF/views/layout/footer.jsp" %>

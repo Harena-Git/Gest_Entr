@@ -414,7 +414,7 @@ public ResponseEntity<Resource> telechargerReleve(@PathVariable String nomFichie
             if ("absence".equals(type)) {
                 for (Integer id : ids) {
                     try {
-                        validationAbsChefService.validerJustificationAbsence(chefId, id, null, decision);
+                        validationAbsChefService.validerJustificationAbsence(chefId, id, decision);
                         count++;
                     } catch (Exception e) {
                         // Continuer avec les autres
@@ -423,7 +423,7 @@ public ResponseEntity<Resource> telechargerReleve(@PathVariable String nomFichie
             } else if ("retard".equals(type)) {
                 for (Integer id : ids) {
                     try {
-                        validationAbsChefService.validerJustificationRetard(chefId, id, null, decision);
+                        validationAbsChefService.validerJustificationRetard(chefId, id, decision);
                         count++;
                     } catch (Exception e) {
                         // Continuer avec les autres
@@ -455,7 +455,7 @@ public ResponseEntity<Resource> telechargerReleve(@PathVariable String nomFichie
 
         try {
             Integer chefId = (Integer) session.getAttribute("userId");
-            validationAbsChefService.validerJustificationAbsence(chefId, idJustification, idPresence, decision);
+            validationAbsChefService.validerJustificationAbsence(chefId, idJustification, decision);
             redirectAttributes.addFlashAttribute("success", "Absence validée avec succès");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur validation: " + e.getMessage());
@@ -476,7 +476,7 @@ public ResponseEntity<Resource> telechargerReleve(@PathVariable String nomFichie
 
         try {
             Integer chefId = (Integer) session.getAttribute("userId");
-            validationAbsChefService.validerJustificationRetard(chefId, idJustification, idPresence, decision);
+            validationAbsChefService.validerJustificationRetard(chefId, idJustification, decision);
             redirectAttributes.addFlashAttribute("success", "Retard validé avec succès");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur validation: " + e.getMessage());

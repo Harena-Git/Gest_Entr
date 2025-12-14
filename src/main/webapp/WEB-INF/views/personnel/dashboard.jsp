@@ -17,7 +17,7 @@
         <div class="card-header">
             <h2 class="card-title">📍 Pointage du jour</h2>
             <div class="card-date">
-                <fmt:formatDate value="${aujourdhui}" pattern="EEEE dd MMMM yyyy" />
+                <fmt:formatDate value="<%=new java.util.Date()%>" pattern="EEEE dd MMMM yyyy" />
             </div>
         </div>
         
@@ -36,7 +36,7 @@
                 <c:when test="${presenceAujourdhui.heureDepart == null}">
                     <div class="pointage-info">
                         <p style="font-size: 16px; margin-bottom: 15px;">✅ Entrée pointée à : 
-                            <strong><fmt:formatDate value="${presenceAujourdhui.heureArrivee}" pattern="HH:mm" /></strong>
+                            <strong>${presenceAujourdhui.heureArrivee}</strong>
                         </p>
                         <form action="${pageContext.request.contextPath}/personnel/pointer-sortie" method="post">
                             <button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-size: 16px; min-width: 180px;">
@@ -50,10 +50,10 @@
                         <p style="font-size: 16px; margin-bottom: 15px;">✅ Pointage complet pour aujourd'hui :</p>
                         <ul style="list-style: none; padding-left: 0;">
                             <li style="margin-bottom: 8px; font-size: 15px;">Entrée : 
-                                <strong><fmt:formatDate value="${presenceAujourdhui.heureArrivee}" pattern="HH:mm" /></strong>
+                                <strong>${presenceAujourdhui.heureArrivee}</strong>
                             </li>
                             <li style="font-size: 15px;">Sortie : 
-                                <strong><fmt:formatDate value="${presenceAujourdhui.heureDepart}" pattern="HH:mm" /></strong>
+                                <strong>${presenceAujourdhui.heureDepart}</strong>
                             </li>
                         </ul>
                     </div>
@@ -98,23 +98,6 @@
             <div class="stat-label">Heures supplémentaires</div>
         </div>
     </div>
-    
-    <%-- <!-- Actions rapides -->
-    <div class="card">
-        <h2 class="card-title">🚀 Actions rapides</h2>
-        <div class="actions-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 20px;">
-            <a href="${pageContext.request.contextPath}/personnel/justifications" class="btn btn-primary" style="padding: 14px 20px; font-size: 15px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-                📄 Gérer mes justifications
-            </a>
-            <a href="${pageContext.request.contextPath}/personnel/historique" class="btn btn-primary" style="padding: 14px 20px; font-size: 15px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-                📊 Voir mon historique
-            </a>
-            <a href="${pageContext.request.contextPath}/personnel/historique?dateDebut=<fmt:formatDate value='${aujourdhui}' pattern='yyyy-MM-dd' />&dateFin=<fmt:formatDate value='${aujourdhui}' pattern='yyyy-MM-dd' />" 
-               class="btn btn-secondary" style="padding: 14px 20px; font-size: 15px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center;">
-                📅 Aujourd'hui
-            </a>
-        </div>
-    </div> --%>
 </div>
 
 <%@ include file="/WEB-INF/views/layout/footer.jsp" %>
