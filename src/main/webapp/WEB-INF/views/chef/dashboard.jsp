@@ -15,10 +15,24 @@
         
         <!-- Statistiques département -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <%-- <div class="stat-card">
                 <div class="stat-icon">👥</div>
                 <div class="stat-number">${stats.nombrePresences}</div>
                 <div class="stat-label">Présences aujourd'hui</div>
+            </div> --%>
+
+            <div class="col-md-4 mb-4">
+                <div class="card border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">📅 Congés en attente</h5>
+                        <h2 class="card-text text-warning">
+                            ${stats.congesEnAttente}
+                        </h2>
+                        <p class="card-text">Demandes à valider</p>
+                        <a href="${pageContext.request.contextPath}/chef/conge/en-attente" 
+                        class="btn btn-warning">Valider congés</a>
+                    </div>
+                </div>
             </div>
             
             <div class="stat-card">

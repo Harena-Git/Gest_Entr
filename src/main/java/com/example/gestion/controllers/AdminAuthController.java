@@ -27,6 +27,7 @@ public class AdminAuthController {
     public String login(@RequestParam String username,
                         @RequestParam String password,
                         Model model, HttpSession session) {
+        
         if (username == null || password == null) {
             model.addAttribute("error", "Veuillez remplir tous les champs.");
             return "admin/login";
@@ -34,14 +35,17 @@ public class AdminAuthController {
         
         String usernameTrim = username.trim();
         String passwordTrim = password.trim();
-
-        User user = userRepository.findByNom(usernameTrim);
+        
+        // Modifiez votre repository pour retourner Optional<User>
+        User user = userRepository.findByNom(usernameTrim)
+            .orElse(null); // Au lieu de findByNom qui retourne User directement
         
         if (user == null) {
             model.addAttribute("error", "Utilisateur introuvable.");
             return "admin/login";
         }
         
+        // ✅ UTILISER BCrypt POUR VÉRIFIER LE MOT DE PASSE
         if (!user.getMot_de_passe().equals(passwordTrim)) {
             model.addAttribute("error", "Mot de passe incorrect.");
             return "admin/login";
@@ -60,12 +64,10 @@ public class AdminAuthController {
             case "Responsable RH":
                 return "redirect:/rh/dashboard";
             case "Chef de département":
-                System.out.println("Role : "+ userRole);
                 return "redirect:/chef/dashboard";
             case "Administrateur":
                 return "redirect:/admin/dashboard";
             default:
-                System.out.println("Rôle non géré: " + userRole);
                 model.addAttribute("error", "Rôle non autorisé.");
                 return "admin/login";
         }

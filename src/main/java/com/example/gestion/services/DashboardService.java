@@ -1,15 +1,23 @@
 package com.example.gestion.services;
 
-import com.example.gestion.models.Personnel;
-import com.example.gestion.models.User;
-import com.example.gestion.repository.*;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import com.example.gestion.models.User;
+import com.example.gestion.repository.DemandeCongeRepository;
+import com.example.gestion.repository.JustificationAbsenceRepository;
+import com.example.gestion.repository.JustificationRetardRepository;
+import com.example.gestion.repository.PersonnelHeureSuppRepository;
+import com.example.gestion.repository.PersonnelRepository;
+import com.example.gestion.repository.PresenceAbsenceRepository;
+import com.example.gestion.repository.UserRepository;
+import com.example.gestion.repository.ValidationAbsChefRepository;
+import com.example.gestion.repository.ValidationAbsRhRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,12 +47,20 @@ public class DashboardService {
     @Autowired
     private PersonnelHeureSuppRepository personnelHeureSuppRepository;
 
+    // AJOUTEZ CES REPOSITORIES
+    @Autowired
+    private DemandeCongeRepository demandeCongeRepository;
+
     // ========== STATISTIQUES GLOBALES DU JOUR ==========
     public Map<String, Object> getStatistiquesDuJour(LocalDate date) {
         Map<String, Object> stats = new HashMap<>();
 
         // Présences du jour
         stats.put("nombrePresences", presenceAbsenceRepository.findByDate(date).size());
+
+         // CONGÉS EN ATTENTE DE VALIDATION (NOUVEAU)
+        stats.put("congesEnAttenteChef", demandeCongeRepository.countDemandesEnAttenteParStatut("En attente de chef"));
+        stats.put("congesEnAttenteRH", demandeCongeRepository.countDemandesEnAttenteParStatut("Approuvée par chef"));
 
         // Présences en attente de validation
         stats.put("presencesEnAttenteChef", presenceAbsenceRepository.findPresencesEnAttenteValidationChef().size());
@@ -106,6 +122,8 @@ public class DashboardService {
         // Validations effectuées
         User chef = userRepository.findById(idChef).orElseThrow(() -> new RuntimeException("Chef non trouvé"));
         stats.put("nombreValidations", validationAbsChefRepository.countByUser(chef));
+
+        stats.put("congesEnAttente", demandeCongeRepository.countDemandesEnAttenteParStatut("Approuvée par chef"));
 
         User chefRef = new User();
         chefRef.setId_user(idChef);

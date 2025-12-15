@@ -22,11 +22,10 @@ public class PersonnelAuthController {
     }
     
     @PostMapping("/login")
-    public String login(@RequestParam String matricule, // ou email/ID
+    public String login(@RequestParam String matricule,
                         HttpSession session,
                         Model model) {
         
-        // Option A: Par ID personnel (simple)
         try {
             Integer id = Integer.parseInt(matricule);
             Personnel personnel = personnelRepository.findById(id)
@@ -35,6 +34,12 @@ public class PersonnelAuthController {
             // Vérifier si actif
             if (personnel.getActif() != null && !personnel.getActif()) {
                 model.addAttribute("error", "Compte désactivé");
+                return "personnel/login";
+            }
+            
+            // Vérifier si le personnel a un candidat associé
+            if (personnel.getCandidat() == null) {
+                model.addAttribute("error", "Candidat non associé à ce personnel");
                 return "personnel/login";
             }
             
@@ -48,6 +53,9 @@ public class PersonnelAuthController {
             
         } catch (NumberFormatException e) {
             model.addAttribute("error", "Matricule invalide");
+            return "personnel/login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
             return "personnel/login";
         }
     }

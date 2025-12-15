@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -61,6 +62,176 @@ public class ChefController {
 
     @Autowired
     private DepartementRepository departementRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private DemandeCongeService demandeCongeService;
+
+    @Autowired
+    private DemandeCongeRepository demandeCongeRepository;
+
+    @Autowired
+    private ValidationCongeChefService validationCongeChefService;
+
+    @Autowired
+    private RemplacementService remplacementService; 
+
+    // ========== GESTION DES CONGÉS ==========
+
+    /**
+     * Liste des demandes en attente pour le département du chef
+     */
+    @GetMapping("/conge/en-attente")
+    public String afficherDemandesEnAttenteConge(Model model, HttpSession session) {
+        if (!estChef(session)) {
+            return "redirect:/admin/login";
+        }
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> chefOpt = userRepository.findById(userId);
+        
+        if (chefOpt.isEmpty()) {
+            return "redirect:/admin/login";
+        }
+
+        User chef = chefOpt.get();
+        Integer departementId = chef.getDepartement() != null ? 
+            chef.getDepartement().getId_departement() : null;
+        
+        List<DemandeConge> demandes = demandeCongeService.obtenirDemandesEnAtenteParDepartement(departementId);
+
+        model.addAttribute("chef", chef);
+        model.addAttribute("demandes", demandes);
+        model.addAttribute("idChef", userId);
+
+        return "conge/chef/en-attente";
+    }
+
+    /**
+     * Formulaire de validation d'une demande
+     */
+    @GetMapping("/conge/valider/{idDemande}")
+    public String afficherFormulaireValidationConge(
+            @PathVariable Integer idDemande,
+            Model model,
+            HttpSession session) {
+        
+        if (!estChef(session)) {
+            return "redirect:/admin/login";
+        }
+
+        Optional<DemandeConge> demandeOpt = demandeCongeRepository.findById(idDemande);
+        Integer userId = (Integer) session.getAttribute("userId");
+        Optional<User> chefOpt = userRepository.findById(userId);
+
+        if (demandeOpt.isEmpty() || chefOpt.isEmpty()) {
+            return "redirect:/error";
+        }
+
+        model.addAttribute("demande", demandeOpt.get());
+        model.addAttribute("chef", chefOpt.get());
+        model.addAttribute("idChef", userId);
+
+        return "conge/chef/formulaire-validation";
+    }
+
+    /**
+     * Approuver une demande de congé
+     */
+    @PostMapping("/conge/approuver")
+    public String approuverDemandeConge(
+            @RequestParam Integer idDemande,
+            @RequestParam(required = false) String commentaire,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        
+        if (!estChef(session)) {
+            return "redirect:/admin/login";
+        }
+
+        try {
+            Optional<DemandeConge> demandeOpt = demandeCongeRepository.findById(idDemande);
+            Integer userId = (Integer) session.getAttribute("userId");
+            Optional<User> chefOpt = userRepository.findById(userId);
+
+            if (demandeOpt.isEmpty() || chefOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("erreur", "Données invalides");
+                return "redirect:/chef/conge/en-attente";
+            }
+
+            DemandeConge demande = demandeOpt.get();
+            User chef = chefOpt.get();
+            
+            validationCongeChefService.validerApprobation(demande, chef, commentaire);
+
+            // Proposer automatiquement un remplaçant
+            try {
+                Remplacement remplacement = remplacementService.proposerRemplacant(demande);
+                redirectAttributes.addFlashAttribute("succes", 
+                    "Demande approuvée! Remplaçant proposé: " + 
+                    remplacement.getPersonnel().getCandidat().getPrenom() + " " + 
+                    remplacement.getPersonnel().getCandidat().getNom());
+            } catch (RuntimeException e) {
+                redirectAttributes.addFlashAttribute("avertissement", 
+                    "Demande approuvée, mais aucun remplaçant disponible trouvé.");
+            }
+
+            return "redirect:/chef/conge/en-attente";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erreur", "Erreur: " + e.getMessage());
+            return "redirect:/chef/conge/en-attente";
+        }
+    }
+
+    /**
+     * Rejeter une demande de congé
+     */
+    @PostMapping("/conge/rejeter")
+    public String rejeterDemandeConge(
+            @RequestParam Integer idDemande,
+            @RequestParam String commentaire,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        
+        if (!estChef(session)) {
+            return "redirect:/admin/login";
+        }
+
+        try {
+            Optional<DemandeConge> demandeOpt = demandeCongeRepository.findById(idDemande);
+            Integer userId = (Integer) session.getAttribute("userId");
+            Optional<User> chefOpt = userRepository.findById(userId);
+
+            if (demandeOpt.isEmpty() || chefOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("erreur", "Données invalides");
+                return "redirect:/chef/conge/en-attente";
+            }
+
+            DemandeConge demande = demandeOpt.get();
+            User chef = chefOpt.get();
+            
+            validationCongeChefService.validerRejet(demande, chef, commentaire);
+
+            redirectAttributes.addFlashAttribute("succes", "Demande rejetée avec le motif: " + commentaire);
+            return "redirect:/chef/conge/en-attente";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erreur", "Erreur: " + e.getMessage());
+            return "redirect:/chef/conge/en-attente";
+        }
+    }
+
+    /**
+     * API pour obtenir les demandes en JSON
+     */
+    @GetMapping("/conge/api/demandes/{idDept}")
+    @ResponseBody
+    public List<DemandeConge> obtenirDemandesAPI(@PathVariable Integer idDept) {
+        return demandeCongeRepository.findPendingCongeesByDepartment(idDept);
+    }
 
         // ========== DASHBOARD CHEF ==========
     @GetMapping("/dashboard")
