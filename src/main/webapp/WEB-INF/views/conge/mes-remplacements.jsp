@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Mes remplacements</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 <%-- <jsp:include page="/WEB-INF/views/menu_bar.jsp" /> --%>

@@ -5,7 +5,7 @@
 <html>
 <head>
     <title>Demandes en attente - Chef</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 <%-- <jsp:include page="/WEB-INF/views/menu_bar.jsp" /> --%>

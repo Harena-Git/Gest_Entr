@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Demandes approuvées par chef - RH</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 <%-- <jsp:include page="/WEB-INF/views/menu_bar.jsp" /> --%>

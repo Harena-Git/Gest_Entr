@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpSession;
 
 import com.example.gestion.models.Remplacement;
 import com.example.gestion.repository.PersonnelRepository;
@@ -31,7 +32,8 @@ public class RemplacementController {
      * Afficher les remplaçants assignés au personnel
      */
     @GetMapping("/mes-remplacements")
-    public String afficherMesRemplacements(Model model, @RequestParam Integer idPersonnel) {
+    public String afficherMesRemplacements(Model model, HttpSession session) {
+        Integer idPersonnel = (Integer) session.getAttribute("personnelId");
         var personnel = personnelRepository.findById(idPersonnel);
         if (personnel.isEmpty()) {
             return "redirect:/error";
@@ -62,8 +64,9 @@ public class RemplacementController {
     @PostMapping("/accepter")
     public String accepterRemplacement(@RequestParam Integer idRemplacement,
                                        @RequestParam(required = false) String commentaire,
-                                       @RequestParam Integer idPersonnel,
+                                       HttpSession session,
                                        RedirectAttributes redirectAttributes) {
+        Integer idPersonnel = (Integer) session.getAttribute("personnelId");
         try {
             // À compléter avec la logique d'acceptation
             redirectAttributes.addFlashAttribute("succes", "Remplacement accepté!");
@@ -81,8 +84,9 @@ public class RemplacementController {
     @PostMapping("/refuser")
     public String refuserRemplacement(@RequestParam Integer idRemplacement,
                                       @RequestParam String commentaire,
-                                      @RequestParam Integer idPersonnel,
+                                      HttpSession session,
                                       RedirectAttributes redirectAttributes) {
+        Integer idPersonnel = (Integer) session.getAttribute("personnelId");
         try {
             // À compléter avec la logique de refus
             redirectAttributes.addFlashAttribute("succes", "Remplacement refusé!");

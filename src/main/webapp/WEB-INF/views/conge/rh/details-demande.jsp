@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Détails demande - RH</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
 <div class="container">

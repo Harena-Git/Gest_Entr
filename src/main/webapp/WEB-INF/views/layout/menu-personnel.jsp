@@ -11,6 +11,9 @@
         <span class="badge bg-info">${sessionScope.mesCongesEnAttente}</span>
     </c:if>
 </a>
+<a href="${pageContext.request.contextPath}/personnel/remplacement/mes-remplacements" class="nav-item ${pageContext.request.requestURI.contains('/remplacements') ? 'active' : ''}">
+    🔄 Mes remplacements
+</a>
 <a href="${pageContext.request.contextPath}/personnel/justifications" class="nav-item ${pageContext.request.requestURI.endsWith('justifications') ? 'active' : ''}">
     📄 Mes justifications
 </a>
